@@ -1,0 +1,1664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+
+  <title>Simple Chat</title>
+
+  <link rel="icon" href="data:,">
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    :root {
+      --bg: #ffffff;
+      --header: #ffffff;
+      --border: #e5e5e5;
+      --text: #171717;
+      --muted: #777777;
+      --user: #f1f1f1;
+      --button: #171717;
+      --button-hover: #333333;
+    }
+
+    html,
+    body {
+      width: 100%;
+      height: 100%;
+      margin: 0;
+      font-family:
+        Arial,
+        Helvetica,
+        sans-serif;
+      background: var(--bg);
+      color: var(--text);
+    }
+
+    body {
+      overflow: hidden;
+    }
+
+    .app {
+      width: 100%;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ==================================================
+       HEADER
+       ================================================== */
+
+    header {
+      height: 68px;
+      flex-shrink: 0;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      background: var(--header);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #171717;
+      color: white;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    .brand-text h1 {
+      margin: 0;
+      font-size: 18px;
+      line-height: 1.2;
+    }
+
+    .brand-text span {
+      display: block;
+      margin-top: 3px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .icon-button {
+      width: 42px;
+      height: 42px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      background: white;
+      cursor: pointer;
+      font-size: 20px;
+      transition: 0.2s;
+    }
+
+    .icon-button:hover {
+      background: #f4f4f4;
+      transform: rotate(12deg);
+    }
+
+    /* ==================================================
+       CHAT AREA
+       ================================================== */
+
+    .chat-area {
+      flex: 1;
+      min-height: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .chat-container {
+      width: 100%;
+      max-width: 900px;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+
+    .messages {
+      flex: 1;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 30px 20px;
+      scroll-behavior: smooth;
+    }
+
+    /* ==================================================
+       WELCOME
+       ================================================== */
+
+    .welcome {
+      min-height: 55vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 30px;
+    }
+
+    .welcome-icon {
+      width: 64px;
+      height: 64px;
+      border-radius: 20px;
+      background: #171717;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 30px;
+      margin-bottom: 18px;
+    }
+
+    .welcome h2 {
+      margin: 0 0 10px;
+      font-size: 28px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: var(--muted);
+      max-width: 520px;
+      line-height: 1.6;
+    }
+
+    .welcome.hidden {
+      display: none;
+    }
+
+    /* ==================================================
+       MESSAGES
+       ================================================== */
+
+    .message {
+      display: flex;
+      width: 100%;
+      margin-bottom: 22px;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .message.assistant {
+      justify-content: flex-start;
+    }
+
+    .message-content {
+      max-width: 78%;
+      padding: 12px 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      font-size: 15px;
+    }
+
+    .message.user .message-content {
+      background: var(--user);
+      border-radius: 18px;
+    }
+
+    .message.assistant .message-content {
+      padding-left: 0;
+    }
+
+    /* ==================================================
+       LOADING
+       ================================================== */
+
+    .loading-message {
+      display: flex;
+      gap: 5px;
+      align-items: center;
+      height: 28px;
+    }
+
+    .loading-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #777;
+      animation: bounce 1.2s infinite ease-in-out;
+    }
+
+    .loading-dot:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .loading-dot:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    @keyframes bounce {
+      0%,
+      80%,
+      100% {
+        transform: scale(0.7);
+        opacity: 0.5;
+      }
+
+      40% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    /* ==================================================
+       INPUT
+       ================================================== */
+
+    .input-area {
+      padding: 12px 20px 20px;
+    }
+
+    .chat-form {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      border: 1px solid #d8d8d8;
+      border-radius: 20px;
+      padding: 8px;
+      background: white;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+    }
+
+    .chat-form textarea {
+      flex: 1;
+      min-height: 42px;
+      max-height: 160px;
+      resize: none;
+      border: none;
+      outline: none;
+      padding: 11px 12px;
+      font-family: inherit;
+      font-size: 15px;
+      line-height: 1.4;
+      background: transparent;
+    }
+
+    .send-button {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 14px;
+      background: var(--button);
+      color: white;
+      font-size: 23px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .send-button:hover:not(:disabled) {
+      background: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+    .send-button:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .powered {
+      text-align: center;
+      color: #999;
+      font-size: 11px;
+      margin-top: 8px;
+    }
+
+    /* ==================================================
+       DIALOG
+       ================================================== */
+
+    .settings-dialog {
+      width: min(520px, calc(100% - 30px));
+      border: none;
+      border-radius: 18px;
+      padding: 0;
+      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+    }
+
+    .settings-dialog::backdrop {
+      background: rgba(0, 0, 0, 0.45);
+    }
+
+    .settings-box {
+      padding: 24px;
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .settings-header h2 {
+      margin: 0;
+      font-size: 21px;
+    }
+
+    .close-button {
+      border: none;
+      background: transparent;
+      font-size: 25px;
+      cursor: pointer;
+      color: #666;
+    }
+
+    .settings-form {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .settings-form label {
+      font-size: 14px;
+      font-weight: 600;
+      margin-top: 8px;
+    }
+
+    .settings-form label span {
+      color: #999;
+      font-weight: normal;
+    }
+
+    .settings-form input,
+    .settings-form textarea {
+      width: 100%;
+      border: 1px solid #d8d8d8;
+      border-radius: 11px;
+      outline: none;
+      padding: 12px;
+      font-family: inherit;
+      font-size: 14px;
+    }
+
+    .settings-form input:focus,
+    .settings-form textarea:focus {
+      border-color: #777;
+    }
+
+    .settings-form textarea {
+      min-height: 110px;
+      resize: vertical;
+    }
+
+    .settings-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .secondary-button,
+    .primary-button {
+      border: none;
+      border-radius: 10px;
+      padding: 11px 17px;
+      font-family: inherit;
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    .secondary-button {
+      background: #eeeeee;
+      color: #222;
+    }
+
+    .primary-button {
+      background: #171717;
+      color: white;
+    }
+
+    .secondary-button:hover {
+      background: #dddddd;
+    }
+
+    .primary-button:hover {
+      background: #333333;
+    }
+
+    /* ==================================================
+       MOBILE
+       ================================================== */
+
+    @media (max-width: 600px) {
+      header {
+        padding: 0 14px;
+      }
+
+      .messages {
+        padding: 20px 14px;
+      }
+
+      .input-area {
+        padding: 10px 12px 14px;
+      }
+
+      .message-content {
+        max-width: 88%;
+      }
+
+      .welcome h2 {
+        font-size: 24px;
+      }
+
+      .settings-box {
+        padding: 19px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- ==================================================
+         HEADER
+         ================================================== -->
+
+    <header>
+
+      <div class="brand">
+
+        <div class="brand-icon">
+          ✦
+        </div>
+
+        <div class="brand-text">
+          <h1>Simple Chat</h1>
+          <span>GPT-4.1 Nano</span>
+        </div>
+
+      </div>
+
+      <button
+        id="settingsBtn"
+        class="icon-button"
+        type="button"
+        aria-label="Open settings"
+        title="Settings"
+      >
+        ⚙
+      </button>
+
+    </header>
+
+
+    <!-- ==================================================
+         CHAT
+         ================================================== -->
+
+    <main class="chat-area">
+
+      <div class="chat-container">
+
+        <div
+          id="messages"
+          class="messages"
+          aria-live="polite"
+        >
+
+          <div
+            id="welcome"
+            class="welcome"
+          >
+
+            <div class="welcome-icon">
+              ✦
+            </div>
+
+            <h2>How can I help?</h2>
+
+            <p>
+              Ask a question and GPT-4.1 Nano
+              will respond.
+            </p>
+
+          </div>
+
+        </div>
+
+
+        <!-- ==================================================
+             INPUT
+             ================================================== -->
+
+        <div class="input-area">
+
+          <form
+            id="chatForm"
+            class="chat-form"
+          >
+
+            <textarea
+              id="messageInput"
+              rows="1"
+              placeholder="Message..."
+              autocomplete="off"
+              aria-label="Message"
+            ></textarea>
+
+            <button
+              id="sendBtn"
+              class="send-button"
+              type="submit"
+              aria-label="Send message"
+              title="Send"
+            >
+              ↑
+            </button>
+
+          </form>
+
+          <div class="powered">
+            Powered by Replicate
+          </div>
+
+        </div>
+
+      </div>
+
+    </main>
+
+  </div>
+
+
+  <!-- ==================================================
+       SETTINGS DIALOG
+       ================================================== -->
+
+  <dialog
+    id="settingsDialog"
+    class="settings-dialog"
+  >
+
+    <div class="settings-box">
+
+      <div class="settings-header">
+
+        <h2>Settings</h2>
+
+        <button
+          id="closeSettingsBtn"
+          class="close-button"
+          type="button"
+          aria-label="Close settings"
+        >
+          ×
+        </button>
+
+      </div>
+
+
+      <form
+        id="settingsForm"
+        class="settings-form"
+      >
+
+        <label for="apiToken">
+          Replicate API Token
+        </label>
+
+        <input
+          id="apiToken"
+          name="apiToken"
+          type="password"
+          placeholder="r8_..."
+          autocomplete="off"
+        >
+
+
+        <label for="systemPrompt">
+          System Prompt
+          <span>(Optional)</span>
+        </label>
+
+        <textarea
+          id="systemPrompt"
+          name="systemPrompt"
+          placeholder="Example: You are a helpful assistant."
+        ></textarea>
+
+
+        <div class="settings-actions">
+
+          <button
+            id="cancelSettingsBtn"
+            class="secondary-button"
+            type="button"
+          >
+            Cancel
+          </button>
+
+          <button
+            class="primary-button"
+            type="submit"
+          >
+            Save Settings
+          </button>
+
+        </div>
+
+      </form>
+
+    </div>
+
+  </dialog>
+
+
+  <script>
+
+    // ======================================================
+    // REPLICATE MODEL
+    // ======================================================
+
+    const MODEL_URL =
+      "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
+
+
+    // ======================================================
+    // ELEMENTS
+    // ======================================================
+
+    const settingsBtn =
+      document.getElementById("settingsBtn");
+
+    const settingsDialog =
+      document.getElementById("settingsDialog");
+
+    const settingsForm =
+      document.getElementById("settingsForm");
+
+    const apiToken =
+      document.getElementById("apiToken");
+
+    const systemPrompt =
+      document.getElementById("systemPrompt");
+
+    const closeSettingsBtn =
+      document.getElementById("closeSettingsBtn");
+
+    const cancelSettingsBtn =
+      document.getElementById("cancelSettingsBtn");
+
+    const chatForm =
+      document.getElementById("chatForm");
+
+    const messageInput =
+      document.getElementById("messageInput");
+
+    const messages =
+      document.getElementById("messages");
+
+    const sendBtn =
+      document.getElementById("sendBtn");
+
+    const welcome =
+      document.getElementById("welcome");
+
+
+    // ======================================================
+    // CHAT HISTORY
+    // ======================================================
+
+    let chatHistory = [];
+
+
+    // ======================================================
+    // LOAD SETTINGS
+    // ======================================================
+
+    function loadSettings() {
+
+      apiToken.value =
+        localStorage.getItem(
+          "replicateApiToken"
+        ) || "";
+
+      systemPrompt.value =
+        localStorage.getItem(
+          "systemPrompt"
+        ) || "";
+    }
+
+
+    // ======================================================
+    // SAVE SETTINGS
+    // ======================================================
+
+    function saveSettings() {
+
+      const token =
+        apiToken.value.trim();
+
+      const prompt =
+        systemPrompt.value.trim();
+
+      localStorage.setItem(
+        "replicateApiToken",
+        token
+      );
+
+      localStorage.setItem(
+        "systemPrompt",
+        prompt
+      );
+    }
+
+
+    // ======================================================
+    // GET TOKEN
+    // ======================================================
+
+    function getApiToken() {
+
+      return (
+        localStorage.getItem(
+          "replicateApiToken"
+        ) || ""
+      ).trim();
+    }
+
+
+    // ======================================================
+    // GET SYSTEM PROMPT
+    // ======================================================
+
+    function getSystemPrompt() {
+
+      return (
+        localStorage.getItem(
+          "systemPrompt"
+        ) || ""
+      ).trim();
+    }
+
+
+    // ======================================================
+    // OPEN SETTINGS
+    // ======================================================
+
+    settingsBtn.addEventListener(
+      "click",
+      function () {
+
+        if (
+          typeof settingsDialog.showModal ===
+          "function"
+        ) {
+          settingsDialog.showModal();
+        } else {
+          settingsDialog.setAttribute(
+            "open",
+            ""
+          );
+        }
+
+      }
+    );
+
+
+    // ======================================================
+    // CLOSE SETTINGS
+    // ======================================================
+
+    closeSettingsBtn.addEventListener(
+      "click",
+      function () {
+
+        settingsDialog.close();
+
+      }
+    );
+
+
+    cancelSettingsBtn.addEventListener(
+      "click",
+      function () {
+
+        settingsDialog.close();
+
+      }
+    );
+
+
+    // ======================================================
+    // SAVE SETTINGS
+    // ======================================================
+
+    settingsForm.addEventListener(
+      "submit",
+      function (event) {
+
+        event.preventDefault();
+
+        saveSettings();
+
+        settingsDialog.close();
+
+      }
+    );
+
+
+    // ======================================================
+    // CLICK OUTSIDE DIALOG
+    // ======================================================
+
+    settingsDialog.addEventListener(
+      "click",
+      function (event) {
+
+        const rect =
+          settingsDialog.getBoundingClientRect();
+
+        const clickedOutside =
+          event.clientX < rect.left ||
+          event.clientX > rect.right ||
+          event.clientY < rect.top ||
+          event.clientY > rect.bottom;
+
+        if (clickedOutside) {
+
+          settingsDialog.close();
+
+        }
+
+      }
+    );
+
+
+    // ======================================================
+    // ADD MESSAGE
+    // ======================================================
+
+    function addMessage(
+      text,
+      sender
+    ) {
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message " + sender;
+
+
+      const content =
+        document.createElement("div");
+
+      content.className =
+        "message-content";
+
+      content.textContent =
+        text;
+
+
+      message.appendChild(
+        content
+      );
+
+      messages.appendChild(
+        message
+      );
+
+
+      if (welcome) {
+
+        welcome.classList.add(
+          "hidden"
+        );
+
+      }
+
+
+      scrollToBottom();
+
+      return message;
+    }
+
+
+    // ======================================================
+    // LOADING MESSAGE
+    // ======================================================
+
+    function addLoadingMessage() {
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message assistant";
+
+
+      const loading =
+        document.createElement("div");
+
+      loading.className =
+        "loading-message";
+
+
+      loading.innerHTML =
+        '<span class="loading-dot"></span>' +
+        '<span class="loading-dot"></span>' +
+        '<span class="loading-dot"></span>';
+
+
+      message.appendChild(
+        loading
+      );
+
+      messages.appendChild(
+        message
+      );
+
+
+      scrollToBottom();
+
+      return message;
+    }
+
+
+    // ======================================================
+    // SCROLL
+    // ======================================================
+
+    function scrollToBottom() {
+
+      requestAnimationFrame(
+        function () {
+
+          messages.scrollTop =
+            messages.scrollHeight;
+
+        }
+      );
+    }
+
+
+    // ======================================================
+    // SHOW ERROR
+    // ======================================================
+
+    function showError(
+      message
+    ) {
+
+      addMessage(
+        "⚠ " + message,
+        "assistant"
+      );
+    }
+
+
+    // ======================================================
+    // EXTRACT OUTPUT
+    // ======================================================
+
+    function extractOutput(
+      data
+    ) {
+
+      if (!data) {
+        return "";
+      }
+
+
+      if (
+        Array.isArray(
+          data.output
+        )
+      ) {
+
+        return data.output
+          .map(
+            function (part) {
+
+              if (
+                typeof part ===
+                "string"
+              ) {
+                return part;
+              }
+
+              return String(part);
+
+            }
+          )
+          .join("");
+
+      }
+
+
+      if (
+        typeof data.output ===
+        "string"
+      ) {
+
+        return data.output;
+
+      }
+
+
+      if (
+        data.output &&
+        typeof data.output ===
+        "object"
+      ) {
+
+        if (
+          typeof data.output.text ===
+          "string"
+        ) {
+
+          return data.output.text;
+
+        }
+
+
+        if (
+          typeof data.output.content ===
+          "string"
+        ) {
+
+          return data.output.content;
+
+        }
+
+      }
+
+
+      if (
+        typeof data.text ===
+        "string"
+      ) {
+
+        return data.text;
+
+      }
+
+
+      return "";
+    }
+
+
+    // ======================================================
+    // FRIENDLY ERROR
+    // ======================================================
+
+    function getFriendlyError(
+      error
+    ) {
+
+      const message =
+        error &&
+        error.message
+          ? error.message
+          : String(error);
+
+
+      const lower =
+        message.toLowerCase();
+
+
+      if (
+        lower.includes("401") ||
+        lower.includes("unauthorized") ||
+        lower.includes("invalid token") ||
+        lower.includes("authentication")
+      ) {
+
+        return (
+          "Your Replicate API token appears to be invalid. Check it in Settings."
+        );
+
+      }
+
+
+      if (
+        lower.includes("403") ||
+        lower.includes("forbidden") ||
+        lower.includes("permission")
+      ) {
+
+        return (
+          "Replicate refused the request because the token does not have permission to use this model."
+        );
+
+      }
+
+
+      if (
+        lower.includes("429") ||
+        lower.includes("rate limit") ||
+        lower.includes("too many requests")
+      ) {
+
+        return (
+          "Too many requests were sent. Please wait a moment and try again."
+        );
+
+      }
+
+
+      if (
+        lower.includes("400") ||
+        lower.includes("bad request")
+      ) {
+
+        return (
+          "Replicate rejected the request. Check the API input and model settings."
+        );
+
+      }
+
+
+      if (
+        lower.includes("500") ||
+        lower.includes("502") ||
+        lower.includes("503") ||
+        lower.includes("504")
+      ) {
+
+        return (
+          "Replicate's server returned an error. Please wait a moment and try again."
+        );
+
+      }
+
+
+      if (
+        lower.includes("failed to fetch") ||
+        lower.includes("networkerror") ||
+        lower.includes("network error")
+      ) {
+
+        return (
+          "The browser could not connect to Replicate. Check the red Console error for the exact reason."
+        );
+
+      }
+
+
+      return message;
+    }
+
+
+    // ======================================================
+    // SEND TO REPLICATE
+    // ======================================================
+
+    async function sendToReplicate(
+      userText
+    ) {
+
+      const token =
+        getApiToken();
+
+
+      if (!token) {
+
+        throw new Error(
+          "No API token was found. Open Settings and enter your Replicate API token."
+        );
+
+      }
+
+
+      const messagesForApi = [
+        ...chatHistory,
+        {
+          role: "user",
+          content: userText
+        }
+      ];
+
+
+      const system =
+        getSystemPrompt();
+
+
+      const finalMessages = [];
+
+
+      if (system) {
+
+        finalMessages.push({
+          role: "system",
+          content: system
+        });
+
+      }
+
+
+      finalMessages.push(
+        ...messagesForApi
+      );
+
+
+      const requestBody = {
+
+        input: {
+
+          messages:
+            finalMessages,
+
+          temperature:
+            1,
+
+          top_p:
+            1,
+
+          frequency_penalty:
+            0,
+
+          presence_penalty:
+            0,
+
+          max_completion_tokens:
+            2000,
+
+          image_input:
+            []
+
+        }
+
+      };
+
+
+      console.log(
+        "Sending request to Replicate..."
+      );
+
+
+      let response;
+
+
+      try {
+
+        response =
+          await fetch(
+            MODEL_URL,
+            {
+
+              method:
+                "POST",
+
+              headers: {
+
+                "Authorization":
+                  "Bearer " + token,
+
+                "Content-Type":
+                  "application/json",
+
+                "Prefer":
+                  "wait"
+
+              },
+
+              body:
+                JSON.stringify(
+                  requestBody
+                )
+
+            }
+          );
+
+      } catch (error) {
+
+        console.error(
+          "FETCH ERROR:",
+          error
+        );
+
+        throw new Error(
+          "Browser connection failed. The exact browser error is in the Console."
+        );
+
+      }
+
+
+      const responseText =
+        await response.text();
+
+
+      let data =
+        null;
+
+
+      try {
+
+        data =
+          responseText
+            ? JSON.parse(
+                responseText
+              )
+            : null;
+
+      } catch (error) {
+
+        console.error(
+          "INVALID JSON:",
+          responseText
+        );
+
+        throw new Error(
+          "Replicate returned an invalid response."
+        );
+
+      }
+
+
+      if (!response.ok) {
+
+        console.error(
+          "REPLICATE API ERROR:",
+          {
+            status:
+              response.status,
+
+            data:
+              data
+          }
+        );
+
+
+        const detail =
+          data &&
+          (
+            data.detail ||
+            data.error ||
+            data.title
+          );
+
+
+        if (detail) {
+
+          throw new Error(
+            response.status +
+            ": " +
+            detail
+          );
+
+        }
+
+
+        throw new Error(
+          "Replicate request failed with HTTP " +
+          response.status +
+          "."
+        );
+
+      }
+
+
+      console.log(
+        "REPLICATE RESPONSE:",
+        data
+      );
+
+
+      const answer =
+        extractOutput(
+          data
+        );
+
+
+      if (!answer) {
+
+        throw new Error(
+          "Replicate completed the request but returned no text."
+        );
+
+      }
+
+
+      return answer;
+    }
+
+
+    // ======================================================
+    // CHAT FORM
+    // ======================================================
+
+    chatForm.addEventListener(
+      "submit",
+      async function (event) {
+
+        event.preventDefault();
+
+
+        const text =
+          messageInput.value.trim();
+
+
+        if (!text) {
+          return;
+        }
+
+
+        const token =
+          getApiToken();
+
+
+        if (!token) {
+
+          settingsDialog.showModal();
+
+          apiToken.focus();
+
+          return;
+        }
+
+
+        addMessage(
+          text,
+          "user"
+        );
+
+
+        messageInput.value =
+          "";
+
+        messageInput.style.height =
+          "auto";
+
+
+        sendBtn.disabled =
+          true;
+
+        messageInput.disabled =
+          true;
+
+
+        const loadingMessage =
+          addLoadingMessage();
+
+
+        try {
+
+          const answer =
+            await sendToReplicate(
+              text
+            );
+
+
+          loadingMessage.remove();
+
+
+          const cleanAnswer =
+            answer.trim();
+
+
+          if (!cleanAnswer) {
+
+            showError(
+              "The model returned an empty response."
+            );
+
+            return;
+          }
+
+
+          addMessage(
+            cleanAnswer,
+            "assistant"
+          );
+
+
+          chatHistory.push({
+            role:
+              "user",
+            content:
+              text
+          });
+
+
+          chatHistory.push({
+            role:
+              "assistant",
+            content:
+              cleanAnswer
+          });
+
+
+          console.log(
+            "CHAT HISTORY:",
+            chatHistory
+          );
+
+
+        } catch (error) {
+
+          loadingMessage.remove();
+
+
+          console.error(
+            "CHAT REQUEST FAILED:",
+            error
+          );
+
+
+          showError(
+            getFriendlyError(
+              error
+            )
+          );
+
+
+        } finally {
+
+          sendBtn.disabled =
+            false;
+
+          messageInput.disabled =
+            false;
+
+          messageInput.focus();
+
+        }
+
+      }
+    );
+
+
+    // ======================================================
+    // TEXTAREA RESIZE
+    // ======================================================
+
+    messageInput.addEventListener(
+      "input",
+      function () {
+
+        this.style.height =
+          "auto";
+
+        this.style.height =
+          Math.min(
+            this.scrollHeight,
+            160
+          ) + "px";
+
+      }
+    );
+
+
+    // ======================================================
+    // ENTER TO SEND
+    // SHIFT + ENTER = NEW LINE
+    // ======================================================
+
+    messageInput.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          chatForm.requestSubmit();
+
+        }
+
+      }
+    );
+
+
+    // ======================================================
+    // ESCAPE
+    // ======================================================
+
+    document.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key === "Escape" &&
+          settingsDialog.open
+        ) {
+
+          settingsDialog.close();
+
+        }
+
+      }
+    );
+
+
+    // ======================================================
+    // START
+    // ======================================================
+
+    loadSettings();
+
+  </script>
+
+</body>
+</html>
+```
