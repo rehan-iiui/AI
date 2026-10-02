@@ -2,177 +2,189 @@ const MODEL_URL =
   "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
 
 exports.handler = async function (event) {
-  // Only allow POST requests
+
   if (event.httpMethod !== "POST") {
-    return jsonResponse(405, {
+    return response(405, {
       error: "Method not allowed."
     });
   }
 
-  // Get the secret API token from Netlify
-  const apiKey =
+  const token =
     process.env.REPLICATE_API_TOKEN;
 
-  if (!apiKey) {
-    console.error(
-      "REPLICATE_API_TOKEN is missing."
-    );
-
-    return jsonResponse(500, {
-      error:
-        "REPLICATE_API_TOKEN is not configured in Netlify Environment Variables."
+  if (!token) {
+    return response(500, {
+      error: "REPLICATE_API_TOKEN is missing from Netlify."
     });
   }
 
-  // Parse request body
   let body;
 
   try {
-    body = JSON.parse(
-      event.body || "{}"
-    );
+    body = JSON.parse(event.body || "{}");
   } catch (error) {
-    console.error(
-      "Invalid JSON:",
-      error
-    );
-
-    return jsonResponse(400, {
-      error: "Invalid JSON request."
+    return response(400, {
+      error: "Invalid JSON."
     });
   }
 
-  // Get user's message
   const message =
     typeof body.message === "string"
       ? body.message.trim()
       : "";
 
   if (!message) {
-    return jsonResponse(400, {
-      error: "Message cannot be empty."
+    return response(400, {
+      error: "Message is empty."
     });
   }
 
-  // Get conversation history
   const history =
     Array.isArray(body.history)
       ? body.history
       : [];
 
-  // Get system prompt
   const systemPrompt =
     typeof body.systemPrompt === "string"
       ? body.systemPrompt.trim()
       : "";
 
-  // Build messages
+  /*
+   * These values come from the app's
+   * Conversation Settings.
+   *
+   * Safe defaults are used if they are
+   * missing or invalid.
+   */
+
+  let temperature =
+    Number(body.temperature);
+
+  if (
+    !Number.isFinite(temperature) ||
+    temperature < 0 ||
+    temperature > 2
+  ) {
+    temperature = 1;
+  }
+
+  let maxTokens =
+    Number(body.maxTokens);
+
+  if (
+    !Number.isFinite(maxTokens) ||
+    maxTokens < 100
+  ) {
+    maxTokens = 2000;
+  }
+
+  if (maxTokens > 8000) {
+    maxTokens = 8000;
+  }
+
   const messages = [];
 
   for (const item of history) {
-    if (!item || typeof item !== "object") {
+
+    if (!item) {
       continue;
     }
 
-    const role = item.role;
-    const content = item.content;
+    if (
+      item.role !== "user" &&
+      item.role !== "assistant"
+    ) {
+      continue;
+    }
 
     if (
-      (role === "user" ||
-        role === "assistant") &&
-      typeof content === "string" &&
-      content.trim()
+      typeof item.content !== "string"
     ) {
-      messages.push({
-        role: role,
-        content: content.trim()
-      });
+      continue;
     }
+
+    if (!item.content.trim()) {
+      continue;
+    }
+
+    messages.push({
+      role: item.role,
+      content: item.content.trim()
+    });
   }
 
-  // Add current user message
   messages.push({
     role: "user",
     content: message
   });
 
-  // Replicate model input
+  /*
+   * Keep the exact API structure that was
+   * already working, while allowing the
+   * UI settings to control temperature
+   * and maximum completion tokens.
+   */
+
   const input = {
     messages: messages,
-    temperature: 1,
-    top_p: 1,
-    frequency_penalty: 0,
-    presence_penalty: 0,
-    max_completion_tokens: 2000
+    temperature: temperature,
+    max_completion_tokens: maxTokens
   };
 
-  // Add system prompt only if provided
   if (systemPrompt) {
-    input.system_prompt =
-      systemPrompt;
+    input.system_prompt = systemPrompt;
   }
 
   try {
-    console.log(
-      "Sending request to Replicate..."
+
+    const apiResponse = await fetch(
+      MODEL_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Authorization":
+            "Bearer " + token,
+
+          "Content-Type":
+            "application/json",
+
+          "Prefer":
+            "wait"
+        },
+
+        body: JSON.stringify({
+          input: input
+        })
+      }
     );
 
-    const response =
-      await fetch(
-        MODEL_URL,
-        {
-          method: "POST",
+    const text =
+      await apiResponse.text();
 
-          headers: {
-            Authorization:
-              "Bearer " + apiKey,
-
-            "Content-Type":
-              "application/json",
-
-            Prefer:
-              "wait"
-          },
-
-          body: JSON.stringify({
-            input: input
-          })
-        }
-      );
-
-    const responseText =
-      await response.text();
-
-    console.log(
-      "Replicate status:",
-      response.status
-    );
-
-    let data = {};
+    let data;
 
     try {
-      data = responseText
-        ? JSON.parse(responseText)
+
+      data = text
+        ? JSON.parse(text)
         : {};
+
     } catch (error) {
+
       console.error(
-        "Replicate returned invalid JSON:",
-        responseText
+        "Invalid Replicate JSON:",
+        text
       );
 
-      return jsonResponse(502, {
+      return response(502, {
         error:
-          "Replicate returned an invalid response."
+          "Replicate returned invalid JSON."
       });
+
     }
 
-    // Replicate returned an error
-    if (!response.ok) {
-      console.error(
-        "Replicate API error:",
-        response.status,
-        data
-      );
+    if (!apiResponse.ok) {
 
       let errorMessage =
         "Replicate request failed.";
@@ -181,137 +193,178 @@ exports.handler = async function (event) {
         data &&
         typeof data.detail === "string"
       ) {
+
         errorMessage =
           data.detail;
+
       } else if (
         data &&
         typeof data.error === "string"
       ) {
+
         errorMessage =
           data.error;
+
       } else if (
         data &&
         typeof data.title === "string"
       ) {
+
         errorMessage =
           data.title;
+
       }
 
-      return jsonResponse(
-        response.status,
+      return response(
+        apiResponse.status,
         {
           error: errorMessage
         }
       );
     }
 
-    // Extract AI response
     const reply =
-      extractReply(data);
+      getReply(data);
 
     if (!reply) {
+
       console.error(
-        "Replicate returned no text:",
-        data
+        "Replicate returned no usable output:",
+        JSON.stringify(data)
       );
 
-      return jsonResponse(502, {
+      return response(502, {
         error:
-          "Replicate returned no text."
+          "Replicate returned no AI text."
       });
+
     }
 
-    return jsonResponse(200, {
+    return response(200, {
       reply: reply.trim()
     });
 
   } catch (error) {
+
     console.error(
-      "Function error:",
+      "Chat function error:",
       error
     );
 
-    return jsonResponse(500, {
+    return response(500, {
       error:
         error &&
         error.message
           ? error.message
           : "Could not connect to Replicate."
     });
+
   }
 };
 
 
 /*
-  Extract the AI text from
-  different possible Replicate
-  response formats.
-*/
+ * Extract AI text from the different
+ * output formats that Replicate may return.
+ */
 
-function extractReply(data) {
+function getReply(data) {
+
   if (!data) {
     return "";
   }
 
-  // Output is an array
+  /*
+   * Most common format:
+   *
+   * output: ["Hello", " there"]
+   */
+
   if (Array.isArray(data.output)) {
+
     return data.output
-      .map(function (part) {
+      .map(function (item) {
+
         if (
-          typeof part === "string"
+          typeof item === "string"
         ) {
-          return part;
+          return item;
         }
 
         if (
-          part &&
-          typeof part.text === "string"
+          item &&
+          typeof item.text === "string"
         ) {
-          return part.text;
+          return item.text;
         }
 
         if (
-          part &&
-          typeof part.content === "string"
+          item &&
+          typeof item.content === "string"
         ) {
-          return part.content;
+          return item.content;
         }
 
         return "";
+
       })
       .join("");
+
   }
 
-  // Output is a string
+
+  /*
+   * Simple string output.
+   */
+
   if (
     typeof data.output === "string"
   ) {
+
     return data.output;
+
   }
 
-  // Output is an object
+
+  /*
+   * Object output.
+   */
+
   if (
     data.output &&
     typeof data.output === "object"
   ) {
+
     if (
       typeof data.output.text === "string"
     ) {
+
       return data.output.text;
+
     }
 
     if (
       typeof data.output.content === "string"
     ) {
+
       return data.output.content;
+
     }
+
   }
 
-  // Some responses may contain text directly
+
+  /*
+   * Some responses may expose text
+   * directly on the response object.
+   */
+
   if (
     typeof data.text === "string"
   ) {
+
     return data.text;
+
   }
 
   return "";
@@ -319,25 +372,32 @@ function extractReply(data) {
 
 
 /*
-  Create a Netlify JSON response.
-*/
+ * Standard Netlify response helper.
+ */
 
-function jsonResponse(
+function response(
   statusCode,
   data
 ) {
+
   return {
+
     statusCode: statusCode,
 
     headers: {
+
       "Content-Type":
         "application/json",
 
       "Cache-Control":
         "no-store"
+
     },
 
     body:
       JSON.stringify(data)
+
   };
+
 }
+
