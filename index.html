@@ -54,7 +54,7 @@
       align-items: center;
       justify-content: center;
       font-weight: bold;
-      font-size: 18px;
+      font-size: 17px;
     }
 
     .brand h1 {
@@ -90,7 +90,7 @@
       background: #e6eaf1;
     }
 
-    /* MAIN */
+    /* WORKSPACE */
 
     .workspace {
       flex: 1;
@@ -109,7 +109,7 @@
       overflow: hidden;
     }
 
-    /* MAIN AI */
+    /* MAIN CHAT */
 
     .main-panel {
       display: flex;
@@ -162,7 +162,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 28px;
+      font-size: 27px;
       font-weight: bold;
     }
 
@@ -187,18 +187,19 @@
     }
 
     .bubble {
-      max-width: min(78%, 760px);
+      max-width: min(82%, 800px);
       padding: 12px 15px;
       border-radius: 16px;
-      line-height: 1.55;
-      white-space: pre-wrap;
+      line-height: 1.6;
       word-wrap: break-word;
+      overflow-wrap: anywhere;
     }
 
     .message.user .bubble {
       background: #5b5df0;
       color: white;
       border-bottom-right-radius: 5px;
+      white-space: pre-wrap;
     }
 
     .message.assistant .bubble {
@@ -206,6 +207,138 @@
       color: #202938;
       border-bottom-left-radius: 5px;
     }
+
+    /* MARKDOWN */
+
+    .markdown-content {
+      line-height: 1.65;
+    }
+
+    .markdown-content > :first-child {
+      margin-top: 0;
+    }
+
+    .markdown-content > :last-child {
+      margin-bottom: 0;
+    }
+
+    .markdown-content h1 {
+      font-size: 26px;
+      line-height: 1.25;
+      margin: 18px 0 10px;
+      color: #111827;
+    }
+
+    .markdown-content h2 {
+      font-size: 21px;
+      line-height: 1.3;
+      margin: 17px 0 9px;
+      color: #172033;
+    }
+
+    .markdown-content h3 {
+      font-size: 17px;
+      line-height: 1.35;
+      margin: 15px 0 7px;
+      color: #263246;
+    }
+
+    .markdown-content h4,
+    .markdown-content h5,
+    .markdown-content h6 {
+      font-size: 15px;
+      margin: 13px 0 6px;
+      color: #334155;
+    }
+
+    .markdown-content p {
+      margin: 9px 0;
+    }
+
+    .markdown-content strong {
+      font-weight: 700;
+      color: #111827;
+    }
+
+    .markdown-content em {
+      font-style: italic;
+    }
+
+    .markdown-content ul,
+    .markdown-content ol {
+      margin: 9px 0;
+      padding-left: 25px;
+    }
+
+    .markdown-content li {
+      margin: 4px 0;
+    }
+
+    .markdown-content blockquote {
+      margin: 12px 0;
+      padding: 8px 13px;
+      border-left: 4px solid #7779ee;
+      background: #e9ebf8;
+      color: #4b5563;
+    }
+
+    .markdown-content hr {
+      border: 0;
+      border-top: 1px solid #d7dce5;
+      margin: 18px 0;
+    }
+
+    .markdown-content code {
+      background: #e1e5ec;
+      border-radius: 5px;
+      padding: 2px 5px;
+      font-family: Consolas, Monaco, monospace;
+      font-size: .9em;
+    }
+
+    .markdown-content pre {
+      margin: 13px 0;
+      padding: 14px;
+      background: #18202d;
+      color: #f3f4f6;
+      border-radius: 10px;
+      overflow-x: auto;
+      line-height: 1.5;
+    }
+
+    .markdown-content pre code {
+      background: transparent;
+      padding: 0;
+      color: inherit;
+      font-size: 13px;
+      white-space: pre;
+    }
+
+    .markdown-content a {
+      color: #4f46e5;
+      text-decoration: underline;
+    }
+
+    .markdown-content table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 13px 0;
+      font-size: 14px;
+    }
+
+    .markdown-content th,
+    .markdown-content td {
+      border: 1px solid #d5dbe5;
+      padding: 8px 10px;
+      text-align: left;
+    }
+
+    .markdown-content th {
+      background: #e9edf4;
+      font-weight: 700;
+    }
+
+    /* TYPING */
 
     .typing {
       display: inline-flex;
@@ -239,7 +372,7 @@
       }
     }
 
-    /* INPUT */
+    /* COMPOSER */
 
     .composer {
       border-top: 1px solid #e8ecf2;
@@ -286,7 +419,7 @@
       cursor: not-allowed;
     }
 
-    /* RIGHT AI SCREEN */
+    /* RIGHT PANEL */
 
     .right-panel {
       display: flex;
@@ -333,7 +466,7 @@
       background: #28c76f;
     }
 
-    /* MODAL */
+    /* SETTINGS */
 
     .modal-overlay {
       position: fixed;
@@ -442,7 +575,7 @@
       }
 
       .bubble {
-        max-width: 88%;
+        max-width: 92%;
       }
     }
   </style>
@@ -453,16 +586,22 @@
   <div class="app">
 
     <header class="topbar">
+
       <div class="brand">
-        <div class="logo">AI</div>
+
+        <div class="logo">
+          AI
+        </div>
 
         <div>
           <h1>Simple Chat AI</h1>
           <span>AI-powered conversation</span>
         </div>
+
       </div>
 
       <div class="top-actions">
+
         <button
           class="top-button"
           id="clearButton"
@@ -476,16 +615,20 @@
           type="button">
           Settings
         </button>
+
       </div>
+
     </header>
+
 
     <main class="workspace">
 
-      <!-- MAIN AI SCREEN -->
+      <!-- MAIN AI -->
 
       <section class="panel main-panel">
 
         <div class="panel-header">
+
           <div class="panel-title">
             <span class="status-dot"></span>
             Main AI
@@ -495,7 +638,9 @@
             <span class="connection-dot"></span>
             Connected
           </div>
+
         </div>
+
 
         <div
           class="messages"
@@ -520,6 +665,7 @@
           </div>
 
         </div>
+
 
         <form
           class="composer"
@@ -548,21 +694,28 @@
       <aside class="panel right-panel">
 
         <div class="panel-header">
+
           <div class="panel-title">
             AI Screen
           </div>
+
         </div>
+
 
         <div class="right-content">
 
           <div class="info-card">
+
             <h3>AI Assistant</h3>
 
             <p>
-              This screen shows information about
-              your current AI session.
+              Your AI conversation appears in the
+              main screen with properly formatted
+              Markdown responses.
             </p>
+
           </div>
+
 
           <div class="info-card">
 
@@ -575,6 +728,7 @@
 
           </div>
 
+
           <div class="info-card">
 
             <h3>API Security</h3>
@@ -586,6 +740,7 @@
             </p>
 
           </div>
+
 
           <div class="info-card">
 
@@ -606,7 +761,7 @@
   </div>
 
 
-  <!-- SETTINGS MODAL -->
+  <!-- SETTINGS -->
 
   <div
     class="modal-overlay"
@@ -627,6 +782,7 @@
 
       </div>
 
+
       <div class="field">
 
         <label for="systemPrompt">
@@ -638,6 +794,7 @@
           placeholder="Example: You are a helpful AI assistant."></textarea>
 
       </div>
+
 
       <div class="modal-actions">
 
@@ -663,6 +820,7 @@
 
 
   <script>
+
     const chatForm =
       document.getElementById("chatForm");
 
@@ -674,9 +832,6 @@
 
     const messages =
       document.getElementById("messages");
-
-    const welcome =
-      document.getElementById("welcome");
 
     const clearButton =
       document.getElementById("clearButton");
@@ -705,13 +860,13 @@
     let isSending = false;
 
 
-    /* LOAD SETTINGS */
+    /* SYSTEM PROMPT */
 
     systemPrompt.value =
       localStorage.getItem("systemPrompt") || "";
 
 
-    /* OPEN SETTINGS */
+    /* SETTINGS */
 
     settingsButton.addEventListener(
       "click",
@@ -721,24 +876,22 @@
     );
 
 
-    /* CLOSE SETTINGS */
-
     function closeSettingsModal() {
       settingsModal.classList.remove("active");
     }
+
 
     closeSettings.addEventListener(
       "click",
       closeSettingsModal
     );
 
+
     cancelSettings.addEventListener(
       "click",
       closeSettingsModal
     );
 
-
-    /* SAVE SETTINGS */
 
     saveSettings.addEventListener(
       "click",
@@ -754,8 +907,6 @@
     );
 
 
-    /* CLOSE MODAL WHEN CLICKING OUTSIDE */
-
     settingsModal.addEventListener(
       "click",
       function (event) {
@@ -770,22 +921,491 @@
     );
 
 
-    /* ADD MESSAGE */
+    /* ESCAPE SETTINGS */
 
-    function addMessage(
-      role,
-      content
-    ) {
+    document.addEventListener(
+      "keydown",
+      function (event) {
 
-      if (welcome) {
-        welcome.remove();
+        if (
+          event.key === "Escape" &&
+          settingsModal.classList.contains("active")
+        ) {
+          closeSettingsModal();
+        }
+
       }
+    );
+
+
+    /*
+      SIMPLE MARKDOWN RENDERER
+
+      Supports:
+
+      # Heading
+      ## Heading
+      ### Heading
+      **bold**
+      *italic*
+      __bold__
+      _italic_
+      - bullets
+      * bullets
+      1. numbered lists
+      `inline code`
+      ```code blocks```
+      > quotes
+      --- horizontal lines
+      [links](url)
+    */
+
+    function escapeHTML(text) {
+
+      return text
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+
+    function renderInline(text) {
+
+      let result =
+        escapeHTML(text);
+
+
+      /* Inline code */
+
+      const inlineCodes = [];
+
+      result =
+        result.replace(
+          /`([^`]+)`/g,
+          function (_, code) {
+
+            const index =
+              inlineCodes.length;
+
+            inlineCodes.push(
+              "<code>" +
+              code +
+              "</code>"
+            );
+
+            return "___INLINECODE" +
+              index +
+              "___";
+          }
+        );
+
+
+      /* Links */
+
+      result =
+        result.replace(
+          /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+          '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>'
+        );
+
+
+      /* Bold */
+
+      result =
+        result.replace(
+          /\*\*(.+?)\*\*/g,
+          "<strong>$1</strong>"
+        );
+
+
+      result =
+        result.replace(
+          /__(.+?)__/g,
+          "<strong>$1</strong>"
+        );
+
+
+      /* Italic */
+
+      result =
+        result.replace(
+          /(^|[^\*])\*([^*\n]+)\*(?!\*)/g,
+          "$1<em>$2</em>"
+        );
+
+
+      result =
+        result.replace(
+          /(^|[^_])_([^_\n]+)_(?!_)/g,
+          "$1<em>$2</em>"
+        );
+
+
+      /* Restore inline code */
+
+      result =
+        result.replace(
+          /___INLINECODE(\d+)___/g,
+          function (_, index) {
+            return inlineCodes[
+              Number(index)
+            ];
+          }
+        );
+
+
+      return result;
+    }
+
+
+    function renderMarkdown(markdown) {
+
+      if (
+        typeof markdown !== "string"
+      ) {
+        return "";
+      }
+
+
+      const lines =
+        markdown.replace(
+          /\r\n/g,
+          "\n"
+        ).split("\n");
+
+
+      let html = "";
+
+      let inCodeBlock = false;
+
+      let codeLanguage = "";
+
+      let codeContent = "";
+
+      let paragraph = [];
+
+      let listType = null;
+
+      let inBlockquote = false;
+
+
+      function flushParagraph() {
+
+        if (!paragraph.length) {
+          return;
+        }
+
+        const text =
+          paragraph.join(" ").trim();
+
+        if (text) {
+
+          html +=
+            "<p>" +
+            renderInline(text) +
+            "</p>";
+        }
+
+        paragraph = [];
+      }
+
+
+      function closeList() {
+
+        if (listType === "ul") {
+          html += "</ul>";
+        }
+
+        if (listType === "ol") {
+          html += "</ol>";
+        }
+
+        listType = null;
+      }
+
+
+      function closeBlockquote() {
+
+        if (inBlockquote) {
+          html += "</blockquote>";
+          inBlockquote = false;
+        }
+
+      }
+
+
+      for (
+        let i = 0;
+        i < lines.length;
+        i++
+      ) {
+
+        const line =
+          lines[i];
+
+
+        /* Code block */
+
+        if (
+          line.trim().startsWith("```")
+        ) {
+
+          if (!inCodeBlock) {
+
+            flushParagraph();
+            closeList();
+            closeBlockquote();
+
+            inCodeBlock = true;
+
+            codeLanguage =
+              line
+                .trim()
+                .substring(3)
+                .trim();
+
+            codeContent = "";
+
+          } else {
+
+            html +=
+              "<pre><code" +
+              (
+                codeLanguage
+                  ? ' data-language="' +
+                    escapeHTML(codeLanguage) +
+                    '"'
+                  : ""
+              ) +
+              ">" +
+              escapeHTML(
+                codeContent.replace(
+                  /\n$/,
+                  ""
+                )
+              ) +
+              "</code></pre>";
+
+            inCodeBlock = false;
+            codeLanguage = "";
+            codeContent = "";
+          }
+
+          continue;
+        }
+
+
+        if (inCodeBlock) {
+
+          codeContent +=
+            line + "\n";
+
+          continue;
+        }
+
+
+        /* Blank line */
+
+        if (!line.trim()) {
+
+          flushParagraph();
+          closeList();
+          closeBlockquote();
+
+          continue;
+        }
+
+
+        /* Horizontal line */
+
+        if (
+          /^(\*\s*){3,}$/.test(line.trim()) ||
+          /^(-\s*){3,}$/.test(line.trim()) ||
+          /^(_\s*){3,}$/.test(line.trim())
+        ) {
+
+          flushParagraph();
+          closeList();
+          closeBlockquote();
+
+          html += "<hr>";
+
+          continue;
+        }
+
+
+        /* Headings */
+
+        const heading =
+          line.match(
+            /^(#{1,6})\s+(.+)$/
+          );
+
+        if (heading) {
+
+          flushParagraph();
+          closeList();
+          closeBlockquote();
+
+          const level =
+            heading[1].length;
+
+          html +=
+            "<h" +
+            level +
+            ">" +
+            renderInline(
+              heading[2]
+            ) +
+            "</h" +
+            level +
+            ">";
+
+          continue;
+        }
+
+
+        /* Blockquote */
+
+        if (
+          line.trim().startsWith(">")
+        ) {
+
+          flushParagraph();
+          closeList();
+
+          if (!inBlockquote) {
+            html += "<blockquote>";
+            inBlockquote = true;
+          }
+
+          const quote =
+            line
+              .trim()
+              .replace(/^>\s?/, "");
+
+          html +=
+            "<p>" +
+            renderInline(quote) +
+            "</p>";
+
+          continue;
+        }
+
+
+        if (inBlockquote) {
+          closeBlockquote();
+        }
+
+
+        /* Unordered list */
+
+        const unordered =
+          line.match(
+            /^\s*[-*+]\s+(.+)$/
+          );
+
+        if (unordered) {
+
+          flushParagraph();
+
+          if (listType !== "ul") {
+            closeList();
+
+            html += "<ul>";
+
+            listType = "ul";
+          }
+
+          html +=
+            "<li>" +
+            renderInline(
+              unordered[1]
+            ) +
+            "</li>";
+
+          continue;
+        }
+
+
+        /* Ordered list */
+
+        const ordered =
+          line.match(
+            /^\s*\d+\.\s+(.+)$/
+          );
+
+        if (ordered) {
+
+          flushParagraph();
+
+          if (listType !== "ol") {
+            closeList();
+
+            html += "<ol>";
+
+            listType = "ol";
+          }
+
+          html +=
+            "<li>" +
+            renderInline(
+              ordered[1]
+            ) +
+            "</li>";
+
+          continue;
+        }
+
+
+        /* Normal paragraph */
+
+        closeList();
+
+        paragraph.push(
+          line.trim()
+        );
+
+      }
+
+
+      if (inCodeBlock) {
+
+        html +=
+          "<pre><code>" +
+          escapeHTML(
+            codeContent.replace(
+              /\n$/,
+              ""
+            )
+          ) +
+          "</code></pre>";
+      }
+
+
+      flushParagraph();
+
+      closeList();
+
+      closeBlockquote();
+
+
+      return html;
+    }
+
+
+    /* ADD USER MESSAGE */
+
+    function addUserMessage(text) {
 
       const message =
         document.createElement("div");
 
       message.className =
-        "message " + role;
+        "message user";
+
 
       const bubble =
         document.createElement("div");
@@ -793,27 +1413,78 @@
       bubble.className =
         "bubble";
 
+
       bubble.textContent =
-        content;
+        text;
 
-      message.appendChild(bubble);
 
-      messages.appendChild(message);
+      message.appendChild(
+        bubble
+      );
+
+
+      messages.appendChild(
+        message
+      );
+
 
       messages.scrollTop =
         messages.scrollHeight;
-
-      return message;
     }
 
 
-    /* TYPING INDICATOR */
+    /* ADD AI MESSAGE */
+
+    function addAIMessage(text) {
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message assistant";
+
+
+      const bubble =
+        document.createElement("div");
+
+      bubble.className =
+        "bubble";
+
+
+      const content =
+        document.createElement("div");
+
+      content.className =
+        "markdown-content";
+
+
+      content.innerHTML =
+        renderMarkdown(text);
+
+
+      bubble.appendChild(
+        content
+      );
+
+
+      message.appendChild(
+        bubble
+      );
+
+
+      messages.appendChild(
+        message
+      );
+
+
+      messages.scrollTop =
+        messages.scrollHeight;
+    }
+
+
+    /* TYPING */
 
     function showTyping() {
-
-      if (welcome) {
-        welcome.remove();
-      }
 
       const message =
         document.createElement("div");
@@ -824,11 +1495,13 @@
       message.id =
         "typingMessage";
 
+
       const bubble =
         document.createElement("div");
 
       bubble.className =
         "bubble";
+
 
       const typing =
         document.createElement("div");
@@ -836,36 +1509,45 @@
       typing.className =
         "typing";
 
+
       typing.innerHTML =
         "<span></span><span></span><span></span>";
 
-      bubble.appendChild(typing);
 
-      message.appendChild(bubble);
+      bubble.appendChild(
+        typing
+      );
 
-      messages.appendChild(message);
+
+      message.appendChild(
+        bubble
+      );
+
+
+      messages.appendChild(
+        message
+      );
+
 
       messages.scrollTop =
         messages.scrollHeight;
     }
 
 
-    /* REMOVE TYPING */
-
     function removeTyping() {
 
-      const typingMessage =
+      const typing =
         document.getElementById(
           "typingMessage"
         );
 
-      if (typingMessage) {
-        typingMessage.remove();
+      if (typing) {
+        typing.remove();
       }
     }
 
 
-    /* SEND MESSAGE */
+    /* SEND */
 
     chatForm.addEventListener(
       "submit",
@@ -873,37 +1555,53 @@
 
         event.preventDefault();
 
+
         if (isSending) {
           return;
         }
 
+
         const text =
           messageInput.value.trim();
+
 
         if (!text) {
           return;
         }
 
+
         isSending = true;
 
         sendButton.disabled = true;
 
-        addMessage(
-          "user",
-          text
-        );
+
+        const welcome =
+          document.getElementById(
+            "welcome"
+          );
+
+        if (welcome) {
+          welcome.remove();
+        }
+
+
+        addUserMessage(text);
+
 
         chatHistory.push({
           role: "user",
           content: text
         });
 
+
         messageInput.value = "";
 
         messageInput.style.height =
           "46px";
 
+
         showTyping();
+
 
         try {
 
@@ -935,19 +1633,22 @@
           const responseText =
             await response.text();
 
+
           let data = {};
 
+
           try {
+
             data =
               responseText
                 ? JSON.parse(responseText)
                 : {};
+
           } catch (error) {
 
             throw new Error(
               "The server returned an invalid response."
             );
-
           }
 
 
@@ -957,7 +1658,6 @@
               data.error ||
               "The server returned an error."
             );
-
           }
 
 
@@ -972,16 +1672,14 @@
             throw new Error(
               "The AI returned an empty response."
             );
-
           }
 
 
           removeTyping();
 
-          addMessage(
-            "assistant",
-            reply
-          );
+
+          addAIMessage(reply);
+
 
           chatHistory.push({
             role: "assistant",
@@ -993,16 +1691,19 @@
 
           removeTyping();
 
+
           const errorMessage =
             error &&
             error.message
               ? error.message
               : "Something went wrong.";
 
-          addMessage(
-            "assistant",
-            "Error: " + errorMessage
+
+          addAIMessage(
+            "**Error**\n\n" +
+            errorMessage
           );
+
 
         } finally {
 
@@ -1032,7 +1733,6 @@
           event.preventDefault();
 
           chatForm.requestSubmit();
-
         }
 
       }
@@ -1058,7 +1758,7 @@
     );
 
 
-    /* CLEAR CHAT */
+    /* CLEAR */
 
     clearButton.addEventListener(
       "click",
@@ -1066,37 +1766,38 @@
 
         chatHistory = [];
 
-        messages.innerHTML = "";
+        messages.innerHTML = `
 
-        const newWelcome =
-          document.createElement("div");
+          <div
+            class="welcome"
+            id="welcome">
 
-        newWelcome.className =
-          "welcome";
+            <div class="welcome-icon">
+              AI
+            </div>
 
-        newWelcome.innerHTML = `
-          <div class="welcome-icon">AI</div>
+            <h2>How can I help?</h2>
 
-          <h2>How can I help?</h2>
+            <p>
+              Ask anything and the AI will respond.
+              Your API key is securely handled by the
+              server, so you don't need to enter it here.
+            </p>
 
-          <p>
-            Ask anything and the AI will respond.
-            Your API key is securely handled by the
-            server, so you don't need to enter it here.
-          </p>
+          </div>
+
         `;
 
-        messages.appendChild(
-          newWelcome
-        );
+        messageInput.focus();
 
       }
     );
 
 
-    /* FOCUS INPUT */
+    /* START */
 
     messageInput.focus();
+
   </script>
 
 </body>
