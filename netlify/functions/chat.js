@@ -1,103 +1,81 @@
-```js
-// ======================================================
-// NETLIFY FUNCTION
-// Simple Chat -> Replicate
-// ======================================================
-
 const MODEL_URL =
   "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
 
-
-// ======================================================
-// MAIN FUNCTION
-// ======================================================
-
 exports.handler = async function (event) {
 
-  // ----------------------------------------------------
-  // Only allow POST
-  // ----------------------------------------------------
+  // =====================================================
+  // ONLY ALLOW POST
+  // =====================================================
 
   if (event.httpMethod !== "POST") {
-
-    return {
-      statusCode: 405,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error: "Method not allowed. Use POST."
-      })
-    };
-
+    return jsonResponse(405, {
+      error: "Method not allowed. Use POST."
+    });
   }
 
 
-  // ----------------------------------------------------
-  // Check Replicate token
-  // ----------------------------------------------------
-
-  const token =
-    process.env.REPLICATE_API_TOKEN;
-
-  if (!token) {
-
-    return {
-      statusCode: 500,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error:
-          "REPLICATE_API_TOKEN is not configured in Netlify."
-      })
-    };
-
-  }
-
-
-  // ----------------------------------------------------
-  // Read request body
-  // ----------------------------------------------------
+  // =====================================================
+  // READ REQUEST
+  // =====================================================
 
   let body;
 
   try {
-
-    body =
-      JSON.parse(
-        event.body || "{}"
-      );
-
+    body = JSON.parse(event.body || "{}");
   } catch (error) {
-
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error:
-          "Invalid JSON request."
-      })
-    };
-
+    return jsonResponse(400, {
+      error: "Invalid JSON request."
+    });
   }
 
 
-  // ----------------------------------------------------
-  // Get values from browser
-  // ----------------------------------------------------
+  // =====================================================
+  // API KEY FROM USER
+  // =====================================================
+
+  const apiKey =
+    typeof body.apiKey === "string"
+      ? body.apiKey.trim()
+      : "";
+
+
+  if (!apiKey) {
+    return jsonResponse(400, {
+      error: "No Replicate API key was provided. Open Settings and enter your API key."
+    });
+  }
+
+
+  // =====================================================
+  // MESSAGE
+  // =====================================================
 
   const message =
     typeof body.message === "string"
       ? body.message.trim()
       : "";
 
+
+  if (!message) {
+    return jsonResponse(400, {
+      error: "Message cannot be empty."
+    });
+  }
+
+
+  // =====================================================
+  // HISTORY
+  // =====================================================
+
   const history =
     Array.isArray(body.history)
       ? body.history
       : [];
+
+
+  // =====================================================
+  // SYSTEM PROMPT
+  // =====================================================
 
   const systemPrompt =
     typeof body.systemPrompt === "string"
@@ -105,67 +83,27 @@ exports.handler = async function (event) {
       : "";
 
 
-  // ----------------------------------------------------
-  // Check message
-  // ----------------------------------------------------
-
-  if (!message) {
-
-    return {
-      statusCode: 400,
-      headers: {
-        "Content-Type": "application/json"
-      },
-      body: JSON.stringify({
-        error:
-          "Message cannot be empty."
-      })
-    };
-
-  }
-
-
-  // ----------------------------------------------------
-  // Build messages
-  // ----------------------------------------------------
+  // =====================================================
+  // BUILD MESSAGES
+  // =====================================================
 
   const messages = [];
 
 
-  // System prompt
-  if (systemPrompt) {
+  for (const item of history) {
 
-    messages.push({
-      role: "system",
-      content: systemPrompt
-    });
-
-  }
-
-
-  // Previous chat history
-  for (
-    const item of history
-  ) {
-
-    if (
-      !item ||
-      typeof item !== "object"
-    ) {
+    if (!item || typeof item !== "object") {
       continue;
     }
 
 
-    const role =
-      item.role;
+    const role = item.role;
 
-    const content =
-      item.content;
+    const content = item.content;
 
 
     if (
-      (role === "user" ||
-       role === "assistant") &&
+      (role === "user" || role === "assistant") &&
       typeof content === "string" &&
       content.trim()
     ) {
@@ -180,413 +118,303 @@ exports.handler = async function (event) {
   }
 
 
-  // Current message
+  // Add current user message
+
   messages.push({
     role: "user",
     content: message
   });
 
 
-  // ----------------------------------------------------
-  // Replicate request
-  // ----------------------------------------------------
+  // =====================================================
+  // REPLICATE INPUT
+  // =====================================================
 
-  const requestBody = {
-
-    input: {
-
-      messages:
-        messages,
-
-      temperature:
-        1,
-
-      top_p:
-        1,
-
-      frequency_penalty:
-        0,
-
-      presence_penalty:
-        0,
-
-      max_completion_tokens:
-        2000,
-
-      image_input:
-        []
-
-    }
-
+  const input = {
+    messages: messages,
+    temperature: 1,
+    top_p: 1,
+    frequency_penalty: 0,
+    presence_penalty: 0,
+    max_completion_tokens: 2000,
+    image_input: []
   };
 
 
+  if (systemPrompt) {
+    input.system_prompt = systemPrompt;
+  }
+
+
+  // =====================================================
+  // SEND TO REPLICATE
+  // =====================================================
+
   try {
 
-    console.log(
-      "Sending request to Replicate..."
+    console.log("Sending request to Replicate");
+
+
+    const response = await fetch(
+      MODEL_URL,
+      {
+        method: "POST",
+
+        headers: {
+          "Authorization": "Bearer " + apiKey,
+          "Content-Type": "application/json",
+          "Prefer": "wait"
+        },
+
+        body: JSON.stringify({
+          input: input
+        })
+      }
     );
 
-
-    const response =
-      await fetch(
-        MODEL_URL,
-        {
-
-          method:
-            "POST",
-
-          headers: {
-
-            "Authorization":
-              "Bearer " + token,
-
-            "Content-Type":
-              "application/json",
-
-            "Prefer":
-              "wait"
-
-          },
-
-          body:
-            JSON.stringify(
-              requestBody
-            )
-
-        }
-      );
-
-
-    // --------------------------------------------------
-    // Read Replicate response
-    // --------------------------------------------------
 
     const responseText =
       await response.text();
 
 
-    let data =
-      null;
+    console.log(
+      "Replicate status:",
+      response.status
+    );
 
+
+    // ===================================================
+    // PARSE RESPONSE
+    // ===================================================
+
+    let data;
 
     try {
 
       data =
         responseText
-          ? JSON.parse(
-              responseText
-            )
-          : null;
+          ? JSON.parse(responseText)
+          : {};
 
     } catch (error) {
 
       console.error(
-        "Replicate returned invalid JSON:",
+        "Invalid Replicate response:",
         responseText
       );
 
-      return {
-        statusCode: 502,
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-        body: JSON.stringify({
-          error:
-            "Replicate returned an invalid response."
-        })
-      };
+      return jsonResponse(502, {
+        error:
+          "Replicate returned an invalid response."
+      });
 
     }
 
 
-    // --------------------------------------------------
-    // Replicate API error
-    // --------------------------------------------------
+    // ===================================================
+    // REPLICATE ERROR
+    // ===================================================
 
     if (!response.ok) {
 
       console.error(
-        "Replicate API error:",
+        "Replicate error:",
         response.status,
         data
       );
 
 
-      let detail =
+      let errorMessage =
         "Replicate request failed.";
+
 
       if (
         data &&
-        typeof data.detail ===
-          "string"
+        typeof data.detail === "string"
       ) {
 
-        detail =
+        errorMessage =
           data.detail;
 
       } else if (
         data &&
-        typeof data.error ===
-          "string"
+        typeof data.error === "string"
       ) {
 
-        detail =
+        errorMessage =
           data.error;
 
       } else if (
         data &&
-        typeof data.title ===
-          "string"
+        typeof data.title === "string"
       ) {
 
-        detail =
+        errorMessage =
           data.title;
 
       }
 
 
-      return {
-        statusCode:
-          response.status,
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-            error:
-              detail
-          })
-      };
+      return jsonResponse(
+        response.status,
+        {
+          error: errorMessage
+        }
+      );
 
     }
 
 
-    // --------------------------------------------------
-    // Extract output
-    // --------------------------------------------------
+    // ===================================================
+    // EXTRACT OUTPUT
+    // ===================================================
 
     const reply =
-      extractOutput(
-        data
-      );
+      extractReply(data);
 
 
     if (!reply) {
 
       console.error(
-        "No output from Replicate:",
+        "Replicate returned no usable output:",
         data
       );
 
-
-      return {
-        statusCode: 502,
-
-        headers: {
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-            error:
-              "Replicate completed the request but returned no text."
-          })
-      };
+      return jsonResponse(502, {
+        error:
+          "Replicate completed the request but returned no text."
+      });
 
     }
 
 
-    // --------------------------------------------------
-    // Success
-    // --------------------------------------------------
+    // ===================================================
+    // SUCCESS
+    // =====================================================
 
-    return {
+    return jsonResponse(200, {
+      reply: reply.trim()
+    });
 
-      statusCode:
-        200,
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body:
-        JSON.stringify({
-          reply:
-            reply.trim()
-        })
-
-    };
 
   } catch (error) {
 
-    // --------------------------------------------------
-    // Server/network error
-    // --------------------------------------------------
-
     console.error(
-      "Function error:",
+      "Netlify Function error:",
       error
     );
 
 
-    return {
-
-      statusCode:
-        500,
-
-      headers: {
-        "Content-Type":
-          "application/json"
-      },
-
-      body:
-        JSON.stringify({
-          error:
-            "The Netlify Function could not connect to Replicate."
-        })
-
-    };
+    return jsonResponse(500, {
+      error:
+        "The Netlify Function could not connect to Replicate."
+    });
 
   }
 
 };
 
 
-// ======================================================
+// ========================================================
 // EXTRACT REPLICATE OUTPUT
-// ======================================================
+// ========================================================
 
-function extractOutput(data) {
+function extractReply(data) {
 
   if (!data) {
     return "";
   }
 
 
-  // ----------------------------------------------------
-  // Array output
-  // ----------------------------------------------------
+  // GPT-4.1 Nano currently returns output as
+  // an array of strings.
 
-  if (
-    Array.isArray(
-      data.output
-    )
-  ) {
+  if (Array.isArray(data.output)) {
 
     return data.output
-      .map(
-        function (part) {
+      .map(function (part) {
 
-          if (
-            typeof part ===
-            "string"
-          ) {
-
-            return part;
-
-          }
-
-
-          if (
-            part &&
-            typeof part.text ===
-            "string"
-          ) {
-
-            return part.text;
-
-          }
-
-
-          if (
-            part &&
-            typeof part.content ===
-            "string"
-          ) {
-
-            return part.content;
-
-          }
-
-
-          return String(
-            part
-          );
-
+        if (typeof part === "string") {
+          return part;
         }
-      )
+
+        if (
+          part &&
+          typeof part.text === "string"
+        ) {
+          return part.text;
+        }
+
+        if (
+          part &&
+          typeof part.content === "string"
+        ) {
+          return part.content;
+        }
+
+        return "";
+
+      })
       .join("");
 
   }
 
 
-  // ----------------------------------------------------
-  // String output
-  // ----------------------------------------------------
+  // Also support a normal string output.
 
-  if (
-    typeof data.output ===
-    "string"
-  ) {
-
+  if (typeof data.output === "string") {
     return data.output;
-
   }
 
 
-  // ----------------------------------------------------
-  // Object output
-  // ----------------------------------------------------
+  // Other possible response shapes.
 
   if (
     data.output &&
-    typeof data.output ===
-      "object"
+    typeof data.output === "object"
   ) {
 
     if (
-      typeof data.output.text ===
-      "string"
+      typeof data.output.text === "string"
     ) {
-
       return data.output.text;
-
     }
 
 
     if (
-      typeof data.output.content ===
-      "string"
+      typeof data.output.content === "string"
     ) {
-
       return data.output.content;
-
     }
 
   }
 
 
-  // ----------------------------------------------------
-  // Other possible text field
-  // ----------------------------------------------------
-
-  if (
-    typeof data.text ===
-    "string"
-  ) {
-
+  if (typeof data.text === "string") {
     return data.text;
-
   }
 
 
   return "";
+}
+
+
+// ========================================================
+// JSON RESPONSE HELPER
+// ========================================================
+
+function jsonResponse(statusCode, data) {
+
+  return {
+    statusCode: statusCode,
+
+    headers: {
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
+    },
+
+    body: JSON.stringify(data)
+  };
+
 }
 ```
