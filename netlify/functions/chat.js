@@ -3,53 +3,45 @@ const MODEL_URL =
 
 exports.handler = async function (event) {
 
-  // =====================================================
-  // ONLY ALLOW POST
-  // =====================================================
-
+  // Only POST requests
   if (event.httpMethod !== "POST") {
     return jsonResponse(405, {
-      error: "Method not allowed. Use POST."
+      error: "Method not allowed."
     });
   }
 
 
-  // =====================================================
-  // READ REQUEST
-  // =====================================================
-
-  let body;
-
-  try {
-    body = JSON.parse(event.body || "{}");
-  } catch (error) {
-    return jsonResponse(400, {
-      error: "Invalid JSON request."
-    });
-  }
-
-
-  // =====================================================
-  // API KEY FROM USER
-  // =====================================================
-
+  // Get API key from Netlify Environment Variables
   const apiKey =
-    typeof body.apiKey === "string"
-      ? body.apiKey.trim()
-      : "";
+    process.env.REPLICATE_API_TOKEN;
 
 
   if (!apiKey) {
-    return jsonResponse(400, {
-      error: "No Replicate API key was provided. Open Settings and enter your API key."
+    return jsonResponse(500, {
+      error:
+        "REPLICATE_API_TOKEN is not configured in Netlify Environment Variables."
     });
   }
 
 
-  // =====================================================
-  // MESSAGE
-  // =====================================================
+  // Read request body
+  let body;
 
+  try {
+
+    body =
+      JSON.parse(event.body || "{}");
+
+  } catch (error) {
+
+    return jsonResponse(400, {
+      error: "Invalid JSON request."
+    });
+
+  }
+
+
+  // Get message
   const message =
     typeof body.message === "string"
       ? body.message.trim()
@@ -57,36 +49,29 @@ exports.handler = async function (event) {
 
 
   if (!message) {
+
     return jsonResponse(400, {
       error: "Message cannot be empty."
     });
+
   }
 
 
-  // =====================================================
-  // HISTORY
-  // =====================================================
-
+  // Get conversation history
   const history =
     Array.isArray(body.history)
       ? body.history
       : [];
 
 
-  // =====================================================
-  // SYSTEM PROMPT
-  // =====================================================
-
+  // Get system prompt
   const systemPrompt =
     typeof body.systemPrompt === "string"
       ? body.systemPrompt.trim()
       : "";
 
 
-  // =====================================================
-  // BUILD MESSAGES
-  // =====================================================
-
+  // Build messages
   const messages = [];
 
 
@@ -97,9 +82,11 @@ exports.handler = async function (event) {
     }
 
 
-    const role = item.role;
+    const role =
+      item.role;
 
-    const content = item.content;
+    const content =
+      item.content;
 
 
     if (
@@ -118,18 +105,14 @@ exports.handler = async function (event) {
   }
 
 
-  // Add current user message
-
+  // Add current message
   messages.push({
     role: "user",
     content: message
   });
 
 
-  // =====================================================
-  // REPLICATE INPUT
-  // =====================================================
-
+  // Replicate model input
   const input = {
     messages: messages,
     temperature: 1,
@@ -141,53 +124,53 @@ exports.handler = async function (event) {
   };
 
 
+  // Optional system prompt
   if (systemPrompt) {
-    input.system_prompt = systemPrompt;
+
+    input.system_prompt =
+      systemPrompt;
+
   }
 
 
-  // =====================================================
-  // SEND TO REPLICATE
-  // =====================================================
-
   try {
 
-    console.log("Sending request to Replicate");
-
-
-    const response = await fetch(
-      MODEL_URL,
-      {
-        method: "POST",
-
-        headers: {
-          "Authorization": "Bearer " + apiKey,
-          "Content-Type": "application/json",
-          "Prefer": "wait"
-        },
-
-        body: JSON.stringify({
-          input: input
-        })
-      }
+    console.log(
+      "Sending request to Replicate..."
     );
+
+
+    const response =
+      await fetch(
+        MODEL_URL,
+        {
+          method: "POST",
+
+          headers: {
+            "Authorization":
+              "Bearer " + apiKey,
+
+            "Content-Type":
+              "application/json",
+
+            "Prefer":
+              "wait"
+          },
+
+          body:
+            JSON.stringify({
+              input: input
+            })
+        }
+      );
 
 
     const responseText =
       await response.text();
 
 
-    console.log(
-      "Replicate status:",
-      response.status
-    );
-
-
-    // ===================================================
-    // PARSE RESPONSE
-    // ===================================================
-
     let data;
+
 
     try {
 
@@ -203,6 +186,7 @@ exports.handler = async function (event) {
         responseText
       );
 
+
       return jsonResponse(502, {
         error:
           "Replicate returned an invalid response."
@@ -211,14 +195,11 @@ exports.handler = async function (event) {
     }
 
 
-    // ===================================================
-    // REPLICATE ERROR
-    // ===================================================
-
+    // Replicate returned an error
     if (!response.ok) {
 
       console.error(
-        "Replicate error:",
+        "Replicate API error:",
         response.status,
         data
       );
@@ -265,10 +246,7 @@ exports.handler = async function (event) {
     }
 
 
-    // ===================================================
-    // EXTRACT OUTPUT
-    // ===================================================
-
+    // Extract AI response
     const reply =
       extractReply(data);
 
@@ -276,22 +254,20 @@ exports.handler = async function (event) {
     if (!reply) {
 
       console.error(
-        "Replicate returned no usable output:",
+        "No AI output:",
         data
       );
 
+
       return jsonResponse(502, {
         error:
-          "Replicate completed the request but returned no text."
+          "Replicate returned no text."
       });
 
     }
 
 
-    // ===================================================
-    // SUCCESS
-    // =====================================================
-
+    // Success
     return jsonResponse(200, {
       reply: reply.trim()
     });
@@ -300,14 +276,14 @@ exports.handler = async function (event) {
   } catch (error) {
 
     console.error(
-      "Netlify Function error:",
+      "Function error:",
       error
     );
 
 
     return jsonResponse(500, {
       error:
-        "The Netlify Function could not connect to Replicate."
+        "Could not connect to Replicate."
     });
 
   }
@@ -316,7 +292,7 @@ exports.handler = async function (event) {
 
 
 // ========================================================
-// EXTRACT REPLICATE OUTPUT
+// EXTRACT RESPONSE
 // ========================================================
 
 function extractReply(data) {
@@ -326,17 +302,17 @@ function extractReply(data) {
   }
 
 
-  // GPT-4.1 Nano currently returns output as
-  // an array of strings.
-
   if (Array.isArray(data.output)) {
 
     return data.output
       .map(function (part) {
 
-        if (typeof part === "string") {
+        if (
+          typeof part === "string"
+        ) {
           return part;
         }
+
 
         if (
           part &&
@@ -345,12 +321,14 @@ function extractReply(data) {
           return part.text;
         }
 
+
         if (
           part &&
           typeof part.content === "string"
         ) {
           return part.content;
         }
+
 
         return "";
 
@@ -360,14 +338,14 @@ function extractReply(data) {
   }
 
 
-  // Also support a normal string output.
+  if (
+    typeof data.output === "string"
+  ) {
 
-  if (typeof data.output === "string") {
     return data.output;
+
   }
 
-
-  // Other possible response shapes.
 
   if (
     data.output &&
@@ -377,21 +355,29 @@ function extractReply(data) {
     if (
       typeof data.output.text === "string"
     ) {
+
       return data.output.text;
+
     }
 
 
     if (
       typeof data.output.content === "string"
     ) {
+
       return data.output.content;
+
     }
 
   }
 
 
-  if (typeof data.text === "string") {
+  if (
+    typeof data.text === "string"
+  ) {
+
     return data.text;
+
   }
 
 
@@ -400,20 +386,29 @@ function extractReply(data) {
 
 
 // ========================================================
-// JSON RESPONSE HELPER
+// JSON RESPONSE
 // ========================================================
 
-function jsonResponse(statusCode, data) {
+function jsonResponse(
+  statusCode,
+  data
+) {
 
   return {
+
     statusCode: statusCode,
 
     headers: {
-      "Content-Type": "application/json",
-      "Cache-Control": "no-store"
+      "Content-Type":
+        "application/json",
+
+      "Cache-Control":
+        "no-store"
     },
 
-    body: JSON.stringify(data)
+    body:
+      JSON.stringify(data)
+
   };
 
 }
