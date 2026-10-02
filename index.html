@@ -2,348 +2,294 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-
-  <meta
-    name="viewport"
-    content="width=device-width, initial-scale=1.0"
-  >
-
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Simple Chat</title>
-
-  <link rel="icon" href="data:,">
 
   <style>
     * {
       box-sizing: border-box;
-    }
-
-    :root {
-      --bg: #ffffff;
-      --header: #ffffff;
-      --border: #e5e5e5;
-      --text: #171717;
-      --muted: #777777;
-      --user: #f1f1f1;
-      --button: #171717;
-      --button-hover: #333333;
-    }
-
-    html,
-    body {
-      width: 100%;
-      height: 100%;
       margin: 0;
-      font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-      background: var(--bg);
-      color: var(--text);
+      padding: 0;
     }
 
     body {
-      overflow: hidden;
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #3b82f6 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #8b5cf6 0%, transparent 35%),
+        linear-gradient(135deg, #0f172a, #111827);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
     }
 
     .app {
       width: 100%;
-      height: 100vh;
+      max-width: 950px;
+      height: 90vh;
+      min-height: 600px;
       display: flex;
       flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 25px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
     }
 
-    /* ==================================================
-       HEADER
-       ================================================== */
+    /* HEADER */
 
-    header {
-      height: 68px;
-      flex-shrink: 0;
-      border-bottom: 1px solid var(--border);
+    .header {
+      height: 75px;
       display: flex;
       align-items: center;
       justify-content: space-between;
       padding: 0 22px;
-      background: var(--header);
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
     }
 
     .brand {
       display: flex;
       align-items: center;
-      gap: 12px;
+      gap: 13px;
     }
 
-    .brand-icon {
-      width: 38px;
-      height: 38px;
-      border-radius: 12px;
+    .logo {
+      width: 45px;
+      height: 45px;
+      border-radius: 14px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: #171717;
-      color: white;
-      font-size: 20px;
+      font-size: 23px;
       font-weight: bold;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.35);
     }
 
     .brand-text h1 {
-      margin: 0;
-      font-size: 18px;
-      line-height: 1.2;
+      font-size: 20px;
+      font-weight: 700;
     }
 
-    .brand-text span {
-      display: block;
+    .brand-text p {
       margin-top: 3px;
-      color: var(--muted);
+      color: #94a3b8;
       font-size: 12px;
     }
 
-    .icon-button {
-      width: 42px;
-      height: 42px;
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      background: white;
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 13px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 21px;
       cursor: pointer;
-      font-size: 20px;
       transition: 0.2s;
     }
 
-    .icon-button:hover {
-      background: #f4f4f4;
-      transform: rotate(12deg);
+    .settings-btn:hover {
+      background: rgba(255,255,255,0.16);
+      transform: rotate(25deg);
     }
 
-    /* ==================================================
-       CHAT AREA
-       ================================================== */
+    /* CHAT */
 
-    .chat-area {
+    .chat {
       flex: 1;
-      min-height: 0;
-      display: flex;
-      justify-content: center;
-    }
-
-    .chat-container {
-      width: 100%;
-      max-width: 900px;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      min-height: 0;
-    }
-
-    .messages {
-      flex: 1;
-      min-height: 0;
       overflow-y: auto;
-      padding: 30px 20px;
+      padding: 28px;
       scroll-behavior: smooth;
     }
 
-    /* ==================================================
-       WELCOME
-       ================================================== */
-
     .welcome {
-      min-height: 55vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
+      max-width: 650px;
+      margin: 45px auto;
       text-align: center;
-      padding: 30px;
     }
 
     .welcome-icon {
-      width: 64px;
-      height: 64px;
-      border-radius: 20px;
-      background: #171717;
-      color: white;
+      width: 75px;
+      height: 75px;
+      margin: 0 auto 20px;
+      border-radius: 23px;
       display: flex;
-      align-items: center;
       justify-content: center;
-      font-size: 30px;
-      margin-bottom: 18px;
+      align-items: center;
+      font-size: 38px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      box-shadow: 0 15px 40px rgba(37,99,235,0.3);
     }
 
     .welcome h2 {
-      margin: 0 0 10px;
-      font-size: 28px;
+      font-size: 30px;
+      margin-bottom: 10px;
     }
 
     .welcome p {
-      margin: 0;
-      color: var(--muted);
-      max-width: 520px;
+      color: #94a3b8;
       line-height: 1.6;
     }
 
-    .welcome.hidden {
-      display: none;
-    }
-
-    /* ==================================================
-       MESSAGES
-       ================================================== */
-
-    .message {
+    .message-row {
       display: flex;
-      width: 100%;
-      margin-bottom: 22px;
+      margin-bottom: 20px;
+      animation: appear 0.25s ease;
     }
 
-    .message.user {
+    .message-row.user {
       justify-content: flex-end;
     }
 
-    .message.assistant {
+    .message-row.assistant {
       justify-content: flex-start;
     }
 
-    .message-content {
+    .message {
       max-width: 78%;
-      padding: 12px 16px;
-      line-height: 1.6;
+      padding: 14px 17px;
+      border-radius: 18px;
+      line-height: 1.55;
       white-space: pre-wrap;
-      overflow-wrap: anywhere;
+      word-wrap: break-word;
       font-size: 15px;
     }
 
-    .message.user .message-content {
-      background: var(--user);
-      border-radius: 18px;
+    .message.user {
+      border-bottom-right-radius: 5px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      box-shadow: 0 8px 25px rgba(37,99,235,0.2);
     }
 
-    .message.assistant .message-content {
-      padding-left: 0;
+    .message.assistant {
+      border-bottom-left-radius: 5px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
     }
 
-    /* ==================================================
-       LOADING
-       ================================================== */
-
-    .loading-message {
-      display: flex;
+    .typing {
+      display: inline-flex;
       gap: 5px;
       align-items: center;
-      height: 28px;
     }
 
-    .loading-dot {
+    .typing span {
       width: 7px;
       height: 7px;
       border-radius: 50%;
-      background: #777;
-      animation: bounce 1.2s infinite ease-in-out;
+      background: #94a3b8;
+      animation: bounce 1s infinite;
     }
 
-    .loading-dot:nth-child(2) {
+    .typing span:nth-child(2) {
       animation-delay: 0.15s;
     }
 
-    .loading-dot:nth-child(3) {
+    .typing span:nth-child(3) {
       animation-delay: 0.3s;
     }
 
-    @keyframes bounce {
-      0%,
-      80%,
-      100% {
-        transform: scale(0.7);
-        opacity: 0.5;
-      }
-
-      40% {
-        transform: scale(1);
-        opacity: 1;
-      }
-    }
-
-    /* ==================================================
-       INPUT
-       ================================================== */
+    /* INPUT */
 
     .input-area {
-      padding: 12px 20px 20px;
+      padding: 17px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.12);
     }
 
-    .chat-form {
+    .input-box {
       display: flex;
       align-items: flex-end;
       gap: 10px;
-      border: 1px solid #d8d8d8;
-      border-radius: 20px;
-      padding: 8px;
-      background: white;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.06);
+      padding: 9px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
     }
 
-    .chat-form textarea {
+    textarea {
       flex: 1;
-      min-height: 42px;
-      max-height: 160px;
+      min-height: 45px;
+      max-height: 130px;
       resize: none;
       border: none;
       outline: none;
-      padding: 11px 12px;
+      background: transparent;
+      color: white;
       font-family: inherit;
       font-size: 15px;
-      line-height: 1.4;
-      background: transparent;
+      padding: 12px 10px;
     }
 
-    .send-button {
-      width: 42px;
-      height: 42px;
+    textarea::placeholder {
+      color: #64748b;
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
       flex-shrink: 0;
       border: none;
       border-radius: 14px;
-      background: var(--button);
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
       color: white;
-      font-size: 23px;
+      font-size: 20px;
       cursor: pointer;
       transition: 0.2s;
     }
 
-    .send-button:hover:not(:disabled) {
-      background: var(--button-hover);
-      transform: translateY(-1px);
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.35);
     }
 
-    .send-button:disabled {
-      opacity: 0.45;
+    .send-btn:disabled {
+      opacity: 0.5;
       cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
     }
 
-    .powered {
+    .hint {
       text-align: center;
-      color: #999;
+      margin-top: 9px;
       font-size: 11px;
-      margin-top: 8px;
+      color: #64748b;
     }
 
-    /* ==================================================
-       DIALOG
-       ================================================== */
+    /* SETTINGS */
 
-    .settings-dialog {
-      width: min(520px, calc(100% - 30px));
-      border: none;
-      border-radius: 18px;
-      padding: 0;
-      box-shadow: 0 25px 80px rgba(0, 0, 0, 0.25);
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px);
+      z-index: 100;
     }
 
-    .settings-dialog::backdrop {
-      background: rgba(0, 0, 0, 0.45);
+    .modal.show {
+      display: flex;
     }
 
-    .settings-box {
-      padding: 24px;
+    .settings {
+      width: 100%;
+      max-width: 480px;
+      padding: 25px;
+      border-radius: 22px;
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.5);
     }
 
     .settings-header {
@@ -354,118 +300,118 @@
     }
 
     .settings-header h2 {
-      margin: 0;
       font-size: 21px;
     }
 
-    .close-button {
-      border: none;
-      background: transparent;
-      font-size: 25px;
-      cursor: pointer;
-      color: #666;
-    }
-
-    .settings-form {
-      display: flex;
-      flex-direction: column;
-      gap: 10px;
-    }
-
-    .settings-form label {
-      font-size: 14px;
-      font-weight: 600;
-      margin-top: 8px;
-    }
-
-    .settings-form label span {
-      color: #999;
-      font-weight: normal;
-    }
-
-    .settings-form input,
-    .settings-form textarea {
-      width: 100%;
-      border: 1px solid #d8d8d8;
-      border-radius: 11px;
-      outline: none;
-      padding: 12px;
-      font-family: inherit;
-      font-size: 14px;
-    }
-
-    .settings-form input:focus,
-    .settings-form textarea:focus {
-      border-color: #777;
-    }
-
-    .settings-form textarea {
-      min-height: 110px;
-      resize: vertical;
-    }
-
-    .settings-actions {
-      display: flex;
-      justify-content: flex-end;
-      gap: 10px;
-      margin-top: 18px;
-    }
-
-    .secondary-button,
-    .primary-button {
+    .close-btn {
+      width: 35px;
+      height: 35px;
       border: none;
       border-radius: 10px;
-      padding: 11px 17px;
-      font-family: inherit;
-      font-weight: 600;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 20px;
       cursor: pointer;
     }
 
-    .secondary-button {
-      background: #eeeeee;
-      color: #222;
+    .field {
+      margin-bottom: 18px;
     }
 
-    .primary-button {
-      background: #171717;
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .field textarea {
+      width: 100%;
+      height: 100px;
+      max-height: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      outline: none;
+      background: rgba(255,255,255,0.06);
       color: white;
+      font-size: 14px;
     }
 
-    .secondary-button:hover {
-      background: #dddddd;
+    .save-settings {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
     }
 
-    .primary-button:hover {
-      background: #333333;
+    .server-note {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.5;
     }
 
-    /* ==================================================
-       MOBILE
-       ================================================== */
-
-    @media (max-width: 600px) {
-      header {
-        padding: 0 14px;
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
       }
 
-      .messages {
-        padding: 20px 14px;
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
       }
 
-      .input-area {
-        padding: 10px 12px 14px;
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 0;
       }
 
-      .message-content {
+      .app {
+        height: 100vh;
+        min-height: 100vh;
+        border-radius: 0;
+      }
+
+      .chat {
+        padding: 18px;
+      }
+
+      .message {
         max-width: 88%;
       }
 
-      .welcome h2 {
-        font-size: 24px;
+      .welcome {
+        margin: 30px auto;
       }
 
-      .settings-box {
-        padding: 19px;
+      .welcome h2 {
+        font-size: 25px;
       }
     }
   </style>
@@ -475,476 +421,226 @@
 
   <div class="app">
 
-    <!-- ==================================================
-         HEADER
-         ================================================== -->
-
-    <header>
+    <!-- HEADER -->
+    <header class="header">
 
       <div class="brand">
-
-        <div class="brand-icon">
-          ✦
-        </div>
+        <div class="logo">✦</div>
 
         <div class="brand-text">
           <h1>Simple Chat</h1>
-          <span>GPT-4.1 Nano</span>
+          <p>GPT-4.1 Nano • Netlify AI</p>
         </div>
-
       </div>
 
       <button
+        class="settings-btn"
         id="settingsBtn"
-        class="icon-button"
-        type="button"
-        aria-label="Open settings"
-        title="Settings"
-      >
+        title="Settings">
         ⚙
       </button>
 
     </header>
 
 
-    <!-- ==================================================
-         CHAT
-         ================================================== -->
+    <!-- CHAT -->
+    <main class="chat" id="chat">
 
-    <main class="chat-area">
+      <div class="welcome" id="welcome">
 
-      <div class="chat-container">
-
-        <div
-          id="messages"
-          class="messages"
-          aria-live="polite"
-        >
-
-          <div
-            id="welcome"
-            class="welcome"
-          >
-
-            <div class="welcome-icon">
-              ✦
-            </div>
-
-            <h2>How can I help?</h2>
-
-            <p>
-              Ask a question and GPT-4.1 Nano
-              will respond.
-            </p>
-
-          </div>
-
+        <div class="welcome-icon">
+          ✨
         </div>
 
+        <h2>How can I help?</h2>
 
-        <!-- ==================================================
-             INPUT
-             ================================================== -->
-
-        <div class="input-area">
-
-          <form
-            id="chatForm"
-            class="chat-form"
-          >
-
-            <textarea
-              id="messageInput"
-              rows="1"
-              placeholder="Message..."
-              autocomplete="off"
-              aria-label="Message"
-            ></textarea>
-
-            <button
-              id="sendBtn"
-              class="send-button"
-              type="submit"
-              aria-label="Send message"
-              title="Send"
-            >
-              ↑
-            </button>
-
-          </form>
-
-          <div class="powered">
-            Powered by Replicate
-          </div>
-
-        </div>
+        <p>
+          Ask a question, get an explanation,
+          brainstorm ideas, or simply have a chat.
+        </p>
 
       </div>
 
     </main>
 
+
+    <!-- INPUT -->
+    <footer class="input-area">
+
+      <div class="input-box">
+
+        <textarea
+          id="messageInput"
+          placeholder="Type your message..."
+          rows="1"
+          autocomplete="off"></textarea>
+
+        <button
+          class="send-btn"
+          id="sendBtn"
+          title="Send">
+          ➤
+        </button>
+
+      </div>
+
+      <div class="hint">
+        Press Enter to send • Shift + Enter for a new line
+      </div>
+
+    </footer>
+
   </div>
 
 
-  <!-- ==================================================
-       SETTINGS DIALOG
-       ================================================== -->
+  <!-- SETTINGS MODAL -->
+  <div class="modal" id="settingsModal">
 
-  <dialog
-    id="settingsDialog"
-    class="settings-dialog"
-  >
-
-    <div class="settings-box">
+    <div class="settings">
 
       <div class="settings-header">
 
         <h2>Settings</h2>
 
         <button
-          id="closeSettingsBtn"
-          class="close-button"
-          type="button"
-          aria-label="Close settings"
-        >
+          class="close-btn"
+          id="closeSettings">
           ×
         </button>
 
       </div>
 
 
-      <form
-        id="settingsForm"
-        class="settings-form"
-      >
+      <div class="field">
 
-        <label for="apiToken">
-          Replicate API Token
-        </label>
-
-        <input
-          id="apiToken"
-          name="apiToken"
-          type="password"
-          placeholder="r8_..."
-          autocomplete="off"
-        >
-
-
-        <label for="systemPrompt">
+        <label>
           System Prompt
-          <span>(Optional)</span>
         </label>
 
         <textarea
           id="systemPrompt"
-          name="systemPrompt"
-          placeholder="Example: You are a helpful assistant."
-        ></textarea>
+          placeholder="Example: You are a helpful AI assistant."></textarea>
 
+      </div>
 
-        <div class="settings-actions">
+      <p class="server-note">
+        Your Replicate API token is securely stored in
+        Netlify Environment Variables. It should not be
+        placed in this HTML file.
+      </p>
 
-          <button
-            id="cancelSettingsBtn"
-            class="secondary-button"
-            type="button"
-          >
-            Cancel
-          </button>
+      <br>
 
-          <button
-            class="primary-button"
-            type="submit"
-          >
-            Save Settings
-          </button>
-
-        </div>
-
-      </form>
+      <button
+        class="save-settings"
+        id="saveSettings">
+        Save Settings
+      </button>
 
     </div>
 
-  </dialog>
+  </div>
 
 
   <script>
 
-    // ======================================================
-    // REPLICATE MODEL
-    // ======================================================
-
-    const MODEL_URL =
-      "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
-
-
-    // ======================================================
+    // =====================================================
     // ELEMENTS
-    // ======================================================
+    // =====================================================
 
-    const settingsBtn =
-      document.getElementById("settingsBtn");
-
-    const settingsDialog =
-      document.getElementById("settingsDialog");
-
-    const settingsForm =
-      document.getElementById("settingsForm");
-
-    const apiToken =
-      document.getElementById("apiToken");
-
-    const systemPrompt =
-      document.getElementById("systemPrompt");
-
-    const closeSettingsBtn =
-      document.getElementById("closeSettingsBtn");
-
-    const cancelSettingsBtn =
-      document.getElementById("cancelSettingsBtn");
-
-    const chatForm =
-      document.getElementById("chatForm");
+    const chat = document.getElementById("chat");
+    const welcome = document.getElementById("welcome");
 
     const messageInput =
       document.getElementById("messageInput");
 
-    const messages =
-      document.getElementById("messages");
-
     const sendBtn =
       document.getElementById("sendBtn");
 
-    const welcome =
-      document.getElementById("welcome");
+    const settingsBtn =
+      document.getElementById("settingsBtn");
+
+    const settingsModal =
+      document.getElementById("settingsModal");
+
+    const closeSettings =
+      document.getElementById("closeSettings");
+
+    const saveSettings =
+      document.getElementById("saveSettings");
+
+    const systemPrompt =
+      document.getElementById("systemPrompt");
 
 
-    // ======================================================
+    // =====================================================
     // CHAT HISTORY
-    // ======================================================
+    // =====================================================
 
     let chatHistory = [];
 
-
-    // ======================================================
-    // LOAD SETTINGS
-    // ======================================================
-
-    function loadSettings() {
-
-      apiToken.value =
-        localStorage.getItem(
-          "replicateApiToken"
-        ) || "";
-
-      systemPrompt.value =
-        localStorage.getItem(
-          "systemPrompt"
-        ) || "";
-    }
+    let isSending = false;
 
 
-    // ======================================================
-    // SAVE SETTINGS
-    // ======================================================
+    // =====================================================
+    // LOAD SAVED SETTINGS
+    // =====================================================
 
-    function saveSettings() {
-
-      const token =
-        apiToken.value.trim();
-
-      const prompt =
-        systemPrompt.value.trim();
-
-      localStorage.setItem(
-        "replicateApiToken",
-        token
-      );
-
-      localStorage.setItem(
-        "systemPrompt",
-        prompt
-      );
-    }
+    systemPrompt.value =
+      localStorage.getItem("simpleChatSystemPrompt") || "";
 
 
-    // ======================================================
-    // GET TOKEN
-    // ======================================================
-
-    function getApiToken() {
-
-      return (
-        localStorage.getItem(
-          "replicateApiToken"
-        ) || ""
-      ).trim();
-    }
-
-
-    // ======================================================
-    // GET SYSTEM PROMPT
-    // ======================================================
-
-    function getSystemPrompt() {
-
-      return (
-        localStorage.getItem(
-          "systemPrompt"
-        ) || ""
-      ).trim();
-    }
-
-
-    // ======================================================
-    // OPEN SETTINGS
-    // ======================================================
-
-    settingsBtn.addEventListener(
-      "click",
-      function () {
-
-        if (
-          typeof settingsDialog.showModal ===
-          "function"
-        ) {
-          settingsDialog.showModal();
-        } else {
-          settingsDialog.setAttribute(
-            "open",
-            ""
-          );
-        }
-
-      }
-    );
-
-
-    // ======================================================
-    // CLOSE SETTINGS
-    // ======================================================
-
-    closeSettingsBtn.addEventListener(
-      "click",
-      function () {
-
-        settingsDialog.close();
-
-      }
-    );
-
-
-    cancelSettingsBtn.addEventListener(
-      "click",
-      function () {
-
-        settingsDialog.close();
-
-      }
-    );
-
-
-    // ======================================================
-    // SAVE SETTINGS
-    // ======================================================
-
-    settingsForm.addEventListener(
-      "submit",
-      function (event) {
-
-        event.preventDefault();
-
-        saveSettings();
-
-        settingsDialog.close();
-
-      }
-    );
-
-
-    // ======================================================
-    // CLICK OUTSIDE DIALOG
-    // ======================================================
-
-    settingsDialog.addEventListener(
-      "click",
-      function (event) {
-
-        const rect =
-          settingsDialog.getBoundingClientRect();
-
-        const clickedOutside =
-          event.clientX < rect.left ||
-          event.clientX > rect.right ||
-          event.clientY < rect.top ||
-          event.clientY > rect.bottom;
-
-        if (clickedOutside) {
-
-          settingsDialog.close();
-
-        }
-
-      }
-    );
-
-
-    // ======================================================
+    // =====================================================
     // ADD MESSAGE
-    // ======================================================
+    // =====================================================
 
-    function addMessage(
-      text,
-      sender
-    ) {
+    function addMessage(role, text) {
+
+      if (welcome) {
+        welcome.style.display = "none";
+      }
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "message-row " + role;
 
       const message =
         document.createElement("div");
 
       message.className =
-        "message " + sender;
+        "message " + role;
 
+      message.textContent = text;
 
-      const content =
-        document.createElement("div");
+      row.appendChild(message);
 
-      content.className =
-        "message-content";
+      chat.appendChild(row);
 
-      content.textContent =
-        text;
+      chat.scrollTop = chat.scrollHeight;
 
-
-      message.appendChild(
-        content
-      );
-
-      messages.appendChild(
-        message
-      );
-
-
-      if (welcome) {
-
-        welcome.classList.add(
-          "hidden"
-        );
-
-      }
-
-
-      scrollToBottom();
-
-      return message;
+      return row;
     }
 
 
-    // ======================================================
-    // LOADING MESSAGE
-    // ======================================================
+    // =====================================================
+    // TYPING INDICATOR
+    // =====================================================
 
-    function addLoadingMessage() {
+    function showTyping() {
+
+      if (welcome) {
+        welcome.style.display = "none";
+      }
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "message-row assistant";
+
+      row.id = "typingRow";
 
       const message =
         document.createElement("div");
@@ -952,668 +648,242 @@
       message.className =
         "message assistant";
 
+      message.innerHTML = `
+        <div class="typing">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      `;
 
-      const loading =
-        document.createElement("div");
+      row.appendChild(message);
 
-      loading.className =
-        "loading-message";
+      chat.appendChild(row);
 
-
-      loading.innerHTML =
-        '<span class="loading-dot"></span>' +
-        '<span class="loading-dot"></span>' +
-        '<span class="loading-dot"></span>';
-
-
-      message.appendChild(
-        loading
-      );
-
-      messages.appendChild(
-        message
-      );
-
-
-      scrollToBottom();
-
-      return message;
+      chat.scrollTop = chat.scrollHeight;
     }
 
 
-    // ======================================================
-    // SCROLL
-    // ======================================================
+    // =====================================================
+    // REMOVE TYPING
+    // =====================================================
 
-    function scrollToBottom() {
+    function removeTyping() {
 
-      requestAnimationFrame(
-        function () {
+      const typing =
+        document.getElementById("typingRow");
 
-          messages.scrollTop =
-            messages.scrollHeight;
-
-        }
-      );
+      if (typing) {
+        typing.remove();
+      }
     }
 
 
-    // ======================================================
-    // SHOW ERROR
-    // ======================================================
+    // =====================================================
+    // SEND MESSAGE
+    // =====================================================
 
-    function showError(
-      message
-    ) {
+    async function sendMessage() {
 
-      addMessage(
-        "⚠ " + message,
-        "assistant"
-      );
-    }
-
-
-    // ======================================================
-    // EXTRACT OUTPUT
-    // ======================================================
-
-    function extractOutput(
-      data
-    ) {
-
-      if (!data) {
-        return "";
+      if (isSending) {
+        return;
       }
 
+      const userText =
+        messageInput.value.trim();
 
-      if (
-        Array.isArray(
-          data.output
-        )
-      ) {
-
-        return data.output
-          .map(
-            function (part) {
-
-              if (
-                typeof part ===
-                "string"
-              ) {
-                return part;
-              }
-
-              return String(part);
-
-            }
-          )
-          .join("");
-
+      if (!userText) {
+        return;
       }
 
+      isSending = true;
 
-      if (
-        typeof data.output ===
-        "string"
-      ) {
+      sendBtn.disabled = true;
 
-        return data.output;
+      addMessage("user", userText);
 
-      }
+      messageInput.value = "";
 
+      autoResize();
 
-      if (
-        data.output &&
-        typeof data.output ===
-        "object"
-      ) {
+      chatHistory.push({
+        role: "user",
+        content: userText
+      });
 
-        if (
-          typeof data.output.text ===
-          "string"
-        ) {
-
-          return data.output.text;
-
-        }
-
-
-        if (
-          typeof data.output.content ===
-          "string"
-        ) {
-
-          return data.output.content;
-
-        }
-
-      }
-
-
-      if (
-        typeof data.text ===
-        "string"
-      ) {
-
-        return data.text;
-
-      }
-
-
-      return "";
-    }
-
-
-    // ======================================================
-    // FRIENDLY ERROR
-    // ======================================================
-
-    function getFriendlyError(
-      error
-    ) {
-
-      const message =
-        error &&
-        error.message
-          ? error.message
-          : String(error);
-
-
-      const lower =
-        message.toLowerCase();
-
-
-      if (
-        lower.includes("401") ||
-        lower.includes("unauthorized") ||
-        lower.includes("invalid token") ||
-        lower.includes("authentication")
-      ) {
-
-        return (
-          "Your Replicate API token appears to be invalid. Check it in Settings."
-        );
-
-      }
-
-
-      if (
-        lower.includes("403") ||
-        lower.includes("forbidden") ||
-        lower.includes("permission")
-      ) {
-
-        return (
-          "Replicate refused the request because the token does not have permission to use this model."
-        );
-
-      }
-
-
-      if (
-        lower.includes("429") ||
-        lower.includes("rate limit") ||
-        lower.includes("too many requests")
-      ) {
-
-        return (
-          "Too many requests were sent. Please wait a moment and try again."
-        );
-
-      }
-
-
-      if (
-        lower.includes("400") ||
-        lower.includes("bad request")
-      ) {
-
-        return (
-          "Replicate rejected the request. Check the API input and model settings."
-        );
-
-      }
-
-
-      if (
-        lower.includes("500") ||
-        lower.includes("502") ||
-        lower.includes("503") ||
-        lower.includes("504")
-      ) {
-
-        return (
-          "Replicate's server returned an error. Please wait a moment and try again."
-        );
-
-      }
-
-
-      if (
-        lower.includes("failed to fetch") ||
-        lower.includes("networkerror") ||
-        lower.includes("network error")
-      ) {
-
-        return (
-          "The browser could not connect to Replicate. Check the red Console error for the exact reason."
-        );
-
-      }
-
-
-      return message;
-    }
-
-
-    // ======================================================
-    // SEND TO REPLICATE
-    // ======================================================
-
-    async function sendToReplicate(
-      userText
-    ) {
-
-      const token =
-        getApiToken();
-
-
-      if (!token) {
-
-        throw new Error(
-          "No API token was found. Open Settings and enter your Replicate API token."
-        );
-
-      }
-
-
-      const messagesForApi = [
-        ...chatHistory,
-        {
-          role: "user",
-          content: userText
-        }
-      ];
-
-
-      const system =
-        getSystemPrompt();
-
-
-      const finalMessages = [];
-
-
-      if (system) {
-
-        finalMessages.push({
-          role: "system",
-          content: system
-        });
-
-      }
-
-
-      finalMessages.push(
-        ...messagesForApi
-      );
-
-
-      const requestBody = {
-
-        input: {
-
-          messages:
-            finalMessages,
-
-          temperature:
-            1,
-
-          top_p:
-            1,
-
-          frequency_penalty:
-            0,
-
-          presence_penalty:
-            0,
-
-          max_completion_tokens:
-            2000,
-
-          image_input:
-            []
-
-        }
-
-      };
-
-
-      console.log(
-        "Sending request to Replicate..."
-      );
-
-
-      let response;
+      showTyping();
 
 
       try {
 
-        response =
+        const response =
           await fetch(
-            MODEL_URL,
+            "/.netlify/functions/chat",
             {
-
-              method:
-                "POST",
+              method: "POST",
 
               headers: {
-
-                "Authorization":
-                  "Bearer " + token,
-
                 "Content-Type":
-                  "application/json",
-
-                "Prefer":
-                  "wait"
-
+                  "application/json"
               },
 
-              body:
-                JSON.stringify(
-                  requestBody
-                )
+              body: JSON.stringify({
 
+                message: userText,
+
+                history:
+                  chatHistory.slice(0, -1),
+
+                systemPrompt:
+                  systemPrompt.value.trim()
+
+              })
             }
           );
 
-      } catch (error) {
 
-        console.error(
-          "FETCH ERROR:",
-          error
-        );
-
-        throw new Error(
-          "Browser connection failed. The exact browser error is in the Console."
-        );
-
-      }
+        const data =
+          await response.json();
 
 
-      const responseText =
-        await response.text();
+        removeTyping();
 
 
-      let data =
-        null;
-
-
-      try {
-
-        data =
-          responseText
-            ? JSON.parse(
-                responseText
-              )
-            : null;
-
-      } catch (error) {
-
-        console.error(
-          "INVALID JSON:",
-          responseText
-        );
-
-        throw new Error(
-          "Replicate returned an invalid response."
-        );
-
-      }
-
-
-      if (!response.ok) {
-
-        console.error(
-          "REPLICATE API ERROR:",
-          {
-            status:
-              response.status,
-
-            data:
-              data
-          }
-        );
-
-
-        const detail =
-          data &&
-          (
-            data.detail ||
-            data.error ||
-            data.title
-          );
-
-
-        if (detail) {
+        if (!response.ok) {
 
           throw new Error(
-            response.status +
-            ": " +
-            detail
+            data.error ||
+            "The server returned an error."
           );
 
         }
 
 
-        throw new Error(
-          "Replicate request failed with HTTP " +
-          response.status +
-          "."
-        );
+        if (
+          !data.reply ||
+          typeof data.reply !== "string"
+        ) {
 
-      }
+          throw new Error(
+            "The AI returned an empty response."
+          );
 
-
-      console.log(
-        "REPLICATE RESPONSE:",
-        data
-      );
-
-
-      const answer =
-        extractOutput(
-          data
-        );
-
-
-      if (!answer) {
-
-        throw new Error(
-          "Replicate completed the request but returned no text."
-        );
-
-      }
-
-
-      return answer;
-    }
-
-
-    // ======================================================
-    // CHAT FORM
-    // ======================================================
-
-    chatForm.addEventListener(
-      "submit",
-      async function (event) {
-
-        event.preventDefault();
-
-
-        const text =
-          messageInput.value.trim();
-
-
-        if (!text) {
-          return;
-        }
-
-
-        const token =
-          getApiToken();
-
-
-        if (!token) {
-
-          settingsDialog.showModal();
-
-          apiToken.focus();
-
-          return;
         }
 
 
         addMessage(
-          text,
-          "user"
+          "assistant",
+          data.reply
         );
 
 
-        messageInput.value =
-          "";
-
-        messageInput.style.height =
-          "auto";
-
-
-        sendBtn.disabled =
-          true;
-
-        messageInput.disabled =
-          true;
+        chatHistory.push({
+          role: "assistant",
+          content: data.reply
+        });
 
 
-        const loadingMessage =
-          addLoadingMessage();
+      } catch (error) {
 
+        removeTyping();
 
-        try {
+        console.error(
+          "Chat error:",
+          error
+        );
 
-          const answer =
-            await sendToReplicate(
-              text
-            );
+        addMessage(
+          "assistant",
+          "⚠️ " + getFriendlyError(error)
+        );
 
+      } finally {
 
-          loadingMessage.remove();
+        isSending = false;
 
+        sendBtn.disabled = false;
 
-          const cleanAnswer =
-            answer.trim();
-
-
-          if (!cleanAnswer) {
-
-            showError(
-              "The model returned an empty response."
-            );
-
-            return;
-          }
-
-
-          addMessage(
-            cleanAnswer,
-            "assistant"
-          );
-
-
-          chatHistory.push({
-            role:
-              "user",
-            content:
-              text
-          });
-
-
-          chatHistory.push({
-            role:
-              "assistant",
-            content:
-              cleanAnswer
-          });
-
-
-          console.log(
-            "CHAT HISTORY:",
-            chatHistory
-          );
-
-
-        } catch (error) {
-
-          loadingMessage.remove();
-
-
-          console.error(
-            "CHAT REQUEST FAILED:",
-            error
-          );
-
-
-          showError(
-            getFriendlyError(
-              error
-            )
-          );
-
-
-        } finally {
-
-          sendBtn.disabled =
-            false;
-
-          messageInput.disabled =
-            false;
-
-          messageInput.focus();
-
-        }
+        messageInput.focus();
 
       }
-    );
+    }
 
 
-    // ======================================================
-    // TEXTAREA RESIZE
-    // ======================================================
+    // =====================================================
+    // FRIENDLY ERRORS
+    // =====================================================
+
+    function getFriendlyError(error) {
+
+      const message =
+        error && error.message
+          ? error.message
+          : String(error);
+
+
+      if (
+        message.includes(
+          "Failed to fetch"
+        )
+      ) {
+
+        return (
+          "Could not connect to the Netlify Function. " +
+          "Make sure the site was redeployed and " +
+          "the function is inside netlify/functions/chat.js."
+        );
+
+      }
+
+
+      if (
+        message.includes(
+          "REPLICATE_API_TOKEN"
+        )
+      ) {
+
+        return (
+          "The Replicate API token has not been " +
+          "configured in Netlify Environment Variables."
+        );
+
+      }
+
+
+      return message;
+    }
+
+
+    // =====================================================
+    // AUTO RESIZE TEXTAREA
+    // =====================================================
+
+    function autoResize() {
+
+      messageInput.style.height =
+        "auto";
+
+      messageInput.style.height =
+        Math.min(
+          messageInput.scrollHeight,
+          130
+        ) + "px";
+    }
+
 
     messageInput.addEventListener(
       "input",
-      function () {
-
-        this.style.height =
-          "auto";
-
-        this.style.height =
-          Math.min(
-            this.scrollHeight,
-            160
-          ) + "px";
-
-      }
+      autoResize
     );
 
 
-    // ======================================================
+    // =====================================================
     // ENTER TO SEND
-    // SHIFT + ENTER = NEW LINE
-    // ======================================================
+    // =====================================================
 
     messageInput.addEventListener(
       "keydown",
-      function (event) {
+      function(event) {
 
         if (
           event.key === "Enter" &&
@@ -1622,7 +892,7 @@
 
           event.preventDefault();
 
-          chatForm.requestSubmit();
+          sendMessage();
 
         }
 
@@ -1630,20 +900,107 @@
     );
 
 
-    // ======================================================
-    // ESCAPE
-    // ======================================================
+    // =====================================================
+    // SEND BUTTON
+    // =====================================================
+
+    sendBtn.addEventListener(
+      "click",
+      sendMessage
+    );
+
+
+    // =====================================================
+    // SETTINGS OPEN
+    // =====================================================
+
+    settingsBtn.addEventListener(
+      "click",
+      function() {
+
+        settingsModal.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // SETTINGS CLOSE
+    // =====================================================
+
+    closeSettings.addEventListener(
+      "click",
+      function() {
+
+        settingsModal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // CLICK OUTSIDE SETTINGS
+    // =====================================================
+
+    settingsModal.addEventListener(
+      "click",
+      function(event) {
+
+        if (
+          event.target ===
+          settingsModal
+        ) {
+
+          settingsModal.classList.remove(
+            "show"
+          );
+
+        }
+
+      }
+    );
+
+
+    // =====================================================
+    // SAVE SETTINGS
+    // =====================================================
+
+    saveSettings.addEventListener(
+      "click",
+      function() {
+
+        localStorage.setItem(
+          "simpleChatSystemPrompt",
+          systemPrompt.value.trim()
+        );
+
+        settingsModal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // ESCAPE CLOSES SETTINGS
+    // =====================================================
 
     document.addEventListener(
       "keydown",
-      function (event) {
+      function(event) {
 
         if (
-          event.key === "Escape" &&
-          settingsDialog.open
+          event.key === "Escape"
         ) {
 
-          settingsDialog.close();
+          settingsModal.classList.remove(
+            "show"
+          );
 
         }
 
@@ -1651,11 +1008,1033 @@
     );
 
 
-    // ======================================================
-    // START
-    // ======================================================
+    // =====================================================
+    // INITIAL FOCUS
+    // =====================================================
 
-    loadSettings();
+    messageInput.focus();
+
+  </script>
+
+</body>
+</html>
+```
+```html
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Chat</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, #3b82f6 0%, transparent 35%),
+        radial-gradient(circle at bottom right, #8b5cf6 0%, transparent 35%),
+        linear-gradient(135deg, #0f172a, #111827);
+      color: white;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 20px;
+    }
+
+    .app {
+      width: 100%;
+      max-width: 950px;
+      height: 90vh;
+      min-height: 600px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 25px;
+      background: rgba(15, 23, 42, 0.82);
+      backdrop-filter: blur(20px);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.45);
+    }
+
+    /* HEADER */
+
+    .header {
+      height: 75px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+      background: rgba(255,255,255,0.04);
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 13px;
+    }
+
+    .logo {
+      width: 45px;
+      height: 45px;
+      border-radius: 14px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 23px;
+      font-weight: bold;
+      background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+    }
+
+    .brand-text h1 {
+      font-size: 20px;
+      font-weight: 700;
+    }
+
+    .brand-text p {
+      margin-top: 3px;
+      color: #94a3b8;
+      font-size: 12px;
+    }
+
+    .settings-btn {
+      width: 44px;
+      height: 44px;
+      border: none;
+      border-radius: 13px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 21px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .settings-btn:hover {
+      background: rgba(255,255,255,0.16);
+      transform: rotate(25deg);
+    }
+
+    /* CHAT */
+
+    .chat {
+      flex: 1;
+      overflow-y: auto;
+      padding: 28px;
+      scroll-behavior: smooth;
+    }
+
+    .welcome {
+      max-width: 650px;
+      margin: 45px auto;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 75px;
+      height: 75px;
+      margin: 0 auto 20px;
+      border-radius: 23px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 38px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      box-shadow: 0 15px 40px rgba(37,99,235,0.3);
+    }
+
+    .welcome h2 {
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+
+    .welcome p {
+      color: #94a3b8;
+      line-height: 1.6;
+    }
+
+    .message-row {
+      display: flex;
+      margin-bottom: 20px;
+      animation: appear 0.25s ease;
+    }
+
+    .message-row.user {
+      justify-content: flex-end;
+    }
+
+    .message-row.assistant {
+      justify-content: flex-start;
+    }
+
+    .message {
+      max-width: 78%;
+      padding: 14px 17px;
+      border-radius: 18px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+      font-size: 15px;
+    }
+
+    .message.user {
+      border-bottom-right-radius: 5px;
+      background: linear-gradient(135deg, #2563eb, #4f46e5);
+      box-shadow: 0 8px 25px rgba(37,99,235,0.2);
+    }
+
+    .message.assistant {
+      border-bottom-left-radius: 5px;
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 5px;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #94a3b8;
+      animation: bounce 1s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: 0.15s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: 0.3s;
+    }
+
+    /* INPUT */
+
+    .input-area {
+      padding: 17px;
+      border-top: 1px solid rgba(255,255,255,0.1);
+      background: rgba(0,0,0,0.12);
+    }
+
+    .input-box {
+      display: flex;
+      align-items: flex-end;
+      gap: 10px;
+      padding: 9px;
+      border-radius: 18px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    textarea {
+      flex: 1;
+      min-height: 45px;
+      max-height: 130px;
+      resize: none;
+      border: none;
+      outline: none;
+      background: transparent;
+      color: white;
+      font-family: inherit;
+      font-size: 15px;
+      padding: 12px 10px;
+    }
+
+    textarea::placeholder {
+      color: #64748b;
+    }
+
+    .send-btn {
+      width: 48px;
+      height: 48px;
+      flex-shrink: 0;
+      border: none;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+      transition: 0.2s;
+    }
+
+    .send-btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 8px 25px rgba(59,130,246,0.35);
+    }
+
+    .send-btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    .hint {
+      text-align: center;
+      margin-top: 9px;
+      font-size: 11px;
+      color: #64748b;
+    }
+
+    /* SETTINGS */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      background: rgba(0,0,0,0.65);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+    }
+
+    .modal.show {
+      display: flex;
+    }
+
+    .settings {
+      width: 100%;
+      max-width: 480px;
+      padding: 25px;
+      border-radius: 22px;
+      background: #111827;
+      border: 1px solid rgba(255,255,255,0.12);
+      box-shadow: 0 25px 70px rgba(0,0,0,0.5);
+    }
+
+    .settings-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 22px;
+    }
+
+    .settings-header h2 {
+      font-size: 21px;
+    }
+
+    .close-btn {
+      width: 35px;
+      height: 35px;
+      border: none;
+      border-radius: 10px;
+      background: rgba(255,255,255,0.08);
+      color: white;
+      font-size: 20px;
+      cursor: pointer;
+    }
+
+    .field {
+      margin-bottom: 18px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 8px;
+      color: #cbd5e1;
+      font-size: 13px;
+    }
+
+    .field textarea {
+      width: 100%;
+      height: 100px;
+      max-height: none;
+      padding: 12px;
+      border-radius: 12px;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 1px solid rgba(255,255,255,0.1);
+      outline: none;
+      background: rgba(255,255,255,0.06);
+      color: white;
+      font-size: 14px;
+    }
+
+    .save-settings {
+      width: 100%;
+      padding: 13px;
+      border: none;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #2563eb, #7c3aed);
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .server-note {
+      margin-top: 10px;
+      color: #64748b;
+      font-size: 11px;
+      line-height: 1.5;
+    }
+
+    @keyframes appear {
+      from {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes bounce {
+      0%, 60%, 100% {
+        transform: translateY(0);
+      }
+
+      30% {
+        transform: translateY(-5px);
+      }
+    }
+
+    @media (max-width: 650px) {
+      body {
+        padding: 0;
+      }
+
+      .app {
+        height: 100vh;
+        min-height: 100vh;
+        border-radius: 0;
+      }
+
+      .chat {
+        padding: 18px;
+      }
+
+      .message {
+        max-width: 88%;
+      }
+
+      .welcome {
+        margin: 30px auto;
+      }
+
+      .welcome h2 {
+        font-size: 25px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <!-- HEADER -->
+    <header class="header">
+
+      <div class="brand">
+        <div class="logo">✦</div>
+
+        <div class="brand-text">
+          <h1>Simple Chat</h1>
+          <p>GPT-4.1 Nano • Netlify AI</p>
+        </div>
+      </div>
+
+      <button
+        class="settings-btn"
+        id="settingsBtn"
+        title="Settings">
+        ⚙
+      </button>
+
+    </header>
+
+
+    <!-- CHAT -->
+    <main class="chat" id="chat">
+
+      <div class="welcome" id="welcome">
+
+        <div class="welcome-icon">
+          ✨
+        </div>
+
+        <h2>How can I help?</h2>
+
+        <p>
+          Ask a question, get an explanation,
+          brainstorm ideas, or simply have a chat.
+        </p>
+
+      </div>
+
+    </main>
+
+
+    <!-- INPUT -->
+    <footer class="input-area">
+
+      <div class="input-box">
+
+        <textarea
+          id="messageInput"
+          placeholder="Type your message..."
+          rows="1"
+          autocomplete="off"></textarea>
+
+        <button
+          class="send-btn"
+          id="sendBtn"
+          title="Send">
+          ➤
+        </button>
+
+      </div>
+
+      <div class="hint">
+        Press Enter to send • Shift + Enter for a new line
+      </div>
+
+    </footer>
+
+  </div>
+
+
+  <!-- SETTINGS MODAL -->
+  <div class="modal" id="settingsModal">
+
+    <div class="settings">
+
+      <div class="settings-header">
+
+        <h2>Settings</h2>
+
+        <button
+          class="close-btn"
+          id="closeSettings">
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="field">
+
+        <label>
+          System Prompt
+        </label>
+
+        <textarea
+          id="systemPrompt"
+          placeholder="Example: You are a helpful AI assistant."></textarea>
+
+      </div>
+
+      <p class="server-note">
+        Your Replicate API token is securely stored in
+        Netlify Environment Variables. It should not be
+        placed in this HTML file.
+      </p>
+
+      <br>
+
+      <button
+        class="save-settings"
+        id="saveSettings">
+        Save Settings
+      </button>
+
+    </div>
+
+  </div>
+
+
+  <script>
+
+    // =====================================================
+    // ELEMENTS
+    // =====================================================
+
+    const chat = document.getElementById("chat");
+    const welcome = document.getElementById("welcome");
+
+    const messageInput =
+      document.getElementById("messageInput");
+
+    const sendBtn =
+      document.getElementById("sendBtn");
+
+    const settingsBtn =
+      document.getElementById("settingsBtn");
+
+    const settingsModal =
+      document.getElementById("settingsModal");
+
+    const closeSettings =
+      document.getElementById("closeSettings");
+
+    const saveSettings =
+      document.getElementById("saveSettings");
+
+    const systemPrompt =
+      document.getElementById("systemPrompt");
+
+
+    // =====================================================
+    // CHAT HISTORY
+    // =====================================================
+
+    let chatHistory = [];
+
+    let isSending = false;
+
+
+    // =====================================================
+    // LOAD SAVED SETTINGS
+    // =====================================================
+
+    systemPrompt.value =
+      localStorage.getItem("simpleChatSystemPrompt") || "";
+
+
+    // =====================================================
+    // ADD MESSAGE
+    // =====================================================
+
+    function addMessage(role, text) {
+
+      if (welcome) {
+        welcome.style.display = "none";
+      }
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "message-row " + role;
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message " + role;
+
+      message.textContent = text;
+
+      row.appendChild(message);
+
+      chat.appendChild(row);
+
+      chat.scrollTop = chat.scrollHeight;
+
+      return row;
+    }
+
+
+    // =====================================================
+    // TYPING INDICATOR
+    // =====================================================
+
+    function showTyping() {
+
+      if (welcome) {
+        welcome.style.display = "none";
+      }
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "message-row assistant";
+
+      row.id = "typingRow";
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message assistant";
+
+      message.innerHTML = `
+        <div class="typing">
+          <span></span>
+          <span></span>
+          <span></span>
+        </div>
+      `;
+
+      row.appendChild(message);
+
+      chat.appendChild(row);
+
+      chat.scrollTop = chat.scrollHeight;
+    }
+
+
+    // =====================================================
+    // REMOVE TYPING
+    // =====================================================
+
+    function removeTyping() {
+
+      const typing =
+        document.getElementById("typingRow");
+
+      if (typing) {
+        typing.remove();
+      }
+    }
+
+
+    // =====================================================
+    // SEND MESSAGE
+    // =====================================================
+
+    async function sendMessage() {
+
+      if (isSending) {
+        return;
+      }
+
+      const userText =
+        messageInput.value.trim();
+
+      if (!userText) {
+        return;
+      }
+
+      isSending = true;
+
+      sendBtn.disabled = true;
+
+      addMessage("user", userText);
+
+      messageInput.value = "";
+
+      autoResize();
+
+      chatHistory.push({
+        role: "user",
+        content: userText
+      });
+
+      showTyping();
+
+
+      try {
+
+        const response =
+          await fetch(
+            "/.netlify/functions/chat",
+            {
+              method: "POST",
+
+              headers: {
+                "Content-Type":
+                  "application/json"
+              },
+
+              body: JSON.stringify({
+
+                message: userText,
+
+                history:
+                  chatHistory.slice(0, -1),
+
+                systemPrompt:
+                  systemPrompt.value.trim()
+
+              })
+            }
+          );
+
+
+        const data =
+          await response.json();
+
+
+        removeTyping();
+
+
+        if (!response.ok) {
+
+          throw new Error(
+            data.error ||
+            "The server returned an error."
+          );
+
+        }
+
+
+        if (
+          !data.reply ||
+          typeof data.reply !== "string"
+        ) {
+
+          throw new Error(
+            "The AI returned an empty response."
+          );
+
+        }
+
+
+        addMessage(
+          "assistant",
+          data.reply
+        );
+
+
+        chatHistory.push({
+          role: "assistant",
+          content: data.reply
+        });
+
+
+      } catch (error) {
+
+        removeTyping();
+
+        console.error(
+          "Chat error:",
+          error
+        );
+
+        addMessage(
+          "assistant",
+          "⚠️ " + getFriendlyError(error)
+        );
+
+      } finally {
+
+        isSending = false;
+
+        sendBtn.disabled = false;
+
+        messageInput.focus();
+
+      }
+    }
+
+
+    // =====================================================
+    // FRIENDLY ERRORS
+    // =====================================================
+
+    function getFriendlyError(error) {
+
+      const message =
+        error && error.message
+          ? error.message
+          : String(error);
+
+
+      if (
+        message.includes(
+          "Failed to fetch"
+        )
+      ) {
+
+        return (
+          "Could not connect to the Netlify Function. " +
+          "Make sure the site was redeployed and " +
+          "the function is inside netlify/functions/chat.js."
+        );
+
+      }
+
+
+      if (
+        message.includes(
+          "REPLICATE_API_TOKEN"
+        )
+      ) {
+
+        return (
+          "The Replicate API token has not been " +
+          "configured in Netlify Environment Variables."
+        );
+
+      }
+
+
+      return message;
+    }
+
+
+    // =====================================================
+    // AUTO RESIZE TEXTAREA
+    // =====================================================
+
+    function autoResize() {
+
+      messageInput.style.height =
+        "auto";
+
+      messageInput.style.height =
+        Math.min(
+          messageInput.scrollHeight,
+          130
+        ) + "px";
+    }
+
+
+    messageInput.addEventListener(
+      "input",
+      autoResize
+    );
+
+
+    // =====================================================
+    // ENTER TO SEND
+    // =====================================================
+
+    messageInput.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          sendMessage();
+
+        }
+
+      }
+    );
+
+
+    // =====================================================
+    // SEND BUTTON
+    // =====================================================
+
+    sendBtn.addEventListener(
+      "click",
+      sendMessage
+    );
+
+
+    // =====================================================
+    // SETTINGS OPEN
+    // =====================================================
+
+    settingsBtn.addEventListener(
+      "click",
+      function() {
+
+        settingsModal.classList.add(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // SETTINGS CLOSE
+    // =====================================================
+
+    closeSettings.addEventListener(
+      "click",
+      function() {
+
+        settingsModal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // CLICK OUTSIDE SETTINGS
+    // =====================================================
+
+    settingsModal.addEventListener(
+      "click",
+      function(event) {
+
+        if (
+          event.target ===
+          settingsModal
+        ) {
+
+          settingsModal.classList.remove(
+            "show"
+          );
+
+        }
+
+      }
+    );
+
+
+    // =====================================================
+    // SAVE SETTINGS
+    // =====================================================
+
+    saveSettings.addEventListener(
+      "click",
+      function() {
+
+        localStorage.setItem(
+          "simpleChatSystemPrompt",
+          systemPrompt.value.trim()
+        );
+
+        settingsModal.classList.remove(
+          "show"
+        );
+
+      }
+    );
+
+
+    // =====================================================
+    // ESCAPE CLOSES SETTINGS
+    // =====================================================
+
+    document.addEventListener(
+      "keydown",
+      function(event) {
+
+        if (
+          event.key === "Escape"
+        ) {
+
+          settingsModal.classList.remove(
+            "show"
+          );
+
+        }
+
+      }
+    );
+
+
+    // =====================================================
+    // INITIAL FOCUS
+    // =====================================================
+
+    messageInput.focus();
 
   </script>
 
