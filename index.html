@@ -1,1387 +1,1103 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Simple Chat AI</title>
-
-<style>
-* {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-body {
-  font-family: Arial, Helvetica, sans-serif;
-  min-height: 100vh;
-  background:
-    radial-gradient(circle at 10% 10%, rgba(59,130,246,.25), transparent 30%),
-    radial-gradient(circle at 90% 90%, rgba(139,92,246,.25), transparent 30%),
-    #080d18;
-  color: #fff;
-  overflow: hidden;
-}
-
-/* ==============================
-   APP
-============================== */
-
-.app {
-  width: 100%;
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-/* ==============================
-   TOP BAR
-============================== */
-
-.topbar {
-  height: 70px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 22px;
-  border-bottom: 1px solid rgba(255,255,255,.09);
-  background: rgba(8,13,24,.88);
-  backdrop-filter: blur(20px);
-}
-
-.brand {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.logo {
-  width: 42px;
-  height: 42px;
-  border-radius: 13px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: linear-gradient(135deg,#2563eb,#7c3aed);
-  font-size: 21px;
-  font-weight: bold;
-  box-shadow: 0 8px 25px rgba(59,130,246,.25);
-}
-
-.brand h1 {
-  font-size: 19px;
-}
-
-.brand p {
-  color: #718096;
-  font-size: 11px;
-  margin-top: 3px;
-}
-
-.top-actions {
-  display: flex;
-  gap: 8px;
-}
-
-.top-btn {
-  width: 42px;
-  height: 42px;
-  border: 0;
-  border-radius: 12px;
-  color: #fff;
-  background: rgba(255,255,255,.07);
-  cursor: pointer;
-  font-size: 18px;
-  transition: .2s;
-}
-
-.top-btn:hover {
-  background: rgba(255,255,255,.14);
-  transform: translateY(-1px);
-}
-
-/* ==============================
-   TWO AI SCREENS
-============================== */
-
-.workspace {
-  flex: 1;
-  min-height: 0;
-  display: grid;
-  grid-template-columns: minmax(0, 1.6fr) minmax(300px, .8fr);
-  gap: 12px;
-  padding: 12px;
-}
-
-/* ==============================
-   PANEL
-============================== */
-
-.panel {
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  border: 1px solid rgba(255,255,255,.09);
-  border-radius: 20px;
-  background: rgba(15,23,42,.72);
-  backdrop-filter: blur(18px);
-  box-shadow: 0 15px 45px rgba(0,0,0,.25);
-}
-
-.panel-header {
-  height: 57px;
-  flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 17px;
-  border-bottom: 1px solid rgba(255,255,255,.08);
-}
-
-.panel-title {
-  display: flex;
-  align-items: center;
-  gap: 9px;
-}
-
-.panel-icon {
-  width: 31px;
-  height: 31px;
-  border-radius: 10px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(59,130,246,.15);
-}
-
-.panel-title strong {
-  font-size: 14px;
-}
-
-.panel-title span {
-  color: #64748b;
-  font-size: 11px;
-  display: block;
-  margin-top: 2px;
-}
-
-.panel-action {
-  border: 0;
-  color: #94a3b8;
-  background: transparent;
-  cursor: pointer;
-  font-size: 17px;
-}
-
-/* ==============================
-   MAIN CHAT
-============================== */
-
-.chat {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 25px;
-}
-
-.welcome {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.welcome-icon {
-  width: 72px;
-  height: 72px;
-  border-radius: 22px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 34px;
-  background: linear-gradient(135deg,#2563eb,#7c3aed);
-  box-shadow: 0 15px 40px rgba(37,99,235,.25);
-  margin-bottom: 18px;
-}
-
-.welcome h2 {
-  font-size: 27px;
-  margin-bottom: 9px;
-}
-
-.welcome p {
-  color: #718096;
-  max-width: 450px;
-  line-height: 1.6;
-  font-size: 14px;
-}
-
-.message-row {
-  display: flex;
-  margin-bottom: 17px;
-}
-
-.message-row.user {
-  justify-content: flex-end;
-}
-
-.message-row.assistant {
-  justify-content: flex-start;
-}
-
-.message {
-  max-width: 80%;
-  padding: 13px 16px;
-  border-radius: 17px;
-  line-height: 1.55;
-  font-size: 14px;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-.message.user {
-  border-bottom-right-radius: 5px;
-  background: linear-gradient(135deg,#2563eb,#4f46e5);
-}
-
-.message.assistant {
-  border-bottom-left-radius: 5px;
-  background: rgba(255,255,255,.065);
-  border: 1px solid rgba(255,255,255,.07);
-}
-
-/* ==============================
-   RIGHT AI SCREEN
-============================== */
-
-.right-content {
-  flex: 1;
-  min-height: 0;
-  overflow-y: auto;
-  padding: 18px;
-}
-
-.right-welcome {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  text-align: center;
-  padding: 20px;
-}
-
-.right-welcome-icon {
-  width: 55px;
-  height: 55px;
-  border-radius: 17px;
-  background: linear-gradient(135deg,#7c3aed,#ec4899);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 25px;
-  margin-bottom: 15px;
-}
-
-.right-welcome h3 {
-  font-size: 18px;
-  margin-bottom: 7px;
-}
-
-.right-welcome p {
-  color: #718096;
-  font-size: 12px;
-  line-height: 1.5;
-}
-
-.right-message {
-  margin-bottom: 13px;
-}
-
-.right-label {
-  color: #64748b;
-  font-size: 10px;
-  margin-bottom: 5px;
-}
-
-.right-bubble {
-  padding: 11px 13px;
-  border-radius: 13px;
-  background: rgba(255,255,255,.055);
-  border: 1px solid rgba(255,255,255,.07);
-  font-size: 13px;
-  line-height: 1.5;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
-
-/* ==============================
-   INPUTS
-============================== */
-
-.input-area {
-  flex-shrink: 0;
-  padding: 13px;
-  border-top: 1px solid rgba(255,255,255,.08);
-}
-
-.input-box {
-  display: flex;
-  align-items: flex-end;
-  gap: 8px;
-  padding: 7px;
-  border-radius: 16px;
-  background: rgba(255,255,255,.055);
-  border: 1px solid rgba(255,255,255,.08);
-}
-
-textarea {
-  flex: 1;
-  min-width: 0;
-  min-height: 43px;
-  max-height: 120px;
-  resize: none;
-  border: 0;
-  outline: 0;
-  background: transparent;
-  color: #fff;
-  font-family: inherit;
-  font-size: 14px;
-  padding: 12px 9px;
-}
-
-textarea::placeholder {
-  color: #64748b;
-}
-
-.send-btn {
-  width: 44px;
-  height: 44px;
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 13px;
-  color: #fff;
-  background: linear-gradient(135deg,#2563eb,#7c3aed);
-  cursor: pointer;
-  font-size: 18px;
-}
-
-.send-btn:hover {
-  box-shadow: 0 8px 22px rgba(59,130,246,.3);
-}
-
-.send-btn:disabled {
-  opacity: .5;
-  cursor: not-allowed;
-}
-
-.hint {
-  text-align: center;
-  color: #475569;
-  font-size: 9px;
-  margin-top: 7px;
-}
-
-/* ==============================
-   SETTINGS MODAL
-============================== */
-
-.modal {
-  position: fixed;
-  inset: 0;
-  z-index: 100;
-  display: none;
-  align-items: center;
-  justify-content: center;
-  padding: 20px;
-  background: rgba(0,0,0,.68);
-  backdrop-filter: blur(9px);
-}
-
-.modal.show {
-  display: flex;
-}
-
-.settings {
-  width: 100%;
-  max-width: 470px;
-  border-radius: 22px;
-  padding: 24px;
-  background: #111827;
-  border: 1px solid rgba(255,255,255,.1);
-  box-shadow: 0 25px 70px rgba(0,0,0,.5);
-}
-
-.settings-head {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 23px;
-}
-
-.settings-head h2 {
-  font-size: 21px;
-}
-
-.close-btn {
-  width: 35px;
-  height: 35px;
-  border: 0;
-  border-radius: 10px;
-  background: rgba(255,255,255,.07);
-  color: #fff;
-  font-size: 20px;
-  cursor: pointer;
-}
-
-.field {
-  margin-bottom: 18px;
-}
-
-.field label {
-  display: block;
-  color: #cbd5e1;
-  font-size: 13px;
-  margin-bottom: 8px;
-}
-
-.field input,
-.field textarea {
-  width: 100%;
-  border: 1px solid rgba(255,255,255,.1);
-  border-radius: 12px;
-  outline: 0;
-  background: rgba(255,255,255,.055);
-  color: #fff;
-  padding: 12px;
-  font-family: inherit;
-  font-size: 13px;
-}
-
-.field textarea {
-  height: 100px;
-  max-height: none;
-  resize: vertical;
-}
-
-.field input::placeholder,
-.field textarea::placeholder {
-  color: #64748b;
-}
-
-.key-note {
-  color: #64748b;
-  font-size: 10px;
-  line-height: 1.5;
-  margin-top: -7px;
-  margin-bottom: 18px;
-}
-
-.save-btn {
-  width: 100%;
-  padding: 13px;
-  border: 0;
-  border-radius: 12px;
-  background: linear-gradient(135deg,#2563eb,#7c3aed);
-  color: #fff;
-  font-weight: bold;
-  cursor: pointer;
-}
-
-.save-btn:hover {
-  opacity: .92;
-}
-
-/* ==============================
-   SCROLLBAR
-============================== */
-
-::-webkit-scrollbar {
-  width: 6px;
-}
-
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,.12);
-  border-radius: 10px;
-}
-
-/* ==============================
-   MOBILE
-============================== */
-
-@media (max-width: 800px) {
-
-  body {
-    overflow: auto;
-  }
-
-  .app {
-    min-height: 100vh;
-    height: auto;
-  }
-
-  .workspace {
-    grid-template-columns: 1fr;
-  }
-
-  .panel {
-    min-height: 500px;
-  }
-
-  .workspace .panel:nth-child(2) {
-    min-height: 350px;
-  }
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simple Chat AI</title>
+
+  <style>
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: #f3f6fb;
+      color: #172033;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* TOP BAR */
+
+    .topbar {
+      height: 64px;
+      background: #ffffff;
+      border-bottom: 1px solid #dfe5ee;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      flex-shrink: 0;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo {
+      width: 38px;
+      height: 38px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #5b5df0, #7d5cff);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 18px;
+    }
+
+    .brand h1 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .brand span {
+      color: #7a8497;
+      font-size: 12px;
+    }
+
+    .top-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    button {
+      border: none;
+      cursor: pointer;
+      font-family: inherit;
+    }
+
+    .top-button {
+      padding: 9px 13px;
+      border-radius: 10px;
+      background: #f1f4f9;
+      color: #374151;
+      font-weight: 600;
+    }
+
+    .top-button:hover {
+      background: #e6eaf1;
+    }
+
+    /* MAIN */
+
+    .workspace {
+      flex: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 340px;
+      gap: 14px;
+      padding: 14px;
+      min-height: 0;
+    }
+
+    .panel {
+      background: white;
+      border: 1px solid #dfe5ee;
+      border-radius: 18px;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* MAIN AI */
+
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .panel-header {
+      height: 58px;
+      padding: 0 18px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #e8ecf2;
+      flex-shrink: 0;
+    }
+
+    .panel-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-weight: 700;
+    }
+
+    .status-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #28c76f;
+    }
+
+    .messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 22px;
+    }
+
+    .welcome {
+      max-width: 650px;
+      margin: 70px auto;
+      text-align: center;
+    }
+
+    .welcome-icon {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 18px;
+      border-radius: 20px;
+      background: linear-gradient(135deg, #5b5df0, #7d5cff);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 28px;
+      font-weight: bold;
+    }
+
+    .welcome h2 {
+      margin: 0 0 8px;
+      font-size: 26px;
+    }
+
+    .welcome p {
+      margin: 0;
+      color: #7a8497;
+      line-height: 1.6;
+    }
+
+    .message {
+      display: flex;
+      margin-bottom: 18px;
+    }
+
+    .message.user {
+      justify-content: flex-end;
+    }
+
+    .bubble {
+      max-width: min(78%, 760px);
+      padding: 12px 15px;
+      border-radius: 16px;
+      line-height: 1.55;
+      white-space: pre-wrap;
+      word-wrap: break-word;
+    }
+
+    .message.user .bubble {
+      background: #5b5df0;
+      color: white;
+      border-bottom-right-radius: 5px;
+    }
+
+    .message.assistant .bubble {
+      background: #f1f4f8;
+      color: #202938;
+      border-bottom-left-radius: 5px;
+    }
+
+    .typing {
+      display: inline-flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .typing span {
+      width: 6px;
+      height: 6px;
+      background: #8791a3;
+      border-radius: 50%;
+      animation: blink 1.2s infinite;
+    }
+
+    .typing span:nth-child(2) {
+      animation-delay: .15s;
+    }
+
+    .typing span:nth-child(3) {
+      animation-delay: .3s;
+    }
+
+    @keyframes blink {
+      0%, 80%, 100% {
+        opacity: .3;
+      }
+
+      40% {
+        opacity: 1;
+      }
+    }
+
+    /* INPUT */
+
+    .composer {
+      border-top: 1px solid #e8ecf2;
+      padding: 14px;
+      display: flex;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    #messageInput {
+      flex: 1;
+      resize: none;
+      min-height: 46px;
+      max-height: 130px;
+      border: 1px solid #d7deea;
+      border-radius: 13px;
+      padding: 13px 14px;
+      font-family: inherit;
+      font-size: 14px;
+      outline: none;
+    }
+
+    #messageInput:focus {
+      border-color: #6a6cf2;
+      box-shadow: 0 0 0 3px rgba(91, 93, 240, .1);
+    }
+
+    #sendButton {
+      width: 48px;
+      height: 46px;
+      border-radius: 13px;
+      background: #5b5df0;
+      color: white;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    #sendButton:hover {
+      background: #4d4fdc;
+    }
+
+    #sendButton:disabled {
+      opacity: .55;
+      cursor: not-allowed;
+    }
+
+    /* RIGHT AI SCREEN */
+
+    .right-panel {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .right-content {
+      padding: 18px;
+      overflow-y: auto;
+    }
+
+    .info-card {
+      background: #f6f7fb;
+      border: 1px solid #e5e9f0;
+      border-radius: 14px;
+      padding: 15px;
+      margin-bottom: 12px;
+    }
+
+    .info-card h3 {
+      margin: 0 0 7px;
+      font-size: 14px;
+    }
+
+    .info-card p {
+      margin: 0;
+      color: #707a8d;
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .connection {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .connection-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #28c76f;
+    }
+
+    /* MODAL */
+
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, .45);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 20;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal {
+      width: min(500px, 100%);
+      background: white;
+      border-radius: 18px;
+      padding: 22px;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .2);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 18px;
+    }
+
+    .modal-header h2 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .close-button {
+      width: 34px;
+      height: 34px;
+      border-radius: 9px;
+      background: #f1f4f8;
+      font-size: 18px;
+    }
+
+    .field {
+      margin-bottom: 16px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 7px;
+      font-size: 13px;
+      font-weight: 700;
+    }
+
+    .field textarea {
+      width: 100%;
+      min-height: 130px;
+      resize: vertical;
+      border: 1px solid #d7deea;
+      border-radius: 12px;
+      padding: 12px;
+      font-family: inherit;
+      outline: none;
+    }
+
+    .field textarea:focus {
+      border-color: #6a6cf2;
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .secondary-button,
+    .primary-button {
+      padding: 10px 15px;
+      border-radius: 10px;
+      font-weight: 700;
+    }
+
+    .secondary-button {
+      background: #eef1f6;
+    }
+
+    .primary-button {
+      background: #5b5df0;
+      color: white;
+    }
+
+    /* MOBILE */
+
+    @media (max-width: 850px) {
+      body {
+        overflow: auto;
+      }
+
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .right-panel {
+        display: none;
+      }
+
+      .bubble {
+        max-width: 88%;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="app">
+  <div class="app">
 
-  <!-- TOP BAR -->
-  <header class="topbar">
+    <header class="topbar">
+      <div class="brand">
+        <div class="logo">AI</div>
 
-    <div class="brand">
-
-      <div class="logo">✦</div>
-
-      <div>
-        <h1>Simple Chat AI</h1>
-        <p>Two AI screens • GPT-4.1 Nano</p>
+        <div>
+          <h1>Simple Chat AI</h1>
+          <span>AI-powered conversation</span>
+        </div>
       </div>
 
-    </div>
+      <div class="top-actions">
+        <button
+          class="top-button"
+          id="clearButton"
+          type="button">
+          Clear
+        </button>
 
-    <div class="top-actions">
+        <button
+          class="top-button"
+          id="settingsButton"
+          type="button">
+          Settings
+        </button>
+      </div>
+    </header>
 
-      <button
-        class="top-btn"
-        id="clearBtn"
-        title="Clear chat">
-        ↻
-      </button>
+    <main class="workspace">
 
-      <button
-        class="top-btn"
-        id="settingsBtn"
-        title="Settings">
-        ⚙
-      </button>
+      <!-- MAIN AI SCREEN -->
 
-    </div>
+      <section class="panel main-panel">
 
-  </header>
+        <div class="panel-header">
+          <div class="panel-title">
+            <span class="status-dot"></span>
+            Main AI
+          </div>
 
+          <div class="connection">
+            <span class="connection-dot"></span>
+            Connected
+          </div>
+        </div>
 
-  <!-- TWO AI SCREENS -->
-  <main class="workspace">
+        <div
+          class="messages"
+          id="messages">
 
-    <!-- MAIN AI SCREEN -->
-    <section class="panel">
+          <div
+            class="welcome"
+            id="welcome">
 
-      <div class="panel-header">
+            <div class="welcome-icon">
+              AI
+            </div>
 
-        <div class="panel-title">
+            <h2>How can I help?</h2>
 
-          <div class="panel-icon">🤖</div>
+            <p>
+              Ask anything and the AI will respond.
+              Your API key is securely handled by the
+              server, so you don't need to enter it here.
+            </p>
 
-          <div>
-            <strong>Main AI</strong>
-            <span>Chat with AI</span>
           </div>
 
         </div>
 
-      </div>
-
-
-      <div class="chat" id="chat">
-
-        <div class="welcome" id="welcome">
-
-          <div class="welcome-icon">
-            ✨
-          </div>
-
-          <h2>How can I help?</h2>
-
-          <p>
-            Ask questions, learn something new,
-            brainstorm ideas, write text, or simply chat.
-          </p>
-
-        </div>
-
-      </div>
-
-
-      <div class="input-area">
-
-        <div class="input-box">
+        <form
+          class="composer"
+          id="chatForm">
 
           <textarea
             id="messageInput"
-            rows="1"
-            placeholder="Message the AI..."></textarea>
+            placeholder="Type your message..."
+            autocomplete="off"
+            rows="1"></textarea>
 
           <button
-            class="send-btn"
-            id="sendBtn"
-            title="Send">
+            id="sendButton"
+            type="submit"
+            aria-label="Send">
             ➤
           </button>
 
+        </form>
+
+      </section>
+
+
+      <!-- RIGHT AI SCREEN -->
+
+      <aside class="panel right-panel">
+
+        <div class="panel-header">
+          <div class="panel-title">
+            AI Screen
+          </div>
         </div>
 
-        <div class="hint">
-          Enter to send • Shift + Enter for new line
-        </div>
+        <div class="right-content">
 
-      </div>
+          <div class="info-card">
+            <h3>AI Assistant</h3>
 
-    </section>
+            <p>
+              This screen shows information about
+              your current AI session.
+            </p>
+          </div>
 
+          <div class="info-card">
 
-    <!-- RIGHT AI SCREEN -->
-    <section class="panel">
+            <h3>Status</h3>
 
-      <div class="panel-header">
+            <div class="connection">
+              <span class="connection-dot"></span>
+              Ready to chat
+            </div>
 
-        <div class="panel-title">
+          </div>
 
-          <div class="panel-icon">🧠</div>
+          <div class="info-card">
 
-          <div>
-            <strong>AI Screen</strong>
-            <span>AI responses</span>
+            <h3>API Security</h3>
+
+            <p>
+              Your Replicate API token is stored in
+              Netlify Environment Variables and is
+              never requested from the user interface.
+            </p>
+
+          </div>
+
+          <div class="info-card">
+
+            <h3>Model</h3>
+
+            <p>
+              OpenAI GPT-4.1 Nano through Replicate.
+            </p>
+
           </div>
 
         </div>
 
+      </aside>
+
+    </main>
+
+  </div>
+
+
+  <!-- SETTINGS MODAL -->
+
+  <div
+    class="modal-overlay"
+    id="settingsModal">
+
+    <div class="modal">
+
+      <div class="modal-header">
+
+        <h2>Settings</h2>
+
         <button
-          class="panel-action"
-          id="rightClearBtn"
-          title="Clear">
+          class="close-button"
+          id="closeSettings"
+          type="button">
           ×
         </button>
 
       </div>
 
+      <div class="field">
 
-      <div
-        class="right-content"
-        id="rightContent">
+        <label for="systemPrompt">
+          System Prompt
+        </label>
 
-        <div
-          class="right-welcome"
-          id="rightWelcome">
-
-          <div class="right-welcome-icon">
-            🧠
-          </div>
-
-          <h3>Second AI Screen</h3>
-
-          <p>
-            AI responses and useful information
-            will appear here.
-          </p>
-
-        </div>
+        <textarea
+          id="systemPrompt"
+          placeholder="Example: You are a helpful AI assistant."></textarea>
 
       </div>
 
-    </section>
+      <div class="modal-actions">
 
-  </main>
+        <button
+          class="secondary-button"
+          id="cancelSettings"
+          type="button">
+          Cancel
+        </button>
 
-</div>
+        <button
+          class="primary-button"
+          id="saveSettings"
+          type="button">
+          Save Settings
+        </button>
 
-
-<!-- SETTINGS -->
-<div
-  class="modal"
-  id="settingsModal">
-
-  <div class="settings">
-
-    <div class="settings-head">
-
-      <h2>⚙ Settings</h2>
-
-      <button
-        class="close-btn"
-        id="closeSettings">
-        ×
-      </button>
+      </div>
 
     </div>
-
-
-    <!-- API KEY -->
-    <div class="field">
-
-      <label for="apiKey">
-        Replicate API Key
-      </label>
-
-      <input
-        type="password"
-        id="apiKey"
-        placeholder="Enter your Replicate API key">
-
-    </div>
-
-
-    <div class="key-note">
-      Your API key is entered by you and saved only
-      in this browser. It is not written into the source code.
-    </div>
-
-
-    <!-- SYSTEM PROMPT -->
-    <div class="field">
-
-      <label for="systemPrompt">
-        System Prompt
-      </label>
-
-      <textarea
-        id="systemPrompt"
-        placeholder="Example: You are a helpful AI assistant."></textarea>
-
-    </div>
-
-
-    <button
-      class="save-btn"
-      id="saveSettings">
-      Save Settings
-    </button>
 
   </div>
 
-</div>
 
+  <script>
+    const chatForm =
+      document.getElementById("chatForm");
 
-<script>
+    const messageInput =
+      document.getElementById("messageInput");
 
-/* ==========================================
-   ELEMENTS
-========================================== */
+    const sendButton =
+      document.getElementById("sendButton");
 
-const chat =
-  document.getElementById("chat");
+    const messages =
+      document.getElementById("messages");
 
-const welcome =
-  document.getElementById("welcome");
+    const welcome =
+      document.getElementById("welcome");
 
-const messageInput =
-  document.getElementById("messageInput");
+    const clearButton =
+      document.getElementById("clearButton");
 
-const sendBtn =
-  document.getElementById("sendBtn");
+    const settingsButton =
+      document.getElementById("settingsButton");
 
-const settingsBtn =
-  document.getElementById("settingsBtn");
+    const settingsModal =
+      document.getElementById("settingsModal");
 
-const settingsModal =
-  document.getElementById("settingsModal");
+    const closeSettings =
+      document.getElementById("closeSettings");
 
-const closeSettings =
-  document.getElementById("closeSettings");
+    const cancelSettings =
+      document.getElementById("cancelSettings");
 
-const saveSettings =
-  document.getElementById("saveSettings");
+    const saveSettings =
+      document.getElementById("saveSettings");
 
-const apiKey =
-  document.getElementById("apiKey");
+    const systemPrompt =
+      document.getElementById("systemPrompt");
 
-const systemPrompt =
-  document.getElementById("systemPrompt");
 
-const clearBtn =
-  document.getElementById("clearBtn");
+    let chatHistory = [];
 
-const rightContent =
-  document.getElementById("rightContent");
+    let isSending = false;
 
-const rightWelcome =
-  document.getElementById("rightWelcome");
 
-const rightClearBtn =
-  document.getElementById("rightClearBtn");
+    /* LOAD SETTINGS */
 
+    systemPrompt.value =
+      localStorage.getItem("systemPrompt") || "";
 
-/* ==========================================
-   DATA
-========================================== */
 
-let chatHistory = [];
+    /* OPEN SETTINGS */
 
-let isSending = false;
+    settingsButton.addEventListener(
+      "click",
+      function () {
+        settingsModal.classList.add("active");
+      }
+    );
 
 
-/* ==========================================
-   LOAD SETTINGS
-========================================== */
+    /* CLOSE SETTINGS */
 
-apiKey.value =
-  localStorage.getItem("replicateApiKey") || "";
-
-systemPrompt.value =
-  localStorage.getItem("systemPrompt") || "";
-
-
-/* ==========================================
-   ADD MAIN MESSAGE
-========================================== */
-
-function addMessage(role, text) {
-
-  if (welcome) {
-    welcome.style.display = "none";
-  }
-
-  const row =
-    document.createElement("div");
-
-  row.className =
-    "message-row " + role;
-
-  const bubble =
-    document.createElement("div");
-
-  bubble.className =
-    "message " + role;
-
-  bubble.textContent = text;
-
-  row.appendChild(bubble);
-
-  chat.appendChild(row);
-
-  chat.scrollTop =
-    chat.scrollHeight;
-}
-
-
-/* ==========================================
-   ADD RIGHT AI RESPONSE
-========================================== */
-
-function addRightMessage(text) {
-
-  if (rightWelcome) {
-    rightWelcome.style.display = "none";
-  }
-
-  const wrapper =
-    document.createElement("div");
-
-  wrapper.className =
-    "right-message";
-
-  const label =
-    document.createElement("div");
-
-  label.className =
-    "right-label";
-
-  label.textContent =
-    "AI RESPONSE";
-
-  const bubble =
-    document.createElement("div");
-
-  bubble.className =
-    "right-bubble";
-
-  bubble.textContent =
-    text;
-
-  wrapper.appendChild(label);
-
-  wrapper.appendChild(bubble);
-
-  rightContent.appendChild(wrapper);
-
-  rightContent.scrollTop =
-    rightContent.scrollHeight;
-}
-
-
-/* ==========================================
-   TYPING INDICATOR
-========================================== */
-
-function showTyping() {
-
-  if (welcome) {
-    welcome.style.display = "none";
-  }
-
-  const row =
-    document.createElement("div");
-
-  row.className =
-    "message-row assistant";
-
-  row.id =
-    "typingRow";
-
-  const bubble =
-    document.createElement("div");
-
-  bubble.className =
-    "message assistant";
-
-  bubble.textContent =
-    "AI is thinking...";
-
-  row.appendChild(bubble);
-
-  chat.appendChild(row);
-
-  chat.scrollTop =
-    chat.scrollHeight;
-}
-
-
-function removeTyping() {
-
-  const typing =
-    document.getElementById("typingRow");
-
-  if (typing) {
-    typing.remove();
-  }
-}
-
-
-/* ==========================================
-   SEND MESSAGE
-========================================== */
-
-async function sendMessage() {
-
-  if (isSending) {
-    return;
-  }
-
-  const text =
-    messageInput.value.trim();
-
-  if (!text) {
-    return;
-  }
-
-
-  const key =
-    apiKey.value.trim();
-
-
-  if (!key) {
-
-    settingsModal.classList.add("show");
-
-    apiKey.focus();
-
-    return;
-  }
-
-
-  isSending = true;
-
-  sendBtn.disabled = true;
-
-
-  addMessage(
-    "user",
-    text
-  );
-
-
-  messageInput.value = "";
-
-  autoResize();
-
-
-  chatHistory.push({
-    role: "user",
-    content: text
-  });
-
-
-  showTyping();
-
-
-  try {
-
-    const response =
-      await fetch(
-        "/.netlify/functions/chat",
-        {
-          method: "POST",
-
-          headers: {
-            "Content-Type":
-              "application/json"
-          },
-
-          body: JSON.stringify({
-
-            message: text,
-
-            history:
-              chatHistory.slice(0, -1),
-
-            systemPrompt:
-              systemPrompt.value.trim(),
-
-            apiKey: key
-
-          })
-        }
-      );
-
-
-    const data =
-      await response.json();
-
-
-    removeTyping();
-
-
-    if (!response.ok) {
-
-      throw new Error(
-        data.error ||
-        "The server returned an error."
-      );
-
+    function closeSettingsModal() {
+      settingsModal.classList.remove("active");
     }
 
+    closeSettings.addEventListener(
+      "click",
+      closeSettingsModal
+    );
 
-    if (
-      !data.reply ||
-      typeof data.reply !== "string"
+    cancelSettings.addEventListener(
+      "click",
+      closeSettingsModal
+    );
+
+
+    /* SAVE SETTINGS */
+
+    saveSettings.addEventListener(
+      "click",
+      function () {
+
+        localStorage.setItem(
+          "systemPrompt",
+          systemPrompt.value.trim()
+        );
+
+        closeSettingsModal();
+      }
+    );
+
+
+    /* CLOSE MODAL WHEN CLICKING OUTSIDE */
+
+    settingsModal.addEventListener(
+      "click",
+      function (event) {
+
+        if (
+          event.target === settingsModal
+        ) {
+          closeSettingsModal();
+        }
+
+      }
+    );
+
+
+    /* ADD MESSAGE */
+
+    function addMessage(
+      role,
+      content
     ) {
 
-      throw new Error(
-        "The AI returned an empty response."
-      );
+      if (welcome) {
+        welcome.remove();
+      }
 
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message " + role;
+
+      const bubble =
+        document.createElement("div");
+
+      bubble.className =
+        "bubble";
+
+      bubble.textContent =
+        content;
+
+      message.appendChild(bubble);
+
+      messages.appendChild(message);
+
+      messages.scrollTop =
+        messages.scrollHeight;
+
+      return message;
     }
 
 
-    addMessage(
-      "assistant",
-      data.reply
+    /* TYPING INDICATOR */
+
+    function showTyping() {
+
+      if (welcome) {
+        welcome.remove();
+      }
+
+      const message =
+        document.createElement("div");
+
+      message.className =
+        "message assistant";
+
+      message.id =
+        "typingMessage";
+
+      const bubble =
+        document.createElement("div");
+
+      bubble.className =
+        "bubble";
+
+      const typing =
+        document.createElement("div");
+
+      typing.className =
+        "typing";
+
+      typing.innerHTML =
+        "<span></span><span></span><span></span>";
+
+      bubble.appendChild(typing);
+
+      message.appendChild(bubble);
+
+      messages.appendChild(message);
+
+      messages.scrollTop =
+        messages.scrollHeight;
+    }
+
+
+    /* REMOVE TYPING */
+
+    function removeTyping() {
+
+      const typingMessage =
+        document.getElementById(
+          "typingMessage"
+        );
+
+      if (typingMessage) {
+        typingMessage.remove();
+      }
+    }
+
+
+    /* SEND MESSAGE */
+
+    chatForm.addEventListener(
+      "submit",
+      async function (event) {
+
+        event.preventDefault();
+
+        if (isSending) {
+          return;
+        }
+
+        const text =
+          messageInput.value.trim();
+
+        if (!text) {
+          return;
+        }
+
+        isSending = true;
+
+        sendButton.disabled = true;
+
+        addMessage(
+          "user",
+          text
+        );
+
+        chatHistory.push({
+          role: "user",
+          content: text
+        });
+
+        messageInput.value = "";
+
+        messageInput.style.height =
+          "46px";
+
+        showTyping();
+
+        try {
+
+          const response =
+            await fetch(
+              "/.netlify/functions/chat",
+              {
+                method: "POST",
+
+                headers: {
+                  "Content-Type":
+                    "application/json"
+                },
+
+                body:
+                  JSON.stringify({
+                    message: text,
+
+                    history:
+                      chatHistory.slice(0, -1),
+
+                    systemPrompt:
+                      systemPrompt.value.trim()
+                  })
+              }
+            );
+
+
+          const responseText =
+            await response.text();
+
+          let data = {};
+
+          try {
+            data =
+              responseText
+                ? JSON.parse(responseText)
+                : {};
+          } catch (error) {
+
+            throw new Error(
+              "The server returned an invalid response."
+            );
+
+          }
+
+
+          if (!response.ok) {
+
+            throw new Error(
+              data.error ||
+              "The server returned an error."
+            );
+
+          }
+
+
+          const reply =
+            typeof data.reply === "string"
+              ? data.reply.trim()
+              : "";
+
+
+          if (!reply) {
+
+            throw new Error(
+              "The AI returned an empty response."
+            );
+
+          }
+
+
+          removeTyping();
+
+          addMessage(
+            "assistant",
+            reply
+          );
+
+          chatHistory.push({
+            role: "assistant",
+            content: reply
+          });
+
+
+        } catch (error) {
+
+          removeTyping();
+
+          const errorMessage =
+            error &&
+            error.message
+              ? error.message
+              : "Something went wrong.";
+
+          addMessage(
+            "assistant",
+            "Error: " + errorMessage
+          );
+
+        } finally {
+
+          isSending = false;
+
+          sendButton.disabled = false;
+
+          messageInput.focus();
+
+        }
+
+      }
     );
 
 
-    addRightMessage(
-      data.reply
+    /* ENTER TO SEND */
+
+    messageInput.addEventListener(
+      "keydown",
+      function (event) {
+
+        if (
+          event.key === "Enter" &&
+          !event.shiftKey
+        ) {
+
+          event.preventDefault();
+
+          chatForm.requestSubmit();
+
+        }
+
+      }
     );
 
 
-    chatHistory.push({
-      role: "assistant",
-      content: data.reply
-    });
+    /* AUTO RESIZE */
 
+    messageInput.addEventListener(
+      "input",
+      function () {
 
-  } catch (error) {
+        this.style.height =
+          "46px";
 
-    removeTyping();
+        this.style.height =
+          Math.min(
+            this.scrollHeight,
+            130
+          ) + "px";
 
-    console.error(
-      "Chat error:",
-      error
+      }
     );
 
 
-    addMessage(
-      "assistant",
-      "⚠️ " + getErrorMessage(error)
+    /* CLEAR CHAT */
+
+    clearButton.addEventListener(
+      "click",
+      function () {
+
+        chatHistory = [];
+
+        messages.innerHTML = "";
+
+        const newWelcome =
+          document.createElement("div");
+
+        newWelcome.className =
+          "welcome";
+
+        newWelcome.innerHTML = `
+          <div class="welcome-icon">AI</div>
+
+          <h2>How can I help?</h2>
+
+          <p>
+            Ask anything and the AI will respond.
+            Your API key is securely handled by the
+            server, so you don't need to enter it here.
+          </p>
+        `;
+
+        messages.appendChild(
+          newWelcome
+        );
+
+      }
     );
 
-  } finally {
 
-    isSending = false;
-
-    sendBtn.disabled = false;
+    /* FOCUS INPUT */
 
     messageInput.focus();
-
-  }
-}
-
-
-/* ==========================================
-   ERROR MESSAGE
-========================================== */
-
-function getErrorMessage(error) {
-
-  const message =
-    error && error.message
-      ? error.message
-      : String(error);
-
-
-  if (
-    message.includes("Failed to fetch")
-  ) {
-
-    return (
-      "Could not connect to the Netlify Function. " +
-      "Make sure netlify/functions/chat.js exists " +
-      "and the site has been redeployed."
-    );
-
-  }
-
-
-  return message;
-}
-
-
-/* ==========================================
-   AUTO RESIZE
-========================================== */
-
-function autoResize() {
-
-  messageInput.style.height =
-    "auto";
-
-  messageInput.style.height =
-    Math.min(
-      messageInput.scrollHeight,
-      120
-    ) + "px";
-}
-
-
-messageInput.addEventListener(
-  "input",
-  autoResize
-);
-
-
-/* ==========================================
-   ENTER TO SEND
-========================================== */
-
-messageInput.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Enter" &&
-      !event.shiftKey
-    ) {
-
-      event.preventDefault();
-
-      sendMessage();
-    }
-
-  }
-);
-
-
-/* ==========================================
-   SEND BUTTON
-========================================== */
-
-sendBtn.addEventListener(
-  "click",
-  sendMessage
-);
-
-
-/* ==========================================
-   OPEN SETTINGS
-========================================== */
-
-settingsBtn.addEventListener(
-  "click",
-  function() {
-
-    settingsModal.classList.add("show");
-
-    apiKey.focus();
-
-  }
-);
-
-
-/* ==========================================
-   CLOSE SETTINGS
-========================================== */
-
-closeSettings.addEventListener(
-  "click",
-  function() {
-
-    settingsModal.classList.remove("show");
-
-  }
-);
-
-
-/* ==========================================
-   SAVE SETTINGS
-========================================== */
-
-saveSettings.addEventListener(
-  "click",
-  function() {
-
-    localStorage.setItem(
-      "replicateApiKey",
-      apiKey.value.trim()
-    );
-
-    localStorage.setItem(
-      "systemPrompt",
-      systemPrompt.value.trim()
-    );
-
-    settingsModal.classList.remove("show");
-
-  }
-);
-
-
-/* ==========================================
-   CLICK OUTSIDE SETTINGS
-========================================== */
-
-settingsModal.addEventListener(
-  "click",
-  function(event) {
-
-    if (
-      event.target === settingsModal
-    ) {
-
-      settingsModal.classList.remove("show");
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   ESCAPE
-========================================== */
-
-document.addEventListener(
-  "keydown",
-  function(event) {
-
-    if (
-      event.key === "Escape"
-    ) {
-
-      settingsModal.classList.remove("show");
-
-    }
-
-  }
-);
-
-
-/* ==========================================
-   CLEAR MAIN CHAT
-========================================== */
-
-clearBtn.addEventListener(
-  "click",
-  function() {
-
-    chatHistory = [];
-
-    chat.innerHTML = "";
-
-    const newWelcome =
-      document.createElement("div");
-
-    newWelcome.className =
-      "welcome";
-
-    newWelcome.innerHTML = `
-      <div class="welcome-icon">✨</div>
-      <h2>How can I help?</h2>
-      <p>
-        Ask questions, learn something new,
-        brainstorm ideas, write text, or simply chat.
-      </p>
-    `;
-
-    chat.appendChild(newWelcome);
-
-  }
-);
-
-
-/* ==========================================
-   CLEAR RIGHT SCREEN
-========================================== */
-
-rightClearBtn.addEventListener(
-  "click",
-  function() {
-
-    rightContent.innerHTML = "";
-
-    const newWelcome =
-      document.createElement("div");
-
-    newWelcome.className =
-      "right-welcome";
-
-    newWelcome.innerHTML = `
-      <div class="right-welcome-icon">🧠</div>
-      <h3>Second AI Screen</h3>
-      <p>
-        AI responses and useful information
-        will appear here.
-      </p>
-    `;
-
-    rightContent.appendChild(
-      newWelcome
-    );
-
-  }
-);
-
-
-/* ==========================================
-   INITIAL FOCUS
-========================================== */
-
-messageInput.focus();
-
-</script>
+  </script>
 
 </body>
 </html>
-```
