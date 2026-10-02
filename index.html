@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Simple Chat AI</title>
 
+<!-- Markdown renderer + security sanitizer -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/dompurify@3.2.6/dist/purify.min.js"></script>
+
 <style>
 *{
   box-sizing:border-box;
@@ -22,7 +26,7 @@
   --accent:#5b5cf0;
   --accent2:#7c3aed;
   --user:#5b5cf0;
-  --userText:#fff;
+  --userText:#ffffff;
   --assistant:#f1f4f8;
   --danger:#ef4444;
   --shadow:0 12px 35px rgba(25,35,55,.08);
@@ -48,7 +52,10 @@ body{
   transition:.25s;
 }
 
-button,input,textarea,select{
+button,
+input,
+textarea,
+select{
   font:inherit;
 }
 
@@ -56,12 +63,18 @@ button{
   cursor:pointer;
 }
 
+/* =========================
+   APP
+========================= */
+
 .app{
   height:100vh;
   display:flex;
 }
 
-/* SIDEBAR */
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar{
   width:290px;
@@ -206,7 +219,9 @@ button{
   background:var(--panel2);
 }
 
-/* MAIN */
+/* =========================
+   MAIN
+========================= */
 
 .main{
   flex:1;
@@ -267,6 +282,10 @@ button{
 .icon-button:hover{
   background:var(--panel2);
 }
+
+/* =========================
+   MESSAGES
+========================= */
 
 .messages{
   flex:1;
@@ -345,7 +364,7 @@ button{
   align-items:center;
   justify-content:center;
   flex-shrink:0;
-  font-size:13px;
+  font-size:11px;
   font-weight:800;
 }
 
@@ -354,7 +373,8 @@ button{
 }
 
 .message-content{
-  max-width:75%;
+  max-width:80%;
+  min-width:0;
 }
 
 .message.user .message-content{
@@ -365,7 +385,6 @@ button{
   padding:13px 15px;
   border-radius:15px;
   line-height:1.65;
-  white-space:pre-wrap;
   word-break:break-word;
 }
 
@@ -377,6 +396,149 @@ button{
 .message.user .message-bubble{
   background:var(--user);
   color:var(--userText);
+  white-space:pre-wrap;
+}
+
+/* =========================
+   MARKDOWN
+========================= */
+
+.message.assistant .message-bubble p{
+  margin:7px 0;
+}
+
+.message.assistant .message-bubble p:first-child{
+  margin-top:0;
+}
+
+.message.assistant .message-bubble p:last-child{
+  margin-bottom:0;
+}
+
+.message.assistant .message-bubble h1,
+.message.assistant .message-bubble h2,
+.message.assistant .message-bubble h3,
+.message.assistant .message-bubble h4,
+.message.assistant .message-bubble h5,
+.message.assistant .message-bubble h6{
+  line-height:1.25;
+  margin:16px 0 8px;
+  font-weight:800;
+}
+
+.message.assistant .message-bubble h1{
+  font-size:26px;
+}
+
+.message.assistant .message-bubble h2{
+  font-size:22px;
+}
+
+.message.assistant .message-bubble h3{
+  font-size:19px;
+}
+
+.message.assistant .message-bubble h4{
+  font-size:17px;
+}
+
+.message.assistant .message-bubble h5{
+  font-size:15px;
+}
+
+.message.assistant .message-bubble h6{
+  font-size:14px;
+}
+
+.message.assistant .message-bubble ul,
+.message.assistant .message-bubble ol{
+  margin:9px 0 9px 25px;
+}
+
+.message.assistant .message-bubble li{
+  margin:4px 0;
+}
+
+.message.assistant .message-bubble strong{
+  font-weight:800;
+}
+
+.message.assistant .message-bubble em{
+  font-style:italic;
+}
+
+.message.assistant .message-bubble del{
+  opacity:.75;
+}
+
+.message.assistant .message-bubble blockquote{
+  border-left:4px solid var(--accent);
+  padding:5px 0 5px 13px;
+  margin:12px 0;
+  color:var(--muted);
+}
+
+.message.assistant .message-bubble hr{
+  border:0;
+  border-top:1px solid var(--border);
+  margin:15px 0;
+}
+
+.message.assistant .message-bubble a{
+  color:var(--accent);
+  text-decoration:underline;
+}
+
+.message.assistant .message-bubble code{
+  background:rgba(127,127,127,.16);
+  padding:2px 6px;
+  border-radius:5px;
+  font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+  font-size:.9em;
+}
+
+.message.assistant .message-bubble pre{
+  background:#111827;
+  color:#f9fafb;
+  padding:14px;
+  border-radius:10px;
+  overflow-x:auto;
+  margin:12px 0;
+  line-height:1.5;
+}
+
+.message.assistant .message-bubble pre code{
+  background:transparent;
+  padding:0;
+  color:inherit;
+  font-size:13px;
+}
+
+.message.assistant .message-bubble table{
+  width:100%;
+  border-collapse:collapse;
+  margin:12px 0;
+  display:block;
+  overflow-x:auto;
+}
+
+.message.assistant .message-bubble th,
+.message.assistant .message-bubble td{
+  border:1px solid var(--border);
+  padding:7px 9px;
+  text-align:left;
+  min-width:100px;
+}
+
+.message.assistant .message-bubble th{
+  background:var(--panel2);
+  font-weight:800;
+}
+
+.message.assistant .message-bubble img{
+  max-width:100%;
+  height:auto;
+  border-radius:8px;
 }
 
 .message-actions{
@@ -399,6 +561,10 @@ button{
   background:var(--panel2);
   color:var(--text);
 }
+
+/* =========================
+   TYPING
+========================= */
 
 .typing{
   display:inline-flex;
@@ -423,11 +589,18 @@ button{
 }
 
 @keyframes bounce{
-  0%,80%,100%{transform:translateY(0)}
-  40%{transform:translateY(-5px)}
+  0%,80%,100%{
+    transform:translateY(0);
+  }
+
+  40%{
+    transform:translateY(-5px);
+  }
 }
 
-/* COMPOSER */
+/* =========================
+   COMPOSER
+========================= */
 
 .composer-wrap{
   padding:12px 7% 16px;
@@ -481,7 +654,9 @@ button{
   background:var(--danger);
 }
 
-/* RIGHT PANEL */
+/* =========================
+   RIGHT PANEL
+========================= */
 
 .right-panel{
   width:330px;
@@ -561,7 +736,9 @@ button{
   color:var(--danger);
 }
 
-/* MODAL */
+/* =========================
+   MODALS
+========================= */
 
 .modal-backdrop{
   position:fixed;
@@ -655,7 +832,9 @@ button{
   font-weight:700;
 }
 
-/* TOAST */
+/* =========================
+   TOAST
+========================= */
 
 .toast{
   position:fixed;
@@ -678,15 +857,20 @@ button{
   transform:translateX(-50%) translateY(0);
 }
 
-/* MOBILE */
+/* =========================
+   MOBILE
+========================= */
 
 @media(max-width:1050px){
+
   .right-panel{
     display:none;
   }
+
 }
 
 @media(max-width:700px){
+
   .sidebar{
     display:none;
   }
@@ -708,6 +892,7 @@ button{
   .welcome h2{
     font-size:24px;
   }
+
 }
 </style>
 </head>
@@ -720,28 +905,74 @@ button{
   <aside class="sidebar">
 
     <div class="brand">
-      <div class="logo">AI</div>
-      <div>
-        <h1>Simple Chat AI</h1>
-        <small>Powered by your AI assistant</small>
+
+      <div class="logo">
+        AI
       </div>
+
+      <div>
+
+        <h1>
+          Simple Chat AI
+        </h1>
+
+        <small>
+          Powered by your AI assistant
+        </small>
+
+      </div>
+
     </div>
 
-    <button class="new-chat" id="newChatBtn">
+
+    <button
+      class="new-chat"
+      id="newChatBtn"
+    >
       ＋ New Chat
     </button>
 
+
     <div class="search-box">
-      <span class="search-icon">⌕</span>
-      <input id="searchChats" placeholder="Search chats...">
+
+      <span class="search-icon">
+        ⌕
+      </span>
+
+      <input
+        id="searchChats"
+        placeholder="Search chats..."
+      >
+
     </div>
 
-    <div class="history-title">Chat History</div>
-    <div class="history" id="historyList"></div>
+
+    <div class="history-title">
+      Chat History
+    </div>
+
+    <div
+      class="history"
+      id="historyList"
+    ></div>
+
 
     <div class="sidebar-bottom">
-      <button class="side-button" id="settingsBtn">⚙ Settings</button>
-      <button class="side-button" id="themeBtn">◐ Toggle Theme</button>
+
+      <button
+        class="side-button"
+        id="settingsBtn"
+      >
+        ⚙ Settings
+      </button>
+
+      <button
+        class="side-button"
+        id="themeBtn"
+      >
+        ◐ Toggle Theme
+      </button>
+
     </div>
 
   </aside>
@@ -755,47 +986,104 @@ button{
       <header class="topbar">
 
         <div class="chat-title">
-          <strong id="chatName">New Chat</strong>
-          <span class="persona-badge" id="personaBadge">Assistant</span>
+
+          <strong id="chatName">
+            New Chat
+          </strong>
+
+          <span
+            class="persona-badge"
+            id="personaBadge"
+          >
+            Assistant
+          </span>
+
         </div>
 
+
         <div class="top-actions">
-          <button class="icon-button" id="renameBtn" title="Rename chat">✎</button>
-          <button class="icon-button" id="clearBtn" title="Clear chat">⌫</button>
-          <button class="icon-button" id="exportBtn" title="Export chat">⇩</button>
+
+          <button
+            class="icon-button"
+            id="renameBtn"
+            title="Rename chat"
+          >
+            ✎
+          </button>
+
+          <button
+            class="icon-button"
+            id="clearBtn"
+            title="Clear chat"
+          >
+            ⌫
+          </button>
+
+          <button
+            class="icon-button"
+            id="exportBtn"
+            title="Export chat"
+          >
+            ⇩
+          </button>
+
         </div>
 
       </header>
 
 
-      <div class="messages" id="messages">
+      <div
+        class="messages"
+        id="messages"
+      >
 
-        <div class="welcome" id="welcome">
+        <div
+          class="welcome"
+          id="welcome"
+        >
 
-          <div class="welcome-logo">AI</div>
+          <div class="welcome-logo">
+            AI
+          </div>
 
-          <h2>How can I help?</h2>
+          <h2>
+            How can I help?
+          </h2>
 
           <p>
-            Ask anything, write something, explain a topic,
-            create ideas, or simply have a conversation.
+            Ask anything, write something,
+            explain a topic, create ideas,
+            or simply have a conversation.
           </p>
+
 
           <div class="quick-prompts">
 
-            <button class="quick-prompt" data-prompt="Explain this topic in simple words.">
+            <button
+              class="quick-prompt"
+              data-prompt="Explain this topic in simple words."
+            >
               💡 Explain something
             </button>
 
-            <button class="quick-prompt" data-prompt="Give me creative ideas for a new project.">
+            <button
+              class="quick-prompt"
+              data-prompt="Give me creative ideas for a new project."
+            >
               ✨ Generate ideas
             </button>
 
-            <button class="quick-prompt" data-prompt="Help me write a clear and professional message.">
+            <button
+              class="quick-prompt"
+              data-prompt="Help me write a clear and professional message."
+            >
               ✍ Writing help
             </button>
 
-            <button class="quick-prompt" data-prompt="Teach me something interesting step by step.">
+            <button
+              class="quick-prompt"
+              data-prompt="Teach me something interesting step by step."
+            >
               📚 Teach me
             </button>
 
@@ -808,9 +1096,13 @@ button{
 
       <div class="composer-wrap">
 
-        <div class="counter" id="counter">
+        <div
+          class="counter"
+          id="counter"
+        >
           0 characters · 0 words
         </div>
+
 
         <div class="composer">
 
@@ -820,7 +1112,10 @@ button{
             rows="1"
           ></textarea>
 
-          <button class="send-button" id="sendBtn">
+          <button
+            class="send-button"
+            id="sendBtn"
+          >
             ➤
           </button>
 
@@ -834,35 +1129,58 @@ button{
     <!-- RIGHT AI PANEL -->
     <aside class="right-panel">
 
-      <div class="right-title">AI Control Center</div>
+      <div class="right-title">
+        AI Control Center
+      </div>
+
 
       <div class="panel-card">
 
-        <h3>AI Persona</h3>
+        <h3>
+          AI Persona
+        </h3>
 
         <div class="persona-grid">
 
-          <button class="persona active" data-persona="Assistant">
+          <button
+            class="persona active"
+            data-persona="Assistant"
+          >
             🤖 Assistant
           </button>
 
-          <button class="persona" data-persona="Teacher">
+          <button
+            class="persona"
+            data-persona="Teacher"
+          >
             📚 Teacher
           </button>
 
-          <button class="persona" data-persona="Coder">
+          <button
+            class="persona"
+            data-persona="Coder"
+          >
             💻 Coder
           </button>
 
-          <button class="persona" data-persona="Writer">
+          <button
+            class="persona"
+            data-persona="Writer"
+          >
             ✍ Writer
           </button>
 
-          <button class="persona" data-persona="Creative">
+          <button
+            class="persona"
+            data-persona="Creative"
+          >
             🎨 Creative
           </button>
 
-          <button class="persona" data-persona="Business">
+          <button
+            class="persona"
+            data-persona="Business"
+          >
             💼 Business
           </button>
 
@@ -873,21 +1191,38 @@ button{
 
       <div class="panel-card">
 
-        <h3>Conversation Stats</h3>
+        <h3>
+          Conversation Stats
+        </h3>
 
         <div class="stat">
-          <span>Messages</span>
-          <strong id="statMessages">0</strong>
+          <span>
+            Messages
+          </span>
+
+          <strong id="statMessages">
+            0
+          </strong>
         </div>
 
         <div class="stat">
-          <span>User words</span>
-          <strong id="statWords">0</strong>
+          <span>
+            User words
+          </span>
+
+          <strong id="statWords">
+            0
+          </strong>
         </div>
 
         <div class="stat">
-          <span>AI responses</span>
-          <strong id="statAI">0</strong>
+          <span>
+            AI responses
+          </span>
+
+          <strong id="statAI">
+            0
+          </strong>
         </div>
 
       </div>
@@ -895,17 +1230,28 @@ button{
 
       <div class="panel-card">
 
-        <h3>Quick Actions</h3>
+        <h3>
+          Quick Actions
+        </h3>
 
-        <button class="panel-button" id="regenerateLast">
+        <button
+          class="panel-button"
+          id="regenerateLast"
+        >
           ↻ Regenerate last response
         </button>
 
-        <button class="panel-button" id="exportPanel">
+        <button
+          class="panel-button"
+          id="exportPanel"
+        >
           ⇩ Export conversation
         </button>
 
-        <button class="panel-button" id="clearPanel">
+        <button
+          class="panel-button"
+          id="clearPanel"
+        >
           🗑 Clear conversation
         </button>
 
@@ -914,19 +1260,34 @@ button{
 
       <div class="panel-card">
 
-        <h3>AI Settings</h3>
+        <h3>
+          AI Settings
+        </h3>
 
         <div class="stat">
-          <span>Temperature</span>
-          <strong id="temperatureValue">1.0</strong>
+          <span>
+            Temperature
+          </span>
+
+          <strong id="temperatureValue">
+            1.0
+          </strong>
         </div>
 
         <div class="stat">
-          <span>Max tokens</span>
-          <strong id="tokenValue">2000</strong>
+          <span>
+            Max tokens
+          </span>
+
+          <strong id="tokenValue">
+            2000
+          </strong>
         </div>
 
-        <button class="panel-button" id="conversationSettings">
+        <button
+          class="panel-button"
+          id="conversationSettings"
+        >
           ⚙ Conversation Settings
         </button>
 
@@ -941,18 +1302,34 @@ button{
 
 <!-- SETTINGS MODAL -->
 
-<div class="modal-backdrop" id="settingsModal">
+<div
+  class="modal-backdrop"
+  id="settingsModal"
+>
 
   <div class="modal">
 
     <div class="modal-header">
-      <h2>Settings</h2>
-      <button class="close" data-close="settingsModal">×</button>
+
+      <h2>
+        Settings
+      </h2>
+
+      <button
+        class="close"
+        data-close="settingsModal"
+      >
+        ×
+      </button>
+
     </div>
+
 
     <div class="setting">
 
-      <label>System Prompt</label>
+      <label>
+        System Prompt
+      </label>
 
       <textarea
         id="systemPrompt"
@@ -961,18 +1338,32 @@ button{
 
     </div>
 
+
     <div class="setting">
 
-      <label>Theme</label>
+      <label>
+        Theme
+      </label>
 
       <select id="themeSelect">
-        <option value="light">Light</option>
-        <option value="dark">Dark</option>
+
+        <option value="light">
+          Light
+        </option>
+
+        <option value="dark">
+          Dark
+        </option>
+
       </select>
 
     </div>
 
-    <button class="save-button" id="saveSettings">
+
+    <button
+      class="save-button"
+      id="saveSettings"
+    >
       Save Settings
     </button>
 
@@ -981,20 +1372,36 @@ button{
 </div>
 
 
-<!-- CONVERSATION SETTINGS MODAL -->
+<!-- CONVERSATION SETTINGS -->
 
-<div class="modal-backdrop" id="conversationModal">
+<div
+  class="modal-backdrop"
+  id="conversationModal"
+>
 
   <div class="modal">
 
     <div class="modal-header">
-      <h2>Conversation Settings</h2>
-      <button class="close" data-close="conversationModal">×</button>
+
+      <h2>
+        Conversation Settings
+      </h2>
+
+      <button
+        class="close"
+        data-close="conversationModal"
+      >
+        ×
+      </button>
+
     </div>
+
 
     <div class="setting">
 
-      <label>Temperature</label>
+      <label>
+        Temperature
+      </label>
 
       <div class="range-row">
 
@@ -1007,15 +1414,20 @@ button{
           value="1"
         >
 
-        <strong id="temperatureNumber">1.0</strong>
+        <strong id="temperatureNumber">
+          1.0
+        </strong>
 
       </div>
 
     </div>
 
+
     <div class="setting">
 
-      <label>Maximum response tokens</label>
+      <label>
+        Maximum response tokens
+      </label>
 
       <input
         type="number"
@@ -1027,7 +1439,11 @@ button{
 
     </div>
 
-    <button class="save-button" id="saveConversationSettings">
+
+    <button
+      class="save-button"
+      id="saveConversationSettings"
+    >
       Save Conversation Settings
     </button>
 
@@ -1038,24 +1454,47 @@ button{
 
 <!-- RENAME MODAL -->
 
-<div class="modal-backdrop" id="renameModal">
+<div
+  class="modal-backdrop"
+  id="renameModal"
+>
 
   <div class="modal">
 
     <div class="modal-header">
-      <h2>Rename Chat</h2>
-      <button class="close" data-close="renameModal">×</button>
+
+      <h2>
+        Rename Chat
+      </h2>
+
+      <button
+        class="close"
+        data-close="renameModal"
+      >
+        ×
+      </button>
+
     </div>
+
 
     <div class="setting">
 
-      <label>Chat name</label>
+      <label>
+        Chat name
+      </label>
 
-      <input id="renameInput" placeholder="Enter chat name">
+      <input
+        id="renameInput"
+        placeholder="Enter chat name"
+      >
 
     </div>
 
-    <button class="save-button" id="saveRename">
+
+    <button
+      class="save-button"
+      id="saveRename"
+    >
       Rename
     </button>
 
@@ -1064,51 +1503,99 @@ button{
 </div>
 
 
-<div class="toast" id="toast"></div>
+<div
+  class="toast"
+  id="toast"
+></div>
 
 
 <script>
-/* =========================================================
-   SIMPLE CHAT AI
-   Everything is contained in this one HTML file.
-   ========================================================= */
 
-const STORAGE_KEY = "simple_chat_ai_chats_v2";
-const SETTINGS_KEY = "simple_chat_ai_settings_v2";
+const STORAGE_KEY =
+  "simple_chat_ai_chats_v3";
+
+const SETTINGS_KEY =
+  "simple_chat_ai_settings_v3";
+
 
 let chats = [];
+
 let currentChatId = null;
+
 let isGenerating = false;
+
 let abortController = null;
 
+
 let settings = {
-  systemPrompt: "",
-  theme: "light",
-  temperature: 1,
-  maxTokens: 2000,
-  persona: "Assistant"
+
+  systemPrompt:"",
+  theme:"light",
+  temperature:1,
+  maxTokens:2000,
+  persona:"Assistant"
+
 };
 
 
-/* =========================================================
+/* =========================
    ELEMENTS
-   ========================================================= */
+========================= */
 
-const messagesEl = document.getElementById("messages");
-const welcomeEl = document.getElementById("welcome");
-const inputEl = document.getElementById("messageInput");
-const sendBtn = document.getElementById("sendBtn");
-const historyList = document.getElementById("historyList");
-const searchChats = document.getElementById("searchChats");
-const chatNameEl = document.getElementById("chatName");
-const personaBadge = document.getElementById("personaBadge");
-const counterEl = document.getElementById("counter");
-const toastEl = document.getElementById("toast");
+const messagesEl =
+  document.getElementById(
+    "messages"
+  );
+
+const welcomeEl =
+  document.getElementById(
+    "welcome"
+  );
+
+const inputEl =
+  document.getElementById(
+    "messageInput"
+  );
+
+const sendBtn =
+  document.getElementById(
+    "sendBtn"
+  );
+
+const historyList =
+  document.getElementById(
+    "historyList"
+  );
+
+const searchChats =
+  document.getElementById(
+    "searchChats"
+  );
+
+const chatNameEl =
+  document.getElementById(
+    "chatName"
+  );
+
+const personaBadge =
+  document.getElementById(
+    "personaBadge"
+  );
+
+const counterEl =
+  document.getElementById(
+    "counter"
+  );
+
+const toastEl =
+  document.getElementById(
+    "toast"
+  );
 
 
-/* =========================================================
+/* =========================
    STORAGE
-   ========================================================= */
+========================= */
 
 function saveData(){
 
@@ -1121,6 +1608,7 @@ function saveData(){
     SETTINGS_KEY,
     JSON.stringify(settings)
   );
+
 }
 
 
@@ -1129,26 +1617,53 @@ function loadData(){
   try{
 
     const savedChats =
-      localStorage.getItem(STORAGE_KEY);
+      localStorage.getItem(
+        STORAGE_KEY
+      );
 
     if(savedChats){
-      chats = JSON.parse(savedChats);
+
+      const parsed =
+        JSON.parse(
+          savedChats
+        );
+
+      if(Array.isArray(parsed)){
+        chats = parsed;
+      }
+
     }
 
   }catch(error){
+
     chats = [];
+
   }
+
 
   try{
 
     const savedSettings =
-      localStorage.getItem(SETTINGS_KEY);
+      localStorage.getItem(
+        SETTINGS_KEY
+      );
 
     if(savedSettings){
-      settings = {
-        ...settings,
-        ...JSON.parse(savedSettings)
-      };
+
+      const parsed =
+        JSON.parse(
+          savedSettings
+        );
+
+      if(parsed && typeof parsed === "object"){
+
+        settings = {
+          ...settings,
+          ...parsed
+        };
+
+      }
+
     }
 
   }catch(error){}
@@ -1156,31 +1671,42 @@ function loadData(){
 }
 
 
-/* =========================================================
-   CHAT CREATION
-   ========================================================= */
+/* =========================
+   CREATE CHAT
+========================= */
 
 function createChat(){
 
   const chat = {
+
     id:
       Date.now().toString() +
-      Math.random().toString(36).slice(2),
+      Math.random()
+        .toString(36)
+        .slice(2),
 
-    name: "New Chat",
+    name:
+      "New Chat",
 
-    createdAt: Date.now(),
+    createdAt:
+      Date.now(),
 
-    messages: []
+    messages:
+      []
+
   };
 
-  chats.unshift(chat);
+  chats.unshift(
+    chat
+  );
 
-  currentChatId = chat.id;
+  currentChatId =
+    chat.id;
 
   saveData();
 
   renderHistory();
+
   renderChat();
 
 }
@@ -1189,27 +1715,35 @@ function createChat(){
 function getCurrentChat(){
 
   return chats.find(
-    chat => chat.id === currentChatId
+    chat =>
+      chat.id ===
+      currentChatId
   );
 
 }
 
 
-/* =========================================================
+/* =========================
    HISTORY
-   ========================================================= */
+========================= */
 
 function renderHistory(){
 
   const query =
-    searchChats.value.trim().toLowerCase();
+    searchChats.value
+      .trim()
+      .toLowerCase();
 
   historyList.innerHTML = "";
 
   const filtered =
-    chats.filter(chat =>
-      chat.name.toLowerCase().includes(query)
+    chats.filter(
+      chat =>
+        chat.name
+          .toLowerCase()
+          .includes(query)
     );
+
 
   if(filtered.length === 0){
 
@@ -1217,78 +1751,114 @@ function renderHistory(){
       '<div style="padding:12px;color:var(--muted);font-size:12px;">No chats found.</div>';
 
     return;
+
   }
 
-  filtered.forEach(chat => {
 
-    const item =
-      document.createElement("div");
+  filtered.forEach(
+    chat => {
 
-    item.className =
-      "history-item" +
-      (chat.id === currentChatId
-        ? " active"
-        : "");
+      const item =
+        document.createElement(
+          "div"
+        );
 
-    const name =
-      document.createElement("div");
+      item.className =
+        "history-item" +
+        (
+          chat.id ===
+          currentChatId
+            ? " active"
+            : ""
+        );
 
-    name.className =
-      "history-name";
 
-    name.textContent =
-      chat.name;
+      const name =
+        document.createElement(
+          "div"
+        );
 
-    const menu =
-      document.createElement("button");
+      name.className =
+        "history-name";
 
-    menu.className =
-      "history-menu";
+      name.textContent =
+        chat.name;
 
-    menu.textContent =
-      "⋯";
 
-    menu.onclick = event => {
+      const menu =
+        document.createElement(
+          "button"
+        );
 
-      event.stopPropagation();
+      menu.className =
+        "history-menu";
 
-      renameChat(chat.id);
+      menu.textContent =
+        "⋯";
 
-    };
 
-    item.appendChild(name);
-    item.appendChild(menu);
+      menu.onclick =
+        event => {
 
-    item.onclick = () => {
+          event.stopPropagation();
 
-      currentChatId =
-        chat.id;
+          renameChat(
+            chat.id
+          );
 
-      renderHistory();
-      renderChat();
+        };
 
-    };
 
-    historyList.appendChild(item);
+      item.appendChild(
+        name
+      );
 
-  });
+      item.appendChild(
+        menu
+      );
+
+
+      item.onclick =
+        () => {
+
+          currentChatId =
+            chat.id;
+
+          renderHistory();
+
+          renderChat();
+
+        };
+
+
+      historyList.appendChild(
+        item
+      );
+
+    }
+  );
 
 }
 
 
-/* =========================================================
+/* =========================
    RENDER CHAT
-   ========================================================= */
+========================= */
 
 function renderChat(){
 
   const chat =
     getCurrentChat();
 
+
   if(!chat){
+
     createChat();
+
     return;
+
   }
+
 
   chatNameEl.textContent =
     chat.name;
@@ -1296,9 +1866,13 @@ function renderChat(){
   personaBadge.textContent =
     settings.persona;
 
+
   messagesEl.innerHTML = "";
 
-  if(chat.messages.length === 0){
+
+  if(
+    chat.messages.length === 0
+  ){
 
     messagesEl.appendChild(
       welcomeEl
@@ -1312,8 +1886,12 @@ function renderChat(){
     welcomeEl.style.display =
       "none";
 
+
     chat.messages.forEach(
-      (message,index) => {
+      (
+        message,
+        index
+      ) => {
 
         addMessageToDOM(
           message,
@@ -1325,7 +1903,9 @@ function renderChat(){
 
   }
 
+
   updateStats();
+
 
   messagesEl.scrollTop =
     messagesEl.scrollHeight;
@@ -1333,9 +1913,76 @@ function renderChat(){
 }
 
 
-/* =========================================================
+/* =========================
+   MARKDOWN RENDERING
+========================= */
+
+function renderMarkdown(
+  text
+){
+
+  if(
+    typeof text !==
+    "string"
+  ){
+
+    return "";
+
+  }
+
+
+  try{
+
+    const html =
+      marked.parse(
+        text,
+        {
+          breaks:true,
+          gfm:true
+        }
+      );
+
+
+    return DOMPurify.sanitize(
+      html,
+      {
+        USE_PROFILES:{
+          html:true
+        }
+      }
+    );
+
+  }catch(error){
+
+    return escapeHtml(
+      text
+    );
+
+  }
+
+}
+
+
+function escapeHtml(
+  text
+){
+
+  const div =
+    document.createElement(
+      "div"
+    );
+
+  div.textContent =
+    text;
+
+  return div.innerHTML;
+
+}
+
+
+/* =========================
    ADD MESSAGE
-   ========================================================= */
+========================= */
 
 function addMessageToDOM(
   message,
@@ -1343,81 +1990,158 @@ function addMessageToDOM(
 ){
 
   const wrapper =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   wrapper.className =
     "message " +
     message.role;
 
+
   const avatar =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   avatar.className =
     "message-avatar";
+
 
   avatar.textContent =
     message.role === "user"
       ? "You"
       : "AI";
 
+
   const content =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   content.className =
     "message-content";
 
+
   const bubble =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   bubble.className =
     "message-bubble";
 
-  bubble.textContent =
-    message.content;
+
+  /*
+   * USER:
+   * Display normal text.
+   *
+   * AI:
+   * Convert Markdown into real
+   * headings, lists, bold text,
+   * code blocks, tables, etc.
+   */
+
+  if(
+    message.role ===
+    "assistant"
+  ){
+
+    bubble.innerHTML =
+      renderMarkdown(
+        message.content
+      );
+
+  }else{
+
+    bubble.textContent =
+      message.content;
+
+  }
+
 
   content.appendChild(
     bubble
   );
 
+
   const actions =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   actions.className =
     "message-actions";
 
-  if(message.role === "assistant"){
+
+  if(
+    message.role ===
+    "assistant"
+  ){
 
     const copy =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
     copy.textContent =
       "Copy";
 
-    copy.onclick = () => {
 
-      navigator.clipboard.writeText(
-        message.content
-      );
+    copy.onclick =
+      async () => {
 
-      showToast(
-        "Response copied"
-      );
+        try{
 
-    };
+          await navigator
+            .clipboard
+            .writeText(
+              message.content
+            );
 
-    actions.appendChild(copy);
+          showToast(
+            "Response copied"
+          );
+
+        }catch(error){
+
+          showToast(
+            "Could not copy response"
+          );
+
+        }
+
+      };
+
+
+    actions.appendChild(
+      copy
+    );
+
 
     const regenerate =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
     regenerate.textContent =
       "Regenerate";
 
-    regenerate.onclick = () => {
 
-      regenerateMessage(index);
+    regenerate.onclick =
+      () => {
 
-    };
+        regenerateMessage(
+          index
+        );
+
+      };
+
 
     actions.appendChild(
       regenerate
@@ -1425,27 +2149,42 @@ function addMessageToDOM(
 
   }
 
-  if(message.role === "user"){
+
+  if(
+    message.role ===
+    "user"
+  ){
 
     const edit =
-      document.createElement("button");
+      document.createElement(
+        "button"
+      );
 
     edit.textContent =
       "Edit";
 
-    edit.onclick = () => {
 
-      editMessage(index);
+    edit.onclick =
+      () => {
 
-    };
+        editMessage(
+          index
+        );
 
-    actions.appendChild(edit);
+      };
+
+
+    actions.appendChild(
+      edit
+    );
 
   }
+
 
   content.appendChild(
     actions
   );
+
 
   wrapper.appendChild(
     avatar
@@ -1455,6 +2194,7 @@ function addMessageToDOM(
     content
   );
 
+
   messagesEl.appendChild(
     wrapper
   );
@@ -1462,9 +2202,9 @@ function addMessageToDOM(
 }
 
 
-/* =========================================================
+/* =========================
    SEND MESSAGE
-   ========================================================= */
+========================= */
 
 async function sendMessage(){
 
@@ -1473,17 +2213,22 @@ async function sendMessage(){
     stopGeneration();
 
     return;
+
   }
+
 
   const text =
     inputEl.value.trim();
+
 
   if(!text){
     return;
   }
 
+
   let chat =
     getCurrentChat();
+
 
   if(!chat){
 
@@ -1494,18 +2239,28 @@ async function sendMessage(){
 
   }
 
+
   const userMessage = {
-    role:"user",
-    content:text
+
+    role:
+      "user",
+
+    content:
+      text
+
   };
+
 
   chat.messages.push(
     userMessage
   );
 
+
   if(
     chat.messages.filter(
-      m => m.role === "user"
+      message =>
+        message.role ===
+        "user"
     ).length === 1
   ){
 
@@ -1516,9 +2271,12 @@ async function sendMessage(){
 
   }
 
-  inputEl.value = "";
+
+  inputEl.value =
+    "";
 
   autoResize();
+
 
   saveData();
 
@@ -1526,10 +2284,14 @@ async function sendMessage(){
 
   renderChat();
 
-  isGenerating = true;
+
+  isGenerating =
+    true;
+
 
   abortController =
     new AbortController();
+
 
   sendBtn.classList.add(
     "stop"
@@ -1538,26 +2300,33 @@ async function sendMessage(){
   sendBtn.textContent =
     "■";
 
-  const typing =
-    showTyping();
+
+  showTyping();
+
 
   try{
 
     const history =
       chat.messages
         .slice(0,-1)
-        .map(message => ({
-          role:message.role,
-          content:message.content
-        }));
+        .map(
+          message => ({
+            role:
+              message.role,
 
-    const personaInstructions =
-      getPersonaPrompt();
+            content:
+              message.content
+          })
+        );
+
 
     let combinedPrompt =
-      personaInstructions;
+      getPersonaPrompt();
 
-    if(settings.systemPrompt){
+
+    if(
+      settings.systemPrompt
+    ){
 
       combinedPrompt +=
         "\n\nAdditional system instructions:\n" +
@@ -1565,33 +2334,39 @@ async function sendMessage(){
 
     }
 
+
     const response =
       await fetch(
         "/.netlify/functions/chat",
         {
-          method:"POST",
+
+          method:
+            "POST",
 
           headers:{
             "Content-Type":
               "application/json"
           },
 
-          body:JSON.stringify({
+          body:
+            JSON.stringify({
 
-            message:text,
+              message:
+                text,
 
-            history:history,
+              history:
+                history,
 
-            systemPrompt:
-              combinedPrompt,
+              systemPrompt:
+                combinedPrompt,
 
-            temperature:
-              settings.temperature,
+              temperature:
+                settings.temperature,
 
-            maxTokens:
-              settings.maxTokens
+              maxTokens:
+                settings.maxTokens
 
-          }),
+            }),
 
           signal:
             abortController.signal
@@ -1599,10 +2374,13 @@ async function sendMessage(){
         }
       );
 
-    removeTyping();
 
     const data =
       await response.json();
+
+
+    removeTyping();
+
 
     if(!response.ok){
 
@@ -1613,7 +2391,10 @@ async function sendMessage(){
 
     }
 
-    if(!data.reply){
+
+    if(
+      !data.reply
+    ){
 
       throw new Error(
         "The AI returned an empty response."
@@ -1621,22 +2402,27 @@ async function sendMessage(){
 
     }
 
+
     chat.messages.push({
 
-      role:"assistant",
+      role:
+        "assistant",
 
       content:
         data.reply
 
     });
 
+
     saveData();
 
     renderChat();
 
+
   }catch(error){
 
     removeTyping();
+
 
     if(
       error.name ===
@@ -1647,9 +2433,11 @@ async function sendMessage(){
 
     }
 
+
     chat.messages.push({
 
-      role:"assistant",
+      role:
+        "assistant",
 
       content:
         "Error: " +
@@ -1657,15 +2445,19 @@ async function sendMessage(){
 
     });
 
+
     saveData();
 
     renderChat();
 
+
   }finally{
 
-    isGenerating = false;
+    isGenerating =
+      false;
 
-    abortController = null;
+    abortController =
+      null;
 
     sendBtn.classList.remove(
       "stop"
@@ -1679,9 +2471,9 @@ async function sendMessage(){
 }
 
 
-/* =========================================================
-   STOP GENERATING
-   ========================================================= */
+/* =========================
+   STOP
+========================= */
 
 function stopGeneration(){
 
@@ -1693,13 +2485,18 @@ function stopGeneration(){
 
   }
 
+
   removeTyping();
 
-  isGenerating = false;
+
+  isGenerating =
+    false;
+
 
   sendBtn.classList.remove(
     "stop"
   );
+
 
   sendBtn.textContent =
     "➤";
@@ -1707,22 +2504,28 @@ function stopGeneration(){
 }
 
 
-/* =========================================================
-   TYPING INDICATOR
-   ========================================================= */
+/* =========================
+   TYPING
+========================= */
 
 function showTyping(){
 
   removeTyping();
 
+
   const wrapper =
-    document.createElement("div");
+    document.createElement(
+      "div"
+    );
+
 
   wrapper.className =
     "message assistant";
 
+
   wrapper.id =
     "typingMessage";
+
 
   wrapper.innerHTML = `
     <div class="message-avatar">AI</div>
@@ -1737,14 +2540,15 @@ function showTyping(){
     </div>
   `;
 
+
   messagesEl.appendChild(
     wrapper
   );
 
+
   messagesEl.scrollTop =
     messagesEl.scrollHeight;
 
-  return wrapper;
 }
 
 
@@ -1755,16 +2559,19 @@ function removeTyping(){
       "typingMessage"
     );
 
+
   if(typing){
+
     typing.remove();
+
   }
 
 }
 
 
-/* =========================================================
+/* =========================
    REGENERATE
-   ========================================================= */
+========================= */
 
 async function regenerateMessage(
   assistantIndex
@@ -1773,39 +2580,60 @@ async function regenerateMessage(
   const chat =
     getCurrentChat();
 
+
   if(!chat){
     return;
   }
 
+
   if(
+    !chat.messages[
+      assistantIndex
+    ] ||
     chat.messages[
       assistantIndex
-    ]?.role !== "assistant"
+    ].role !==
+      "assistant"
   ){
+
     return;
+
   }
+
 
   const userIndex =
     assistantIndex - 1;
 
+
   if(
     userIndex < 0 ||
-    chat.messages[userIndex].role !== "user"
+    chat.messages[
+      userIndex
+    ].role !==
+      "user"
   ){
+
     return;
+
   }
 
+
   const userText =
-    chat.messages[userIndex].content;
+    chat.messages[
+      userIndex
+    ].content;
+
 
   chat.messages.splice(
     assistantIndex,
     1
   );
 
+
   saveData();
 
   renderChat();
+
 
   await generateForExistingMessage(
     chat,
@@ -1824,10 +2652,14 @@ async function generateForExistingMessage(
     return;
   }
 
-  isGenerating = true;
+
+  isGenerating =
+    true;
+
 
   abortController =
     new AbortController();
+
 
   sendBtn.classList.add(
     "stop"
@@ -1836,51 +2668,71 @@ async function generateForExistingMessage(
   sendBtn.textContent =
     "■";
 
+
   showTyping();
+
 
   try{
 
     const history =
       chat.messages.map(
         message => ({
-          role:message.role,
-          content:message.content
+          role:
+            message.role,
+
+          content:
+            message.content
         })
       );
+
+
+    let combinedPrompt =
+      getPersonaPrompt();
+
+
+    if(
+      settings.systemPrompt
+    ){
+
+      combinedPrompt +=
+        "\n\n" +
+        settings.systemPrompt;
+
+    }
+
 
     const response =
       await fetch(
         "/.netlify/functions/chat",
         {
-          method:"POST",
+
+          method:
+            "POST",
 
           headers:{
             "Content-Type":
               "application/json"
           },
 
-          body:JSON.stringify({
+          body:
+            JSON.stringify({
 
-            message:userText,
+              message:
+                userText,
 
-            history:history,
+              history:
+                history,
 
-            systemPrompt:
-              getPersonaPrompt() +
-              (
-                settings.systemPrompt
-                  ? "\n\n" +
-                    settings.systemPrompt
-                  : ""
-              ),
+              systemPrompt:
+                combinedPrompt,
 
-            temperature:
-              settings.temperature,
+              temperature:
+                settings.temperature,
 
-            maxTokens:
-              settings.maxTokens
+              maxTokens:
+                settings.maxTokens
 
-          }),
+            }),
 
           signal:
             abortController.signal
@@ -1888,10 +2740,13 @@ async function generateForExistingMessage(
         }
       );
 
-    removeTyping();
 
     const data =
       await response.json();
+
+
+    removeTyping();
+
 
     if(!response.ok){
 
@@ -1902,22 +2757,27 @@ async function generateForExistingMessage(
 
     }
 
+
     chat.messages.push({
 
-      role:"assistant",
+      role:
+        "assistant",
 
       content:
         data.reply
 
     });
 
+
     saveData();
 
     renderChat();
 
+
   }catch(error){
 
     removeTyping();
+
 
     if(
       error.name !==
@@ -1926,13 +2786,15 @@ async function generateForExistingMessage(
 
       chat.messages.push({
 
-        role:"assistant",
+        role:
+          "assistant",
 
         content:
           "Error: " +
           error.message
 
       });
+
 
       saveData();
 
@@ -1942,9 +2804,11 @@ async function generateForExistingMessage(
 
   }finally{
 
-    isGenerating = false;
+    isGenerating =
+      false;
 
-    abortController = null;
+    abortController =
+      null;
 
     sendBtn.classList.remove(
       "stop"
@@ -1958,37 +2822,50 @@ async function generateForExistingMessage(
 }
 
 
-/* =========================================================
+/* =========================
    EDIT MESSAGE
-   ========================================================= */
+========================= */
 
-function editMessage(index){
+function editMessage(
+  index
+){
 
   const chat =
     getCurrentChat();
+
 
   if(!chat){
     return;
   }
 
+
   const message =
-    chat.messages[index];
+    chat.messages[
+      index
+    ];
+
 
   if(
     !message ||
-    message.role !== "user"
+    message.role !==
+      "user"
   ){
+
     return;
+
   }
+
 
   inputEl.value =
     message.content;
+
 
   chat.messages =
     chat.messages.slice(
       0,
       index
     );
+
 
   saveData();
 
@@ -2001,21 +2878,24 @@ function editMessage(index){
 }
 
 
-/* =========================================================
+/* =========================
    CLEAR CHAT
-   ========================================================= */
+========================= */
 
 function clearChat(){
 
   const chat =
     getCurrentChat();
 
+
   if(!chat){
     return;
   }
 
+
   if(
-    chat.messages.length === 0
+    chat.messages.length ===
+    0
   ){
 
     showToast(
@@ -2026,19 +2906,26 @@ function clearChat(){
 
   }
 
+
   if(
     !confirm(
       "Clear all messages from this chat?"
     )
   ){
+
     return;
+
   }
 
-  chat.messages = [];
+
+  chat.messages =
+    [];
+
 
   saveData();
 
   renderChat();
+
 
   showToast(
     "Conversation cleared"
@@ -2047,28 +2934,36 @@ function clearChat(){
 }
 
 
-/* =========================================================
+/* =========================
    RENAME
-   ========================================================= */
+========================= */
 
-function renameChat(id){
+function renameChat(
+  id
+){
 
   const chat =
     chats.find(
-      item => item.id === id
+      item =>
+        item.id ===
+        id
     );
+
 
   if(!chat){
     return;
   }
 
+
   currentChatId =
     id;
+
 
   document.getElementById(
     "renameInput"
   ).value =
     chat.name;
+
 
   openModal(
     "renameModal"
@@ -2082,21 +2977,26 @@ function saveRename(){
   const chat =
     getCurrentChat();
 
+
   if(!chat){
     return;
   }
+
 
   const value =
     document.getElementById(
       "renameInput"
     ).value.trim();
 
+
   if(!value){
     return;
   }
 
+
   chat.name =
     value;
+
 
   saveData();
 
@@ -2104,9 +3004,11 @@ function saveRename(){
 
   renderChat();
 
+
   closeModal(
     "renameModal"
   );
+
 
   showToast(
     "Chat renamed"
@@ -2115,18 +3017,20 @@ function saveRename(){
 }
 
 
-/* =========================================================
-   EXPORT CHAT
-   ========================================================= */
+/* =========================
+   EXPORT
+========================= */
 
 function exportChat(){
 
   const chat =
     getCurrentChat();
 
+
   if(!chat){
     return;
   }
+
 
   let output =
     "Simple Chat AI\n";
@@ -2136,12 +3040,14 @@ function exportChat(){
     chat.name +
     "\n\n";
 
+
   chat.messages.forEach(
     message => {
 
       output +=
         (
-          message.role === "user"
+          message.role ===
+          "user"
             ? "YOU"
             : "AI"
         ) +
@@ -2154,26 +3060,32 @@ function exportChat(){
     }
   );
 
+
   const blob =
     new Blob(
       [output],
       {
-        type:"text/plain"
+        type:
+          "text/plain"
       }
     );
+
 
   const url =
     URL.createObjectURL(
       blob
     );
 
+
   const link =
     document.createElement(
       "a"
     );
 
+
   link.href =
     url;
+
 
   link.download =
     (
@@ -2187,11 +3099,14 @@ function exportChat(){
     ) +
     ".txt";
 
+
   link.click();
+
 
   URL.revokeObjectURL(
     url
   );
+
 
   showToast(
     "Chat exported"
@@ -2200,33 +3115,9 @@ function exportChat(){
 }
 
 
-/* =========================================================
-   QUICK PROMPTS
-   ========================================================= */
-
-document
-  .querySelectorAll(
-    ".quick-prompt"
-  )
-  .forEach(button => {
-
-    button.onclick = () => {
-
-      inputEl.value =
-        button.dataset.prompt;
-
-      autoResize();
-
-      inputEl.focus();
-
-    };
-
-  });
-
-
-/* =========================================================
+/* =========================
    PERSONAS
-   ========================================================= */
+========================= */
 
 function getPersonaPrompt(){
 
@@ -2249,7 +3140,9 @@ function getPersonaPrompt(){
 
     Business:
       "Act as a practical business assistant. Help with planning, ideas, organization, customers, products and business decisions."
+
   };
+
 
   return prompts[
     settings.persona
@@ -2263,52 +3156,61 @@ document
   .querySelectorAll(
     ".persona"
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.onclick = () => {
+      button.onclick =
+        () => {
 
-      document
-        .querySelectorAll(
-          ".persona"
-        )
-        .forEach(
-          item =>
-            item.classList.remove(
-              "active"
+          document
+            .querySelectorAll(
+              ".persona"
             )
-        );
-
-      button.classList.add(
-        "active"
-      );
-
-      settings.persona =
-        button.dataset.persona;
-
-      personaBadge.textContent =
-        settings.persona;
-
-      saveData();
-
-      showToast(
-        settings.persona +
-        " persona selected"
-      );
-
-    };
-
-  });
+            .forEach(
+              item =>
+                item.classList.remove(
+                  "active"
+                )
+            );
 
 
-/* =========================================================
+          button.classList.add(
+            "active"
+          );
+
+
+          settings.persona =
+            button.dataset.persona;
+
+
+          personaBadge.textContent =
+            settings.persona;
+
+
+          saveData();
+
+
+          showToast(
+            settings.persona +
+            " persona selected"
+          );
+
+        };
+
+    }
+  );
+
+
+/* =========================
    THEME
-   ========================================================= */
+========================= */
 
 function applyTheme(){
 
   document.body.classList.toggle(
     "dark",
-    settings.theme === "dark"
+    settings.theme ===
+      "dark"
   );
 
 }
@@ -2317,9 +3219,11 @@ function applyTheme(){
 function toggleTheme(){
 
   settings.theme =
-    settings.theme === "dark"
+    settings.theme ===
+      "dark"
       ? "light"
       : "dark";
+
 
   applyTheme();
 
@@ -2334,24 +3238,36 @@ document.getElementById(
   toggleTheme;
 
 
-/* =========================================================
-   SETTINGS
-   ========================================================= */
+/* =========================
+   MODALS
+========================= */
 
-function openModal(id){
+function openModal(
+  id
+){
 
   document
-    .getElementById(id)
-    .classList.add("show");
+    .getElementById(
+      id
+    )
+    .classList.add(
+      "show"
+    );
 
 }
 
 
-function closeModal(id){
+function closeModal(
+  id
+){
 
   document
-    .getElementById(id)
-    .classList.remove("show");
+    .getElementById(
+      id
+    )
+    .classList.remove(
+      "show"
+    );
 
 }
 
@@ -2360,72 +3276,87 @@ document
   .querySelectorAll(
     "[data-close]"
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.onclick = () => {
+      button.onclick =
+        () => {
 
-      closeModal(
-        button.dataset.close
-      );
+          closeModal(
+            button.dataset.close
+          );
 
-    };
+        };
 
-  });
+    }
+  );
 
+
+/* =========================
+   SETTINGS
+========================= */
 
 document.getElementById(
   "settingsBtn"
-).onclick = () => {
+).onclick =
+  () => {
 
-  document.getElementById(
-    "systemPrompt"
-  ).value =
-    settings.systemPrompt;
+    document.getElementById(
+      "systemPrompt"
+    ).value =
+      settings.systemPrompt;
 
-  document.getElementById(
-    "themeSelect"
-  ).value =
-    settings.theme;
 
-  openModal(
-    "settingsModal"
-  );
+    document.getElementById(
+      "themeSelect"
+    ).value =
+      settings.theme;
 
-};
+
+    openModal(
+      "settingsModal"
+    );
+
+  };
 
 
 document.getElementById(
   "saveSettings"
-).onclick = () => {
+).onclick =
+  () => {
 
-  settings.systemPrompt =
-    document.getElementById(
-      "systemPrompt"
-    ).value.trim();
-
-  settings.theme =
-    document.getElementById(
-      "themeSelect"
-    ).value;
-
-  applyTheme();
-
-  saveData();
-
-  closeModal(
-    "settingsModal"
-  );
-
-  showToast(
-    "Settings saved"
-  );
-
-};
+    settings.systemPrompt =
+      document.getElementById(
+        "systemPrompt"
+      ).value.trim();
 
 
-/* =========================================================
+    settings.theme =
+      document.getElementById(
+        "themeSelect"
+      ).value;
+
+
+    applyTheme();
+
+    saveData();
+
+
+    closeModal(
+      "settingsModal"
+    );
+
+
+    showToast(
+      "Settings saved"
+    );
+
+  };
+
+
+/* =========================
    CONVERSATION SETTINGS
-   ========================================================= */
+========================= */
 
 function updateTemperatureDisplay(){
 
@@ -2435,6 +3366,7 @@ function updateTemperatureDisplay(){
         "temperature"
       ).value
     );
+
 
   document.getElementById(
     "temperatureNumber"
@@ -2452,96 +3384,125 @@ document.getElementById(
 
 document.getElementById(
   "conversationSettings"
-).onclick = () => {
+).onclick =
+  () => {
 
-  document.getElementById(
-    "temperature"
-  ).value =
-    settings.temperature;
+    document.getElementById(
+      "temperature"
+    ).value =
+      settings.temperature;
 
-  document.getElementById(
-    "maxTokens"
-  ).value =
-    settings.maxTokens;
 
-  updateTemperatureDisplay();
+    document.getElementById(
+      "maxTokens"
+    ).value =
+      settings.maxTokens;
 
-  openModal(
-    "conversationModal"
-  );
 
-};
+    updateTemperatureDisplay();
+
+
+    openModal(
+      "conversationModal"
+    );
+
+  };
 
 
 document.getElementById(
   "saveConversationSettings"
-).onclick = () => {
+).onclick =
+  () => {
 
-  settings.temperature =
-    Number(
-      document.getElementById(
-        "temperature"
-      ).value
-    );
-
-  settings.maxTokens =
-    Math.max(
-      100,
+    settings.temperature =
       Number(
         document.getElementById(
-          "maxTokens"
+          "temperature"
         ).value
-      ) || 2000
+      );
+
+
+    settings.maxTokens =
+      Math.max(
+        100,
+        Number(
+          document.getElementById(
+            "maxTokens"
+          ).value
+        ) ||
+        2000
+      );
+
+
+    if(
+      settings.maxTokens >
+      8000
+    ){
+
+      settings.maxTokens =
+        8000;
+
+    }
+
+
+    document.getElementById(
+      "temperatureValue"
+    ).textContent =
+      settings.temperature
+        .toFixed(1);
+
+
+    document.getElementById(
+      "tokenValue"
+    ).textContent =
+      settings.maxTokens;
+
+
+    saveData();
+
+
+    closeModal(
+      "conversationModal"
     );
 
-  document.getElementById(
-    "temperatureValue"
-  ).textContent =
-    settings.temperature.toFixed(1);
 
-  document.getElementById(
-    "tokenValue"
-  ).textContent =
-    settings.maxTokens;
+    showToast(
+      "Conversation settings saved"
+    );
 
-  saveData();
-
-  closeModal(
-    "conversationModal"
-  );
-
-  showToast(
-    "Conversation settings saved"
-  );
-
-};
+  };
 
 
-/* =========================================================
+/* =========================
    NEW CHAT
-   ========================================================= */
+========================= */
 
 document.getElementById(
   "newChatBtn"
-).onclick = () => {
+).onclick =
+  () => {
 
-  if(isGenerating){
-    stopGeneration();
-  }
+    if(isGenerating){
 
-  createChat();
+      stopGeneration();
 
-};
+    }
 
 
-/* =========================================================
-   CLEAR BUTTONS
-   ========================================================= */
+    createChat();
+
+  };
+
+
+/* =========================
+   CLEAR
+========================= */
 
 document.getElementById(
   "clearBtn"
 ).onclick =
   clearChat;
+
 
 document.getElementById(
   "clearPanel"
@@ -2549,14 +3510,15 @@ document.getElementById(
   clearChat;
 
 
-/* =========================================================
-   EXPORT BUTTONS
-   ========================================================= */
+/* =========================
+   EXPORT
+========================= */
 
 document.getElementById(
   "exportBtn"
 ).onclick =
   exportChat;
+
 
 document.getElementById(
   "exportPanel"
@@ -2564,31 +3526,35 @@ document.getElementById(
   exportChat;
 
 
-/* =========================================================
-   RENAME BUTTON
-   ========================================================= */
+/* =========================
+   RENAME
+========================= */
 
 document.getElementById(
   "renameBtn"
-).onclick = () => {
+).onclick =
+  () => {
 
-  const chat =
-    getCurrentChat();
+    const chat =
+      getCurrentChat();
 
-  if(!chat){
-    return;
-  }
 
-  document.getElementById(
-    "renameInput"
-  ).value =
-    chat.name;
+    if(!chat){
+      return;
+    }
 
-  openModal(
-    "renameModal"
-  );
 
-};
+    document.getElementById(
+      "renameInput"
+    ).value =
+      chat.name;
+
+
+    openModal(
+      "renameModal"
+    );
+
+  };
 
 
 document.getElementById(
@@ -2597,59 +3563,68 @@ document.getElementById(
   saveRename;
 
 
-/* =========================================================
+/* =========================
    REGENERATE LAST
-   ========================================================= */
+========================= */
 
 document.getElementById(
   "regenerateLast"
-).onclick = () => {
+).onclick =
+  () => {
 
-  const chat =
-    getCurrentChat();
+    const chat =
+      getCurrentChat();
 
-  if(!chat){
-    return;
-  }
 
-  for(
-    let i =
-      chat.messages.length - 1;
-    i >= 0;
-    i--
-  ){
+    if(!chat){
+      return;
+    }
 
-    if(
-      chat.messages[i].role ===
-      "assistant"
+
+    for(
+      let i =
+        chat.messages.length - 1;
+
+      i >= 0;
+
+      i--
     ){
 
-      regenerateMessage(i);
+      if(
+        chat.messages[i]
+          .role ===
+        "assistant"
+      ){
 
-      return;
+        regenerateMessage(
+          i
+        );
+
+        return;
+
+      }
 
     }
 
-  }
 
-  showToast(
-    "There is no AI response to regenerate"
-  );
+    showToast(
+      "There is no AI response to regenerate"
+    );
 
-};
+  };
 
 
-/* =========================================================
-   SEND BUTTON
-   ========================================================= */
+/* =========================
+   SEND
+========================= */
 
 sendBtn.onclick =
   sendMessage;
 
 
-/* =========================================================
+/* =========================
    TEXTAREA
-   ========================================================= */
+========================= */
 
 inputEl.addEventListener(
   "input",
@@ -2668,7 +3643,8 @@ inputEl.addEventListener(
   event => {
 
     if(
-      event.key === "Enter" &&
+      event.key ===
+        "Enter" &&
       !event.shiftKey
     ){
 
@@ -2687,6 +3663,7 @@ function autoResize(){
   inputEl.style.height =
     "auto";
 
+
   inputEl.style.height =
     Math.min(
       inputEl.scrollHeight,
@@ -2697,24 +3674,28 @@ function autoResize(){
 }
 
 
-/* =========================================================
+/* =========================
    COUNTER
-   ========================================================= */
+========================= */
 
 function updateCounter(){
 
   const text =
     inputEl.value;
 
+
   const characters =
     text.length;
 
+
   const words =
     text.trim()
-      ? text.trim()
-        .split(/\s+/)
-        .length
+      ? text
+          .trim()
+          .split(/\s+/)
+          .length
       : 0;
+
 
   counterEl.textContent =
     characters +
@@ -2725,49 +3706,66 @@ function updateCounter(){
 }
 
 
-/* =========================================================
+/* =========================
    STATS
-   ========================================================= */
+========================= */
 
 function updateStats(){
 
   const chat =
     getCurrentChat();
 
+
   if(!chat){
     return;
   }
 
+
   const userMessages =
     chat.messages.filter(
-      m => m.role === "user"
+      message =>
+        message.role ===
+        "user"
     );
+
 
   const aiMessages =
     chat.messages.filter(
-      m => m.role === "assistant"
+      message =>
+        message.role ===
+        "assistant"
     );
+
 
   const userWords =
     userMessages
-      .map(m => m.content)
+      .map(
+        message =>
+          message.content
+      )
       .join(" ")
       .trim();
 
+
   const wordCount =
     userWords
-      ? userWords.split(/\s+/).length
+      ? userWords
+          .split(/\s+/)
+          .length
       : 0;
+
 
   document.getElementById(
     "statMessages"
   ).textContent =
     chat.messages.length;
 
+
   document.getElementById(
     "statWords"
   ).textContent =
     wordCount;
+
 
   document.getElementById(
     "statAI"
@@ -2777,32 +3775,68 @@ function updateStats(){
 }
 
 
-/* =========================================================
+/* =========================
    SEARCH
-   ========================================================= */
+========================= */
 
 searchChats.oninput =
   renderHistory;
 
 
-/* =========================================================
+/* =========================
+   QUICK PROMPTS
+========================= */
+
+document
+  .querySelectorAll(
+    ".quick-prompt"
+  )
+  .forEach(
+    button => {
+
+      button.onclick =
+        () => {
+
+          inputEl.value =
+            button.dataset.prompt;
+
+
+          autoResize();
+
+          updateCounter();
+
+          inputEl.focus();
+
+        };
+
+    }
+  );
+
+
+/* =========================
    TOAST
-   ========================================================= */
+========================= */
 
 let toastTimer;
 
-function showToast(message){
+
+function showToast(
+  message
+){
 
   toastEl.textContent =
     message;
+
 
   toastEl.classList.add(
     "show"
   );
 
+
   clearTimeout(
     toastTimer
   );
+
 
   toastTimer =
     setTimeout(
@@ -2819,82 +3853,97 @@ function showToast(message){
 }
 
 
-/* =========================================================
-   CLOSE MODALS WHEN CLICKING BACKDROP
-   ========================================================= */
+/* =========================
+   MODAL BACKDROP
+========================= */
 
 document
   .querySelectorAll(
     ".modal-backdrop"
   )
-  .forEach(backdrop => {
+  .forEach(
+    backdrop => {
 
-    backdrop.addEventListener(
-      "click",
-      event => {
+      backdrop.addEventListener(
+        "click",
+        event => {
 
-        if(
-          event.target ===
-          backdrop
-        ){
+          if(
+            event.target ===
+            backdrop
+          ){
 
-          backdrop.classList.remove(
-            "show"
-          );
+            backdrop.classList.remove(
+              "show"
+            );
+
+          }
 
         }
+      );
 
-      }
-    );
-
-  });
+    }
+  );
 
 
-/* =========================================================
+/* =========================
    INITIALIZE
-   ========================================================= */
+========================= */
 
 loadData();
 
 applyTheme();
 
+
 document.getElementById(
   "temperatureValue"
 ).textContent =
-  settings.temperature.toFixed(1);
+  Number(
+    settings.temperature
+  ).toFixed(1);
+
 
 document.getElementById(
   "tokenValue"
 ).textContent =
   settings.maxTokens;
 
+
 document.getElementById(
   "temperature"
 ).value =
   settings.temperature;
+
 
 document.getElementById(
   "maxTokens"
 ).value =
   settings.maxTokens;
 
+
 updateTemperatureDisplay();
+
 
 document
   .querySelectorAll(
     ".persona"
   )
-  .forEach(button => {
+  .forEach(
+    button => {
 
-    button.classList.toggle(
-      "active",
-      button.dataset.persona ===
-      settings.persona
-    );
+      button.classList.toggle(
+        "active",
+        button.dataset.persona ===
+        settings.persona
+      );
 
-  });
+    }
+  );
 
-if(chats.length === 0){
+
+if(
+  chats.length === 0
+){
 
   createChat();
 
@@ -2908,6 +3957,7 @@ if(chats.length === 0){
   renderChat();
 
 }
+
 
 updateCounter();
 
