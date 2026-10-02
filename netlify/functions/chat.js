@@ -341,4 +341,3 @@ function jsonResponse(
       JSON.stringify(data)
   };
 }
-```
