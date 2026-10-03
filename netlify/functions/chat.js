@@ -2,28 +2,25 @@ const MODEL_URL =
   "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
 
 exports.handler = async function (event) {
+
   if (event.httpMethod !== "POST") {
     return response(405, {
       error: "Method not allowed."
     });
   }
 
-  const token =
-    process.env.REPLICATE_API_TOKEN;
+  const token = process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
     return response(500, {
-      error:
-        "REPLICATE_API_TOKEN is missing from Netlify."
+      error: "REPLICATE_API_TOKEN is missing from Netlify."
     });
   }
 
   let body;
 
   try {
-    body = JSON.parse(
-      event.body || "{}"
-    );
+    body = JSON.parse(event.body || "{}");
   } catch (error) {
     return response(400, {
       error: "Invalid JSON."
@@ -51,8 +48,7 @@ exports.handler = async function (event) {
       ? body.systemPrompt.trim()
       : "";
 
-  let temperature =
-    Number(body.temperature);
+  let temperature = Number(body.temperature);
 
   if (
     !Number.isFinite(temperature) ||
@@ -62,8 +58,7 @@ exports.handler = async function (event) {
     temperature = 1;
   }
 
-  let maxTokens =
-    Number(body.maxTokens);
+  let maxTokens = Number(body.maxTokens);
 
   if (
     !Number.isFinite(maxTokens) ||
@@ -79,7 +74,10 @@ exports.handler = async function (event) {
   const messages = [];
 
   for (const item of history) {
-    if (!item) continue;
+
+    if (!item) {
+      continue;
+    }
 
     if (
       item.role !== "user" &&
@@ -89,12 +87,9 @@ exports.handler = async function (event) {
     }
 
     if (
-      typeof item.content !== "string"
+      typeof item.content !== "string" ||
+      !item.content.trim()
     ) {
-      continue;
-    }
-
-    if (!item.content.trim()) {
       continue;
     }
 
@@ -104,88 +99,50 @@ exports.handler = async function (event) {
     });
   }
 
-  const imageData =
-    typeof body.imageData === "string"
-      ? body.imageData
-      : "";
-
-  let userContent = message;
-
-  if (imageData) {
-
-    if (imageData.length > 9000000) {
-      return response(413, {
-        error:
-          "Image is too large. Please choose a smaller image."
-      });
-    }
-
-    userContent = [
-      {
-        type: "text",
-        text: message
-      },
-      {
-        type: "image_url",
-        image_url: {
-          url: imageData
-        }
-      }
-    ];
-  }
-
   messages.push({
     role: "user",
-    content: userContent
+    content: message
   });
 
   const input = {
     messages,
     temperature,
-    max_completion_tokens:
-      maxTokens
+    max_completion_tokens: maxTokens
   };
 
   if (systemPrompt) {
-    input.system_prompt =
-      systemPrompt;
+    input.system_prompt = systemPrompt;
   }
 
   try {
 
-    const apiResponse =
-      await fetch(
-        MODEL_URL,
-        {
-          method: "POST",
+    const apiResponse = await fetch(
+      MODEL_URL,
+      {
+        method: "POST",
 
-          headers: {
-            "Authorization":
-              "Bearer " + token,
+        headers: {
+          "Authorization": "Bearer " + token,
+          "Content-Type": "application/json",
+          "Prefer": "wait"
+        },
 
-            "Content-Type":
-              "application/json",
+        body: JSON.stringify({
+          input
+        })
+      }
+    );
 
-            "Prefer":
-              "wait"
-          },
-
-          body: JSON.stringify({
-            input
-          })
-        }
-      );
-
-    const text =
-      await apiResponse.text();
+    const text = await apiResponse.text();
 
     let data;
 
     try {
-      data =
-        text
-          ? JSON.parse(text)
-          : {};
+
+      data = text
+        ? JSON.parse(text)
+        : {};
+
     } catch (error) {
 
       console.error(
@@ -208,24 +165,21 @@ exports.handler = async function (event) {
         data &&
         typeof data.detail === "string"
       ) {
-        errorMessage =
-          data.detail;
+        errorMessage = data.detail;
       }
 
       else if (
         data &&
         typeof data.error === "string"
       ) {
-        errorMessage =
-          data.error;
+        errorMessage = data.error;
       }
 
       else if (
         data &&
         typeof data.title === "string"
       ) {
-        errorMessage =
-          data.title;
+        errorMessage = data.title;
       }
 
       return response(
@@ -236,8 +190,7 @@ exports.handler = async function (event) {
       );
     }
 
-    const reply =
-      getReply(data);
+    const reply = getReply(data);
 
     if (!reply) {
 
@@ -265,8 +218,7 @@ exports.handler = async function (event) {
 
     return response(500, {
       error:
-        error &&
-        error.message
+        error && error.message
           ? error.message
           : "Could not connect to Replicate."
     });
@@ -280,12 +232,10 @@ function getReply(data) {
     return "";
   }
 
-  if (
-    Array.isArray(data.output)
-  ) {
+  if (Array.isArray(data.output)) {
 
     return data.output
-      .map(function (item) {
+      .map(function(item) {
 
         if (
           typeof item === "string"
@@ -324,15 +274,13 @@ function getReply(data) {
   ) {
 
     if (
-      typeof data.output.text ===
-      "string"
+      typeof data.output.text === "string"
     ) {
       return data.output.text;
     }
 
     if (
-      typeof data.output.content ===
-      "string"
+      typeof data.output.content === "string"
     ) {
       return data.output.content;
     }
@@ -348,23 +296,16 @@ function getReply(data) {
 }
 
 
-function response(
-  statusCode,
-  data
-) {
+function response(statusCode, data) {
 
   return {
     statusCode,
 
     headers: {
-      "Content-Type":
-        "application/json",
-
-      "Cache-Control":
-        "no-store"
+      "Content-Type": "application/json",
+      "Cache-Control": "no-store"
     },
 
-    body:
-      JSON.stringify(data)
+    body: JSON.stringify(data)
   };
 }
