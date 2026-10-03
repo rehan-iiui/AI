@@ -2,34 +2,34 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<meta name="theme-color" content="#635bff">
-<title>Pakistani Intelligent</title></title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Simple Chat AI</title>
 
 <style>
 :root{
   --bg:#f5f7fb;
-  --panel:#ffffff;
-  --panel2:#f8f9fd;
-  --text:#171923;
-  --muted:#737887;
-  --border:#e5e7ef;
-  --accent:#635bff;
-  --accent2:#8b5cf6;
-  --bubble:#f1f3f8;
-  --success:#16a34a;
-  --danger:#ef4444;
-  --warning:#f59e0b;
-  --shadow:0 10px 35px rgba(20,25,50,.08);
-  --radius:18px;
-  --density:1;
+  --bg2:#eef2f8;
+  --panel:rgba(255,255,255,.78);
+  --panel-solid:#fff;
+  --text:#172033;
+  --muted:#7b8498;
+  --border:rgba(20,30,55,.09);
+  --accent:#655cff;
+  --accent2:#8d5cff;
+  --accent3:#39b8ff;
+  --user:#eceeff;
+  --shadow:0 20px 60px rgba(35,42,75,.10);
+  --shadow2:0 8px 30px rgba(35,42,75,.08);
+  --success:#20b26b;
+  --danger:#ef5350;
 }
 
 *{
   box-sizing:border-box;
 }
 
-html,body{
+html,
+body{
   width:100%;
   height:100%;
   margin:0;
@@ -37,19 +37,42 @@ html,body{
 }
 
 body{
-  min-height:100vh;
-  background:
-    radial-gradient(circle at 20% 0%,rgba(99,91,255,.08),transparent 30%),
-    radial-gradient(circle at 90% 20%,rgba(139,92,246,.08),transparent 30%),
-    var(--bg);
+  font-family:
+    Inter,
+    ui-sans-serif,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
   color:var(--text);
-  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+  background:
+    radial-gradient(circle at 15% 10%,rgba(101,92,255,.13),transparent 28%),
+    radial-gradient(circle at 85% 5%,rgba(57,184,255,.10),transparent 25%),
+    radial-gradient(circle at 50% 100%,rgba(141,92,255,.09),transparent 35%),
+    var(--bg);
+}
+
+body.dark{
+  --bg:#080c16;
+  --bg2:#0d1321;
+  --panel:rgba(16,23,38,.78);
+  --panel-solid:#101726;
+  --text:#f5f7fb;
+  --muted:#8e99ad;
+  --border:rgba(255,255,255,.08);
+  --user:#1b2438;
+  --shadow:0 25px 70px rgba(0,0,0,.35);
+  --shadow2:0 10px 35px rgba(0,0,0,.25);
+  background:
+    radial-gradient(circle at 15% 10%,rgba(101,92,255,.18),transparent 28%),
+    radial-gradient(circle at 85% 5%,rgba(57,184,255,.10),transparent 25%),
+    #080c16;
 }
 
 button,
 input,
-textarea,
-select{
+textarea{
   font:inherit;
 }
 
@@ -58,472 +81,626 @@ button{
 }
 
 .app{
+  width:100%;
   height:100vh;
-  min-height:0;
   display:grid;
-  grid-template-columns:280px minmax(0,1fr) 320px;
+  grid-template-columns:270px minmax(0,1fr) 300px;
   overflow:hidden;
 }
+
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar{
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
-  background:rgba(255,255,255,.82);
-  backdrop-filter:blur(20px);
+  padding:17px;
   border-right:1px solid var(--border);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:14px;
-  z-index:100;
+  background:var(--panel);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
 }
 
 .brand{
   display:flex;
   align-items:center;
   gap:11px;
-  padding:8px 5px 14px;
+  padding:5px 4px 19px;
 }
 
 .logo{
   width:42px;
   height:42px;
-  border-radius:14px;
   display:grid;
   place-items:center;
-  color:white;
+  border-radius:14px;
+  color:#fff;
   font-size:20px;
   font-weight:900;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 8px 20px rgba(99,91,255,.28);
+  background:
+    linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:
+    0 10px 25px rgba(101,92,255,.32);
 }
 
-.brand-title{
-  font-weight:850;
-  font-size:16px;
+.brand-text strong{
+  display:block;
+  font-size:15px;
+  letter-spacing:-.2px;
 }
 
-.brand-sub{
-  color:var(--muted);
-  font-size:11px;
+.brand-text span{
+  display:block;
   margin-top:2px;
+  color:var(--muted);
+  font-size:10px;
 }
 
 .new-chat{
   width:100%;
   border:0;
-  border-radius:14px;
-  padding:13px 14px;
-  color:white;
+  border-radius:13px;
+  padding:12px;
+  color:#fff;
   font-weight:750;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 8px 22px rgba(99,91,255,.25);
+  background:
+    linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 8px 22px rgba(101,92,255,.22);
   transition:.2s;
 }
 
 .new-chat:hover{
   transform:translateY(-1px);
+  box-shadow:0 12px 28px rgba(101,92,255,.3);
 }
 
 .search-box{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  background:var(--panel2);
-  border:1px solid var(--border);
-  border-radius:12px;
-  padding:9px 11px;
+  margin:12px 0 18px;
+  position:relative;
+}
+
+.search-box span{
+  position:absolute;
+  left:12px;
+  top:9px;
+  color:var(--muted);
 }
 
 .search-box input{
   width:100%;
-  border:0;
-  outline:0;
-  background:transparent;
+  border:1px solid var(--border);
+  outline:none;
+  border-radius:11px;
+  padding:9px 10px 9px 34px;
+  background:var(--bg2);
   color:var(--text);
-}
-
-.side-section{
-  display:flex;
-  flex-direction:column;
-  gap:5px;
 }
 
 .side-label{
+  margin:18px 5px 7px;
   color:var(--muted);
-  font-size:11px;
+  font-size:10px;
   font-weight:800;
   text-transform:uppercase;
-  letter-spacing:.08em;
-  padding:7px 9px;
+  letter-spacing:.1em;
 }
 
 .side-btn{
-  border:0;
-  background:transparent;
-  color:var(--text);
-  padding:10px 11px;
-  border-radius:11px;
+  width:100%;
   display:flex;
   align-items:center;
   gap:10px;
+  border:0;
+  border-radius:11px;
+  padding:10px;
+  margin:3px 0;
+  color:var(--text);
+  background:transparent;
   text-align:left;
-  transition:.15s;
+  transition:.16s;
 }
 
 .side-btn:hover{
-  background:var(--bubble);
+  background:var(--bg2);
 }
 
-.side-btn.active{
-  background:rgba(99,91,255,.11);
-  color:var(--accent);
-  font-weight:700;
-}
-
-.side-icon{
-  width:20px;
-  text-align:center;
-}
-
-.history{
-  min-height:0;
-  overflow-y:auto;
-  flex:1;
-}
-
-.history-item{
-  display:flex;
-  align-items:center;
-  gap:7px;
-  padding:9px;
-  border-radius:11px;
-  cursor:pointer;
-  transition:.15s;
-}
-
-.history-item:hover{
-  background:var(--bubble);
-}
-
-.history-item.active{
-  background:rgba(99,91,255,.1);
-}
-
-.history-title{
-  overflow:hidden;
-  text-overflow:ellipsis;
-  white-space:nowrap;
-  flex:1;
+.side-btn .ico{
+  width:25px;
+  height:25px;
+  display:grid;
+  place-items:center;
+  border-radius:8px;
+  background:var(--bg2);
   font-size:13px;
 }
 
-.history-more{
-  opacity:0;
-  border:0;
-  background:transparent;
-  color:var(--muted);
+.history{
+  min-height:40px;
 }
 
-.history-item:hover .history-more{
-  opacity:1;
+.history-item{
+  width:100%;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  padding:9px 10px;
+  border:0;
+  border-radius:10px;
+  color:var(--text);
+  background:transparent;
+  text-align:left;
+  margin:2px 0;
 }
+
+.history-item:hover{
+  background:var(--bg2);
+}
+
+.history-item.active{
+  background:rgba(101,92,255,.11);
+  color:var(--accent);
+}
+
+.history-item span{
+  overflow:hidden;
+  white-space:nowrap;
+  text-overflow:ellipsis;
+  font-size:12px;
+}
+
+/* =========================
+   MAIN
+========================= */
 
 .main{
   min-width:0;
   min-height:0;
   height:100vh;
-  overflow:hidden;
   display:flex;
   flex-direction:column;
+  position:relative;
+  overflow:hidden;
 }
 
 .topbar{
-  height:66px;
+  height:68px;
   flex-shrink:0;
-  border-bottom:1px solid var(--border);
-  background:rgba(255,255,255,.7);
-  backdrop-filter:blur(20px);
   display:flex;
   align-items:center;
-  justify-content:space-between;
-  padding:0 18px;
   gap:10px;
-  z-index:30;
+  padding:0 20px;
+  border-bottom:1px solid var(--border);
+  background:rgba(255,255,255,.30);
+  backdrop-filter:blur(18px);
+  -webkit-backdrop-filter:blur(18px);
+  z-index:20;
 }
 
-.top-left,
-.top-right{
-  display:flex;
-  align-items:center;
-  gap:8px;
+.dark .topbar{
+  background:rgba(8,12,22,.35);
 }
 
 .mobile-menu{
   display:none;
 }
 
-.chat-title-wrap{
+.title-area{
+  flex:1;
   min-width:0;
 }
 
-.chat-title{
-  font-weight:850;
-  white-space:nowrap;
+.title-area strong{
+  display:block;
   overflow:hidden;
   text-overflow:ellipsis;
-}
-
-.status{
-  font-size:11px;
-  color:var(--success);
-  display:flex;
-  align-items:center;
-  gap:5px;
-  margin-top:2px;
-}
-
-.status-dot{
-  width:7px;
-  height:7px;
-  border-radius:50%;
-  background:var(--success);
-}
-
-.icon-btn{
-  width:36px;
-  height:36px;
-  border:1px solid transparent;
-  background:transparent;
-  border-radius:11px;
-  color:var(--muted);
-  display:grid;
-  place-items:center;
-  transition:.15s;
-}
-
-.icon-btn:hover{
-  background:var(--bubble);
-  color:var(--text);
-}
-
-.icon-btn.active{
-  color:var(--accent);
-  background:rgba(99,91,255,.1);
-}
-
-.persona-badge{
-  padding:7px 10px;
-  border-radius:999px;
-  background:rgba(99,91,255,.1);
-  color:var(--accent);
-  font-size:11px;
-  font-weight:800;
-}
-
-.messages{
-  min-height:0;
-  flex:1 1 auto;
-  overflow-y:auto !important;
-  overflow-x:hidden;
-  overscroll-behavior:contain;
-  -webkit-overflow-scrolling:touch;
-  padding:28px clamp(14px,4vw,65px);
-}
-
-.welcome{
-  max-width:800px;
-  margin:40px auto 30px;
-  text-align:center;
-}
-
-.welcome-logo{
-  width:72px;
-  height:72px;
-  margin:auto;
-  display:grid;
-  place-items:center;
-  border-radius:24px;
-  color:white;
-  font-size:34px;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:0 18px 45px rgba(99,91,255,.25);
-}
-
-.welcome h1{
-  font-size:34px;
-  margin:20px 0 8px;
-}
-
-.welcome p{
-  color:var(--muted);
-  margin:0 auto 25px;
-  max-width:600px;
-  line-height:1.6;
-}
-
-.quick-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  max-width:700px;
-  margin:auto;
-}
-
-.quick{
-  text-align:left;
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.75);
-  padding:14px;
-  border-radius:14px;
-  color:var(--text);
-  transition:.18s;
-}
-
-.quick:hover{
-  border-color:rgba(99,91,255,.4);
-  transform:translateY(-2px);
-  box-shadow:var(--shadow);
-}
-
-.quick b{
-  display:block;
-  margin-bottom:4px;
-}
-
-.quick span{
-  color:var(--muted);
-  font-size:12px;
-}
-
-.message{
-  max-width:900px;
-  margin:0 auto 22px;
-  display:flex;
-  gap:11px;
-  animation:messageIn .22s ease;
-}
-
-@keyframes messageIn{
-  from{opacity:0;transform:translateY(6px)}
-  to{opacity:1;transform:none}
-}
-
-.message.user{
-  justify-content:flex-end;
-}
-
-.avatar{
-  width:34px;
-  height:34px;
-  flex-shrink:0;
-  border-radius:11px;
-  display:grid;
-  place-items:center;
+  white-space:nowrap;
   font-size:14px;
-  font-weight:800;
 }
 
-.ai-avatar{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:#fff;
-}
-
-.user-avatar{
-  background:var(--bubble);
-  color:var(--text);
-}
-
-.message-body{
-  min-width:0;
-  max-width:min(80%,760px);
-}
-
-.message.user .message-body{
-  order:-1;
-}
-
-.bubble{
-  padding:13px 15px;
-  border-radius:17px;
-  line-height:1.65;
-  white-space:pre-wrap;
-  word-break:break-word;
-}
-
-.message.assistant .bubble{
-  background:var(--panel);
-  border:1px solid var(--border);
-  box-shadow:0 5px 18px rgba(20,25,50,.04);
-}
-
-.message.user .bubble{
-  color:white;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-}
-
-.message-meta{
-  display:flex;
-  align-items:center;
-  gap:6px;
-  margin-top:6px;
+.title-area small{
   color:var(--muted);
   font-size:10px;
 }
 
+.status{
+  display:flex;
+  align-items:center;
+  gap:5px;
+  border:1px solid var(--border);
+  padding:6px 9px;
+  border-radius:999px;
+  color:var(--success);
+  font-size:10px;
+  font-weight:700;
+  background:var(--panel);
+}
+
+.status-dot{
+  width:6px;
+  height:6px;
+  border-radius:50%;
+  background:var(--success);
+  box-shadow:0 0 10px var(--success);
+}
+
+.top-btn{
+  width:36px;
+  height:36px;
+  border:1px solid transparent;
+  border-radius:10px;
+  background:transparent;
+  color:var(--text);
+}
+
+.top-btn:hover{
+  background:var(--panel);
+  border-color:var(--border);
+}
+
+/* =========================
+   EMPTY NEW CHAT
+========================= */
+
+.chat-area{
+  min-height:0;
+  flex:1;
+  position:relative;
+  overflow:hidden;
+}
+
+.messages{
+  width:100%;
+  height:100%;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
+  padding:25px 25px 30px;
+  scroll-behavior:smooth;
+}
+
+.empty-state{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding:30px;
+  transition:
+    opacity .35s ease,
+    transform .35s ease;
+}
+
+.empty-state.hidden{
+  opacity:0;
+  pointer-events:none;
+  transform:translateY(-15px);
+}
+
+.empty-inner{
+  width:min(720px,100%);
+  text-align:center;
+  margin-top:-5vh;
+}
+
+.hero-logo{
+  width:68px;
+  height:68px;
+  margin:0 auto 20px;
+  display:grid;
+  place-items:center;
+  border-radius:23px;
+  color:#fff;
+  font-size:31px;
+  background:
+    linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:
+    0 18px 45px rgba(101,92,255,.28);
+  animation:floatLogo 4s ease-in-out infinite;
+}
+
+@keyframes floatLogo{
+  0%,100%{transform:translateY(0)}
+  50%{transform:translateY(-5px)}
+}
+
+.empty-inner h1{
+  margin:0;
+  font-size:clamp(28px,4vw,42px);
+  letter-spacing:-1.5px;
+}
+
+.empty-inner p{
+  margin:10px auto 24px;
+  max-width:520px;
+  color:var(--muted);
+  line-height:1.6;
+  font-size:14px;
+}
+
+.center-composer{
+  width:min(680px,100%);
+  margin:0 auto;
+}
+
+/* =========================
+   COMPOSER
+========================= */
+
+.composer{
+  border:1px solid var(--border);
+  border-radius:22px;
+  background:var(--panel);
+  backdrop-filter:blur(25px);
+  -webkit-backdrop-filter:blur(25px);
+  box-shadow:var(--shadow);
+  overflow:hidden;
+  transition:.35s ease;
+}
+
+.center-composer .composer{
+  box-shadow:
+    0 20px 60px rgba(35,42,75,.13),
+    0 0 0 1px rgba(101,92,255,.03);
+}
+
+.composer.focused{
+  border-color:rgba(101,92,255,.38);
+  box-shadow:
+    0 20px 70px rgba(35,42,75,.15),
+    0 0 0 4px rgba(101,92,255,.06);
+}
+
+.composer-tools{
+  display:flex;
+  align-items:center;
+  gap:3px;
+  padding:7px 9px;
+  border-bottom:1px solid var(--border);
+  overflow-x:auto;
+  scrollbar-width:none;
+}
+
+.composer-tools::-webkit-scrollbar{
+  display:none;
+}
+
+.tool{
+  flex-shrink:0;
+  border:0;
+  border-radius:8px;
+  padding:6px 8px;
+  color:var(--muted);
+  background:transparent;
+  font-size:11px;
+}
+
+.tool:hover{
+  color:var(--text);
+  background:var(--bg2);
+}
+
+.input-row{
+  display:flex;
+  align-items:flex-end;
+  gap:8px;
+  padding:11px;
+}
+
+.input-icon{
+  width:39px;
+  height:39px;
+  flex-shrink:0;
+  border:0;
+  border-radius:11px;
+  color:var(--muted);
+  background:var(--bg2);
+}
+
+.input-icon:hover{
+  color:var(--accent);
+}
+
+#input{
+  flex:1;
+  min-height:39px;
+  max-height:160px;
+  padding:9px 3px;
+  border:0;
+  outline:none;
+  resize:none;
+  background:transparent;
+  color:var(--text);
+  line-height:1.45;
+  overflow-y:auto;
+}
+
+#input::placeholder{
+  color:#929bad;
+}
+
+.send-btn{
+  width:42px;
+  height:42px;
+  flex-shrink:0;
+  border:0;
+  border-radius:13px;
+  color:#fff;
+  background:
+    linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 7px 20px rgba(101,92,255,.25);
+  transition:.18s;
+}
+
+.send-btn:hover{
+  transform:scale(1.04);
+}
+
+.send-btn.stop{
+  background:var(--danger);
+}
+
+.composer-footer{
+  display:flex;
+  justify-content:space-between;
+  padding:0 13px 8px;
+  color:var(--muted);
+  font-size:9px;
+}
+
+/* =========================
+   QUICK CHIPS
+========================= */
+
+.quick-chips{
+  display:flex;
+  justify-content:center;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:15px;
+}
+
+.quick-chip{
+  border:1px solid var(--border);
+  border-radius:999px;
+  padding:8px 11px;
+  color:var(--text);
+  background:var(--panel);
+  box-shadow:var(--shadow2);
+  font-size:11px;
+  transition:.16s;
+}
+
+.quick-chip:hover{
+  border-color:rgba(101,92,255,.3);
+  color:var(--accent);
+  transform:translateY(-1px);
+}
+
+/* =========================
+   BOTTOM COMPOSER
+========================= */
+
+.bottom-composer{
+  flex-shrink:0;
+  padding:8px 25px 17px;
+  background:
+    linear-gradient(to top,var(--bg) 60%,transparent);
+  transition:
+    transform .35s ease,
+    opacity .35s ease;
+}
+
+.bottom-composer.hidden{
+  display:none;
+}
+
+/* =========================
+   MESSAGES
+========================= */
+
+.message-list{
+  width:min(900px,100%);
+  margin:0 auto;
+}
+
+.message{
+  display:flex;
+  gap:11px;
+  margin:20px 0;
+  animation:messageIn .22s ease;
+}
+
+@keyframes messageIn{
+  from{
+    opacity:0;
+    transform:translateY(7px);
+  }
+  to{
+    opacity:1;
+    transform:none;
+  }
+}
+
+.message-avatar{
+  width:34px;
+  height:34px;
+  min-width:34px;
+  display:grid;
+  place-items:center;
+  border-radius:11px;
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.message.user .message-avatar{
+  background:#252c3c;
+}
+
+.message-content{
+  min-width:0;
+  flex:1;
+}
+
+.message-meta{
+  display:flex;
+  gap:8px;
+  align-items:center;
+  margin:0 0 5px;
+  color:var(--muted);
+  font-size:10px;
+}
+
+.message-text{
+  line-height:1.7;
+  font-size:14px;
+  white-space:pre-wrap;
+  overflow-wrap:anywhere;
+}
+
+.message.user .message-text{
+  display:inline-block;
+  padding:10px 13px;
+  border-radius:14px;
+  background:var(--user);
+}
+
 .message-actions{
   display:flex;
-  gap:4px;
-  margin-top:5px;
-  opacity:.5;
+  gap:3px;
+  margin-top:7px;
+  opacity:0;
+  transition:.15s;
 }
 
 .message:hover .message-actions{
   opacity:1;
 }
 
-.mini-btn{
+.message-actions button{
   border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:4px 6px;
   border-radius:7px;
-  font-size:11px;
+  padding:4px 7px;
+  color:var(--muted);
+  background:transparent;
+  font-size:10px;
 }
 
-.mini-btn:hover{
-  background:var(--bubble);
+.message-actions button:hover{
+  background:var(--bg2);
   color:var(--text);
-}
-
-.markdown strong{
-  font-weight:800;
-}
-
-.markdown code{
-  background:#111827;
-  color:#e5e7eb;
-  padding:2px 6px;
-  border-radius:6px;
-  font-family:ui-monospace,monospace;
-}
-
-.markdown pre{
-  background:#10131a;
-  color:#e5e7eb;
-  padding:15px;
-  border-radius:12px;
-  overflow:auto;
 }
 
 .typing{
   display:flex;
-  gap:5px;
-  padding:4px;
+  gap:4px;
+  padding:8px 0;
 }
 
-.typing span{
+.typing i{
   width:7px;
   height:7px;
   border-radius:50%;
@@ -531,228 +708,117 @@ button{
   animation:typing 1s infinite;
 }
 
-.typing span:nth-child(2){animation-delay:.15s}
-.typing span:nth-child(3){animation-delay:.3s}
+.typing i:nth-child(2){animation-delay:.15s}
+.typing i:nth-child(3){animation-delay:.3s}
 
 @keyframes typing{
-  0%,60%,100%{opacity:.25;transform:translateY(0)}
-  30%{opacity:1;transform:translateY(-4px)}
+  50%{
+    transform:translateY(-4px);
+    opacity:.35;
+  }
 }
 
-.attachment-preview{
-  max-width:260px;
-  max-height:220px;
-  border-radius:12px;
-  margin-bottom:8px;
-  object-fit:contain;
-}
-
-.composer-wrap{
-  flex-shrink:0;
-  padding:10px clamp(12px,4vw,55px) 14px;
-  background:linear-gradient(to top,rgba(245,247,251,1),rgba(245,247,251,.85));
-  z-index:20;
-}
-
-.composer{
-  max-width:950px;
-  margin:auto;
-  border:1px solid var(--border);
-  border-radius:20px;
-  background:var(--panel);
-  box-shadow:0 12px 35px rgba(20,25,50,.1);
-  overflow:hidden;
-  position:relative;
-  z-index:20;
-  pointer-events:auto !important;
-}
-
-.toolbar{
-  display:flex;
-  align-items:center;
-  gap:3px;
-  padding:7px 9px;
-  border-bottom:1px solid var(--border);
-  overflow-x:auto;
-}
-
-.toolbar button{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:6px 8px;
-  border-radius:8px;
-  white-space:nowrap;
-  font-size:11px;
-  font-weight:700;
-  position:relative;
-  z-index:31;
-  pointer-events:auto !important;
-}
-
-.toolbar button:hover{
-  background:var(--bubble);
-  color:var(--text);
-}
-
-.input-row{
-  display:flex;
-  align-items:flex-end;
-  gap:8px;
-  padding:9px;
-}
-
-#input{
-  position:relative;
-  z-index:30;
-  pointer-events:auto !important;
-  user-select:text !important;
-  -webkit-user-select:text !important;
-  cursor:text;
-  resize:none;
-  overflow-y:auto;
-  min-height:52px;
-  max-height:180px;
-  flex:1;
-  border:0;
-  outline:0;
-  background:transparent;
-  color:var(--text);
-  line-height:1.5;
-  padding:10px;
-}
-
-.send-btn{
-  position:relative;
-  z-index:31;
-  pointer-events:auto !important;
-  width:44px;
-  height:44px;
-  border:0;
-  border-radius:14px;
-  color:white;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  font-size:18px;
-  flex-shrink:0;
-}
-
-.composer-bottom{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:0 12px 8px;
-  color:var(--muted);
-  font-size:10px;
-}
+/* =========================
+   RIGHT PANEL
+========================= */
 
 .right-panel{
   min-height:0;
   overflow-y:auto;
-  overflow-x:hidden;
-  background:rgba(255,255,255,.78);
-  backdrop-filter:blur(20px);
+  padding:18px;
   border-left:1px solid var(--border);
-  padding:14px;
+  background:var(--panel);
+  backdrop-filter:blur(25px);
 }
 
 .panel-title{
-  font-size:13px;
-  font-weight:850;
-  margin:4px 4px 12px;
+  margin:3px 2px 15px;
+  font-size:16px;
+  font-weight:800;
 }
 
-.control-card{
-  border:1px solid var(--border);
-  background:rgba(255,255,255,.72);
-  border-radius:15px;
-  padding:12px;
+.ai-card{
+  padding:14px;
   margin-bottom:10px;
-}
-
-.control-card h3{
-  margin:0 0 9px;
-  font-size:12px;
-}
-
-.control-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:7px;
-}
-
-.control-btn{
   border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:10px;
-  padding:8px 6px;
-  font-size:11px;
-  font-weight:650;
+  border-radius:16px;
+  background:rgba(255,255,255,.18);
 }
 
-.control-btn:hover,
-.control-btn.active{
-  border-color:rgba(99,91,255,.35);
-  background:rgba(99,91,255,.1);
+.dark .ai-card{
+  background:rgba(255,255,255,.02);
+}
+
+.ai-card-title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  margin-bottom:5px;
+  font-size:12px;
+  font-weight:800;
+}
+
+.ai-card p{
+  margin:0 0 10px;
+  color:var(--muted);
+  line-height:1.5;
+  font-size:10px;
+}
+
+.panel-action{
+  width:100%;
+  border:1px solid var(--border);
+  border-radius:9px;
+  padding:8px;
+  margin-top:5px;
+  color:var(--text);
+  background:var(--bg2);
+  text-align:left;
+  font-size:10px;
+}
+
+.panel-action:hover{
+  border-color:rgba(101,92,255,.35);
   color:var(--accent);
 }
 
 .stat-grid{
   display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:7px;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
 }
 
 .stat{
-  background:var(--panel2);
-  border-radius:10px;
   padding:9px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--bg2);
 }
 
 .stat b{
   display:block;
-  font-size:17px;
+  font-size:16px;
 }
 
 .stat span{
   color:var(--muted);
-  font-size:10px;
+  font-size:9px;
 }
 
-.progress{
-  height:7px;
-  border-radius:20px;
-  overflow:hidden;
-  background:var(--bubble);
-}
-
-.progress div{
-  height:100%;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-  width:0;
-  transition:.3s;
-}
-
-.select{
-  width:100%;
-  border:1px solid var(--border);
-  border-radius:9px;
-  padding:8px;
-  background:var(--panel2);
-  color:var(--text);
-  outline:0;
-}
+/* =========================
+   MODAL
+========================= */
 
 .modal-bg{
   position:fixed;
   inset:0;
-  background:rgba(10,12,20,.48);
-  backdrop-filter:blur(5px);
-  z-index:9999;
+  z-index:1000;
   display:none;
   align-items:center;
   justify-content:center;
-  padding:18px;
+  padding:20px;
+  background:rgba(5,8,18,.55);
+  backdrop-filter:blur(8px);
 }
 
 .modal-bg.show{
@@ -760,168 +826,122 @@ button{
 }
 
 .modal{
-  width:min(700px,100%);
+  width:min(650px,100%);
   max-height:85vh;
-  overflow:auto;
-  background:var(--panel);
+  overflow-y:auto;
+  padding:22px;
   border:1px solid var(--border);
   border-radius:20px;
-  box-shadow:0 25px 80px rgba(0,0,0,.25);
-  padding:20px;
+  background:var(--panel-solid);
+  color:var(--text);
+  box-shadow:0 35px 100px rgba(0,0,0,.25);
 }
 
-.modal h2{
-  margin-top:0;
+.modal-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:18px;
+}
+
+.modal-header h2{
+  margin:0;
+  font-size:18px;
+}
+
+.close{
+  width:34px;
+  height:34px;
+  border:0;
+  border-radius:9px;
+  background:var(--bg2);
+  color:var(--text);
 }
 
 .modal-input,
-.modal textarea,
-.modal select{
+.modal-textarea,
+.modal-select{
   width:100%;
-  padding:11px;
+  margin:5px 0 12px;
+  padding:10px 11px;
   border:1px solid var(--border);
-  border-radius:11px;
-  background:var(--panel2);
+  border-radius:10px;
+  outline:none;
+  background:var(--bg2);
   color:var(--text);
-  outline:0;
-  margin:7px 0;
 }
 
-.modal-actions{
-  display:flex;
-  justify-content:flex-end;
-  gap:8px;
-  margin-top:15px;
+.modal-textarea{
+  min-height:110px;
+  resize:vertical;
+}
+
+.modal-label{
+  display:block;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:11px;
+  font-weight:700;
 }
 
 .primary{
   border:0;
-  color:white;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
   border-radius:10px;
-  padding:9px 14px;
-  font-weight:750;
+  padding:10px 14px;
+  color:#fff;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  font-weight:700;
 }
 
 .secondary{
   border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
   border-radius:10px;
-  padding:9px 14px;
+  padding:10px 14px;
+  color:var(--text);
+  background:var(--bg2);
 }
+
+.modal-actions{
+  display:flex;
+  gap:8px;
+  justify-content:flex-end;
+  margin-top:14px;
+}
+
+/* =========================
+   TOAST
+========================= */
 
 .toast{
   position:fixed;
-  right:20px;
-  bottom:20px;
-  z-index:10000;
-  background:#171923;
-  color:#fff;
-  padding:11px 15px;
-  border-radius:12px;
+  left:50%;
+  bottom:25px;
+  z-index:2000;
+  transform:translate(-50%,20px);
   opacity:0;
-  transform:translateY(10px);
   pointer-events:none;
-  transition:.2s;
+  padding:10px 15px;
+  border:1px solid var(--border);
+  border-radius:12px;
+  color:var(--text);
+  background:var(--panel-solid);
+  box-shadow:var(--shadow);
   font-size:12px;
+  transition:.25s;
 }
 
 .toast.show{
+  transform:translate(-50%,0);
   opacity:1;
-  transform:none;
 }
 
-.command-palette{
-  display:grid;
-  gap:7px;
-}
-
-.command-item{
-  border:1px solid var(--border);
-  border-radius:10px;
-  padding:10px;
-  background:var(--panel2);
-  cursor:pointer;
-}
-
-.command-item:hover{
-  background:rgba(99,91,255,.08);
-}
-
-.feature-list{
-  display:grid;
-  gap:7px;
-}
-
-.feature-row{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:8px;
-  border:1px solid var(--border);
-  padding:9px;
-  border-radius:10px;
-}
-
-.feature-row small{
-  color:var(--muted);
-}
-
-.dark{
-  --bg:#0d0f14;
-  --panel:#151820;
-  --panel2:#1b1f29;
-  --text:#f2f4f8;
-  --muted:#9ba2b0;
-  --border:#292e39;
-  --bubble:#222733;
-  --shadow:0 15px 40px rgba(0,0,0,.25);
-}
-
-.dark .sidebar,
-.dark .right-panel,
-.dark .topbar{
-  background:rgba(21,24,32,.84);
-}
-
-.dark .composer-wrap{
-  background:linear-gradient(to top,#0d0f14,rgba(13,15,20,.8));
-}
-
-.dark .quick{
-  background:rgba(21,24,32,.8);
-}
-
-.reading-mode .message-body{
-  font-family:Georgia,serif;
-}
-
-.reading-mode .bubble{
-  line-height:1.9;
-  font-size:16px;
-}
-
-.focus-mode .sidebar,
-.focus-mode .right-panel{
-  display:none;
-}
-
-.focus-mode .app{
-  grid-template-columns:minmax(0,1fr);
-}
-
-.compact .message{
-  margin-bottom:10px;
-}
-
-.compact .bubble{
-  padding:9px 12px;
-}
+/* =========================
+   RESPONSIVE
+========================= */
 
 @media(max-width:1100px){
   .app{
-    grid-template-columns:250px minmax(0,1fr);
+    grid-template-columns:245px minmax(0,1fr);
   }
 
   .right-panel{
@@ -929,61 +949,90 @@ button{
   }
 }
 
-@media(max-width:800px){
+@media(max-width:720px){
   .app{
-    grid-template-columns:1fr;
+    display:block;
   }
 
   .sidebar{
     position:fixed;
-    left:-290px;
+    z-index:800;
     top:0;
     bottom:0;
+    left:0;
     width:280px;
+    transform:translateX(-105%);
     transition:.25s;
-    box-shadow:15px 0 50px rgba(0,0,0,.18);
+    box-shadow:25px 0 70px rgba(0,0,0,.2);
   }
 
   .sidebar.open{
-    left:0;
+    transform:translateX(0);
   }
 
   .mobile-menu{
-    display:grid;
+    display:block;
   }
 
-  .quick-grid{
-    grid-template-columns:1fr;
+  .status{
+    display:none;
   }
 
-  .welcome h1{
-    font-size:27px;
+  .topbar{
+    padding:0 10px;
   }
 
   .messages{
-    padding:18px 10px;
+    padding:16px 12px;
   }
 
-  .message-body{
-    max-width:88%;
+  .bottom-composer{
+    padding:7px 8px 10px;
   }
 
-  .composer-wrap{
-    padding:8px;
+  .empty-state{
+    padding:15px;
   }
 
-  .toolbar{
-    max-width:100%;
+  .empty-inner{
+    margin-top:-4vh;
   }
 
-  #input{
-    min-height:46px;
-    max-height:150px;
+  .empty-inner h1{
+    font-size:29px;
+  }
+
+  .composer{
+    border-radius:18px;
+  }
+
+  .tool{
+    font-size:10px;
+  }
+
+  .message-actions{
+    opacity:1;
   }
 }
 
-body.modal-open{
-  overflow:hidden;
+/* custom scrollbar */
+
+::-webkit-scrollbar{
+  width:7px;
+  height:7px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(120,130,150,.25);
+  border-radius:20px;
+}
+
+::-webkit-scrollbar-thumb:hover{
+  background:rgba(120,130,150,.4);
 }
 </style>
 </head>
@@ -992,1108 +1041,865 @@ body.modal-open{
 
 <div class="app">
 
-<!-- SIDEBAR -->
-<aside class="sidebar" id="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar" id="sidebar">
 
-  <div class="brand">
-    <div class="logo">✦</div>
-    <div>
-      <div class="brand-title">Simple Chat AI</div>
-      <div class="brand-sub">Your intelligent workspace</div>
+    <div class="brand">
+      <div class="logo">✦</div>
+      <div class="brand-text">
+        <strong>Simple Chat AI</strong>
+        <span>Think • Create • Learn</span>
+      </div>
     </div>
-  </div>
 
-  <button class="new-chat" id="newChatBtn">＋ New Chat</button>
+    <button class="new-chat" id="newChat">
+      ＋ New Chat
+    </button>
 
-  <div class="search-box">
-    🔎
-    <input id="chatSearch" placeholder="Search chats...">
-  </div>
+    <div class="search-box">
+      <span>⌕</span>
+      <input id="chatSearch" placeholder="Search conversations...">
+    </div>
 
-  <div class="side-section">
-    <button class="side-btn" id="calendarBtn">
-      <span class="side-icon">📅</span> Chat Calendar
+    <div class="side-label">Workspace</div>
+
+    <button class="side-btn" id="memoryBtn">
+      <span class="ico">🧠</span>
+      Smart Memory
     </button>
 
     <button class="side-btn" id="workspaceBtn">
-      <span class="side-icon">🗂️</span> Workspaces
+      <span class="ico">📚</span>
+      Knowledge Workspace
     </button>
 
-    <button class="side-btn" id="homeBtn">
-      <span class="side-icon">⌂</span> Home
+    <button class="side-btn" id="goalBtn">
+      <span class="ico">🎯</span>
+      Goals & Projects
     </button>
 
-    <button class="side-btn" id="savedBtn">
-      <span class="side-icon">🔖</span> Saved Answers
-    </button>
-
-    <button class="side-btn" id="tasksBtn">
-      <span class="side-icon">☑</span> Smart Tasks
-    </button>
-
-    <button class="side-btn" id="memoryBtn">
-      <span class="side-icon">🧠</span> Memory Center
+    <button class="side-btn" id="studyBtn">
+      <span class="ico">🔬</span>
+      Deep Study
     </button>
 
     <button class="side-btn" id="homeworkBtn">
-      <span class="side-icon">🎓</span> Homework Helper
+      <span class="ico">🎓</span>
+      Homework Helper
     </button>
 
     <button class="side-btn" id="commandBtn">
-      <span class="side-icon">⚡</span> Command Center
+      <span class="ico">⚡</span>
+      Command Center
     </button>
-  </div>
 
-  <div class="side-label">Recent chats</div>
+    <div class="side-label">Recent chats</div>
 
-  <div class="history" id="history"></div>
+    <div class="history" id="history"></div>
 
-  <div class="side-section">
-    <button class="side-btn" id="settingsBtn">
-      <span class="side-icon">⚙️</span> Settings
-    </button>
+    <div class="side-label">App</div>
 
     <button class="side-btn" id="themeBtn">
-      <span class="side-icon">◐</span> Theme
+      <span class="ico">◐</span>
+      Toggle Theme
     </button>
 
-    <button class="side-btn" id="focusBtn">
-      <span class="side-icon">◉</span> Focus Mode
+    <button class="side-btn" id="settingsBtn">
+      <span class="ico">⚙</span>
+      Settings
     </button>
-  </div>
 
-</aside>
+  </aside>
 
-<!-- MAIN -->
-<main class="main">
 
-  <header class="topbar">
+  <!-- MAIN -->
+  <main class="main">
 
-    <div class="top-left">
+    <header class="topbar">
 
-      <button class="icon-btn mobile-menu" id="mobileMenuBtn">☰</button>
+      <button class="top-btn mobile-menu" id="mobileMenu">☰</button>
 
-      <div class="chat-title-wrap">
-        <div class="chat-title" id="chatTitle">New Conversation</div>
-        <div class="status">
-          <span class="status-dot"></span>
-          AI ready
-        </div>
+      <div class="title-area">
+        <strong id="chatTitle">New Chat</strong>
+        <small id="chatSubtitle">AI Assistant</small>
       </div>
 
-      <span class="persona-badge" id="personaBadge">Assistant</span>
+      <div class="status">
+        <span class="status-dot"></span>
+        Ready
+      </div>
+
+      <button class="top-btn" id="favoriteBtn" title="Favorite">
+        ☆
+      </button>
+
+      <button class="top-btn" id="renameBtn" title="Rename">
+        ✎
+      </button>
+
+      <button class="top-btn" id="fullscreenBtn" title="Fullscreen">
+        ⛶
+      </button>
+
+    </header>
+
+
+    <section class="chat-area">
+
+      <!-- EMPTY / NEW CHAT -->
+      <div class="empty-state" id="emptyState">
+
+        <div class="empty-inner">
+
+          <div class="hero-logo">✦</div>
+
+          <h1>How can I help you today?</h1>
+
+          <p>
+            Ask anything, learn something new, solve homework,
+            work on a project, or simply have a conversation.
+          </p>
+
+          <div class="center-composer">
+
+            <div class="composer" id="centerComposer">
+
+              <div class="composer-tools">
+
+                <button class="tool" data-action="rewrite">
+                  Rewrite
+                </button>
+
+                <button class="tool" data-action="summarize">
+                  Summarize
+                </button>
+
+                <button class="tool" data-action="translate">
+                  Translate
+                </button>
+
+                <button class="tool" data-action="grammar">
+                  Grammar
+                </button>
+
+                <button class="tool" data-action="explain">
+                  Explain
+                </button>
+
+                <button class="tool" data-action="quiz">
+                  Quiz
+                </button>
+
+                <button class="tool" data-action="flashcards">
+                  Flashcards
+                </button>
+
+              </div>
+
+              <div class="input-row">
+
+                <button class="input-icon" id="centerFileBtn">
+                  ＋
+                </button>
+
+                <textarea
+                  id="centerInput"
+                  rows="1"
+                  placeholder="Message Simple Chat AI..."
+                ></textarea>
+
+                <button class="input-icon" id="centerVoiceBtn">
+                  🎙
+                </button>
+
+                <button class="send-btn" id="centerSend">
+                  ➤
+                </button>
+
+              </div>
+
+              <div class="composer-footer">
+                <span>Simple Chat AI</span>
+                <span>Press Enter to send</span>
+              </div>
+
+            </div>
+
+          </div>
+
+          <div class="quick-chips">
+
+            <button class="quick-chip"
+              data-prompt="Explain a difficult topic to me in very easy words.">
+              ✨ Explain something
+            </button>
+
+            <button class="quick-chip"
+              data-prompt="Help me with my homework step by step. Teach me instead of only giving the answer.">
+              🎓 Homework
+            </button>
+
+            <button class="quick-chip"
+              data-prompt="Teach me a topic with an explanation, examples, key points and a short quiz.">
+              📚 Study
+            </button>
+
+            <button class="quick-chip"
+              data-prompt="Help me create a detailed plan for my project.">
+              🎯 Plan a project
+            </button>
+
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <!-- MESSAGES -->
+      <div class="messages" id="messages">
+        <div class="message-list" id="messageList"></div>
+      </div>
+
+    </section>
+
+
+    <!-- BOTTOM COMPOSER -->
+    <div class="bottom-composer hidden" id="bottomComposer">
+
+      <div class="composer" id="bottomComposerBox">
+
+        <div class="composer-tools">
+
+          <button class="tool" data-action="rewrite">
+            Rewrite
+          </button>
+
+          <button class="tool" data-action="summarize">
+            Summarize
+          </button>
+
+          <button class="tool" data-action="translate">
+            Translate
+          </button>
+
+          <button class="tool" data-action="grammar">
+            Grammar
+          </button>
+
+          <button class="tool" data-action="explain">
+            Explain
+          </button>
+
+          <button class="tool" data-action="quiz">
+            Quiz
+          </button>
+
+          <button class="tool" data-action="flashcards">
+            Flashcards
+          </button>
+
+        </div>
+
+        <div class="input-row">
+
+          <button class="input-icon" id="fileBtn">
+            ＋
+          </button>
+
+          <textarea
+            id="input"
+            rows="1"
+            placeholder="Message Simple Chat AI..."
+          ></textarea>
+
+          <button class="input-icon" id="voiceBtn">
+            🎙
+          </button>
+
+          <button class="send-btn" id="sendBtn">
+            ➤
+          </button>
+
+        </div>
+
+        <div class="composer-footer">
+
+          <span id="counter">
+            0 characters
+          </span>
+
+          <span>
+            Enter to send • Shift+Enter for new line
+          </span>
+
+        </div>
+
+      </div>
 
     </div>
 
-    <div class="top-right">
+  </main>
 
-      <button class="icon-btn" id="favoriteBtn" title="Favorite">☆</button>
-      <button class="icon-btn" id="renameBtn" title="Rename">✎</button>
-      <button class="icon-btn" id="archiveBtn" title="Archive">▱</button>
-      <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
-      <button class="icon-btn" id="moreBtn" title="More">•••</button>
 
+  <!-- RIGHT CONTROL CENTER -->
+  <aside class="right-panel">
+
+    <div class="panel-title">
+      AI Control Center
     </div>
 
-  </header>
+    <div class="ai-card">
 
-  <section class="messages" id="messages">
-
-    <div class="welcome" id="welcome">
-
-      <div class="welcome-logo">✦</div>
-
-      <h1>What can I help you with?</h1>
+      <div class="ai-card-title">
+        🧠 Smart Memory
+      </div>
 
       <p>
-        Chat, learn, write, plan, organize projects and get homework help
-        from one professional AI workspace.
+        Save useful information for future conversations.
       </p>
 
-      <div class="quick-grid">
-
-        <button class="quick" data-prompt="Explain this topic to me in a very easy way.">
-          <b>🧠 Explain something</b>
-          <span>Learn a difficult concept easily</span>
-        </button>
-
-        <button class="quick" data-prompt="Help me solve my homework step by step.">
-          <b>🎓 Homework Helper</b>
-          <span>Understand instead of just copying</span>
-        </button>
-
-        <button class="quick" data-prompt="Help me make a plan for my project.">
-          <b>🎯 Plan a project</b>
-          <span>Create steps and track progress</span>
-        </button>
-
-        <button class="quick" data-prompt="Rewrite this text professionally.">
-          <b>✍️ Improve writing</b>
-          <span>Rewrite, correct and improve text</span>
-        </button>
-
-        <button class="quick" data-prompt="Create a quiz for me about this topic.">
-          <b>📝 Make a quiz</b>
-          <span>Practice what you learned</span>
-        </button>
-
-        <button class="quick" data-prompt="Help me organize my tasks for today.">
-          <b>☑️ Organize my tasks</b>
-          <span>Turn ideas into actionable tasks</span>
-        </button>
-
-      </div>
-
-    </div>
-
-  </section>
-
-  <div class="composer-wrap">
-
-    <div class="composer">
-
-      <div class="toolbar">
-
-        <button data-tool="bold"><b>B</b></button>
-        <button data-tool="italic"><i>I</i></button>
-        <button data-tool="heading">H</button>
-        <button data-tool="list">☷</button>
-        <button data-tool="code">{"}"}</button>
-        <button data-tool="quote">❝</button>
-
-        <button data-action="summarize">Summarize</button>
-        <button data-action="translate">Translate</button>
-        <button data-action="grammar">Grammar</button>
-        <button data-action="rewrite">Rewrite</button>
-        <button data-action="tone">Tone</button>
-        <button data-action="calculator">Calculator</button>
-        <button data-action="explain">Explain</button>
-
-        <button id="fileBtn">📎 File</button>
-        <button id="imageBtn">🖼️ Image</button>
-        <button id="voiceBtn">🎙️ Voice</button>
-
-        <input type="file" id="fileInput"
-               accept=".txt,.md,.csv,.json,.pdf"
-               hidden>
-
-        <input type="file" id="imageInput"
-               accept="image/*"
-               hidden>
-
-      </div>
-
-      <div class="input-row">
-
-        <textarea
-          id="input"
-          rows="1"
-          placeholder="Message Simple Chat AI..."
-        ></textarea>
-
-        <button class="send-btn" id="sendBtn">➤</button>
-
-      </div>
-
-      <div class="composer-bottom">
-        <span id="attachmentText">AI can make mistakes. Check important information.</span>
-        <span id="counter">0 / 6000</span>
-      </div>
-
-    </div>
-
-  </div>
-
-</main>
-
-<!-- RIGHT PANEL -->
-<aside class="right-panel">
-
-  <div class="panel-title">AI Control Center</div>
-
-  <div class="control-card">
-    <h3>🤖 AI Persona</h3>
-
-    <div class="control-grid">
-      <button class="control-btn active" data-persona="Assistant">Assistant</button>
-      <button class="control-btn" data-persona="Teacher">Teacher</button>
-      <button class="control-btn" data-persona="Coder">Coder</button>
-      <button class="control-btn" data-persona="Writer">Writer</button>
-      <button class="control-btn" data-persona="Creative">Creative</button>
-      <button class="control-btn" data-persona="Business">Business</button>
-    </div>
-
-    <button class="secondary" id="customPersonaBtn" style="width:100%;margin-top:8px">
-      ＋ Custom Persona
-    </button>
-  </div>
-
-  <div class="control-card">
-
-    <h3>🎓 Homework Helper</h3>
-
-    <div class="control-grid">
-      <button class="control-btn" data-homework="Math">➗ Math</button>
-      <button class="control-btn" data-homework="Science">🔬 Science</button>
-      <button class="control-btn" data-homework="English">📖 English</button>
-      <button class="control-btn" data-homework="History">🏛️ History</button>
-      <button class="control-btn" data-homework="Geography">🌍 Geography</button>
-      <button class="control-btn" data-homework="Computer">💻 Computer</button>
-      <button class="control-btn" data-homework="Urdu">اُردو</button>
-    </div>
-
-    <button class="primary" id="teachMeBtn" style="width:100%;margin-top:8px">
-      🧑‍🏫 Teach Me Mode
-    </button>
-
-  </div>
-
-  <div class="control-card">
-
-    <h3>⚡ Response Mode</h3>
-
-    <div class="control-grid">
-      <button class="control-btn active" data-mode="Balanced">Balanced</button>
-      <button class="control-btn" data-mode="Concise">Concise</button>
-      <button class="control-btn" data-mode="Detailed">Detailed</button>
-      <button class="control-btn" data-mode="Creative">Creative</button>
-    </div>
-
-  </div>
-
-  <div class="control-card">
-
-    <h3>📊 Conversation Stats</h3>
-
-    <div class="stat-grid">
-
-      <div class="stat">
-        <b id="statMessages">0</b>
-        <span>Messages</span>
-      </div>
-
-      <div class="stat">
-        <b id="statWords">0</b>
-        <span>Words</span>
-      </div>
-
-      <div class="stat">
-        <b id="statAI">0</b>
-        <span>AI Replies</span>
-      </div>
-
-      <div class="stat">
-        <b id="statPinned">0</b>
-        <span>Pinned</span>
-      </div>
-
-    </div>
-
-  </div>
-
-  <div class="control-card">
-
-    <h3>🎯 Conversation Goal</h3>
-
-    <input class="modal-input" id="goalInput"
-           placeholder="What should this chat achieve?">
-
-    <div class="progress">
-      <div id="goalProgress"></div>
-    </div>
-
-    <small id="goalPercent"
-           style="display:block;color:var(--muted);margin-top:6px">
-      0% complete
-    </small>
-
-    <button class="secondary" id="goalBtn"
-            style="width:100%;margin-top:8px">
-      Set Goal
-    </button>
-
-  </div>
-
-  <div class="control-card">
-
-    <h3>🧠 Memory</h3>
-
-    <button class="control-btn" id="rememberBtn" style="width:100%">
-      ＋ Remember Something
-    </button>
-
-    <button class="control-btn" id="viewMemoryBtn"
-            style="width:100%;margin-top:6px">
-      View Memory
-    </button>
-
-  </div>
-
-  <div class="control-card">
-
-    <h3>⚙️ Quick AI Controls</h3>
-
-    <div class="control-grid">
-
-      <button class="control-btn" id="continueBtn">
-        Continue
-      </button>
-
-      <button class="control-btn" id="followBtn">
-        Follow-ups
-      </button>
-
-      <button class="control-btn" id="summaryBtn">
-        AI Summary
-      </button>
-
-      <button class="control-btn" id="snapshotBtn">
-        Snapshot
-      </button>
-
-      <button class="control-btn" id="saveAnswerBtn">
-        Save Answer
-      </button>
-
-      <button class="control-btn" id="tasksResponseBtn">
-        Make Tasks
+      <button class="panel-action" id="viewMemory">
+        Open Memory Center
       </button>
 
     </div>
 
-  </div>
 
-</aside>
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        📚 Knowledge Workspace
+      </div>
+
+      <p>
+        Organize AI work into focused environments.
+      </p>
+
+      <button class="panel-action" id="openWorkspace">
+        Open Workspace
+      </button>
+
+    </div>
+
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        🎯 Goal & Project Manager
+      </div>
+
+      <p>
+        Set a goal and track your progress.
+      </p>
+
+      <button class="panel-action" id="openGoals">
+        Manage Goals
+      </button>
+
+    </div>
+
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        🔬 Deep Study
+      </div>
+
+      <p>
+        Turn a topic into a structured learning session.
+      </p>
+
+      <button class="panel-action" id="openStudy">
+        Start Study
+      </button>
+
+    </div>
+
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        🎓 Homework Helper
+      </div>
+
+      <p>
+        Understand questions and learn the solution step by step.
+      </p>
+
+      <button class="panel-action" id="openHomework">
+        Open Homework
+      </button>
+
+    </div>
+
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        ⚡ Command Center
+      </div>
+
+      <p>
+        Quickly run AI commands and tools.
+      </p>
+
+      <button class="panel-action" id="openCommands">
+        Open Command Center
+      </button>
+
+    </div>
+
+
+    <div class="ai-card">
+
+      <div class="ai-card-title">
+        📊 Conversation
+      </div>
+
+      <div class="stat-grid">
+
+        <div class="stat">
+          <b id="messageStat">0</b>
+          <span>Messages</span>
+        </div>
+
+        <div class="stat">
+          <b id="wordStat">0</b>
+          <span>Words</span>
+        </div>
+
+        <div class="stat">
+          <b id="aiStat">0</b>
+          <span>AI replies</span>
+        </div>
+
+        <div class="stat">
+          <b id="savedStat">0</b>
+          <span>Saved</span>
+        </div>
+
+      </div>
+
+    </div>
+
+  </aside>
 
 </div>
+
 
 <!-- MODAL -->
 <div class="modal-bg" id="modalBg">
-  <div class="modal" id="modal"></div>
+
+  <div class="modal" id="modal">
+
+  </div>
+
 </div>
 
+
+<!-- TOAST -->
 <div class="toast" id="toast"></div>
+
 
 <script>
 "use strict";
 
-/* =========================================================
+/* =========================================
    STORAGE
-========================================================= */
+========================================= */
 
-const CHAT_KEY = "sca_chats_v3";
-const SETTINGS_KEY = "sca_settings_v3";
-const MEMORY_KEY = "sca_memory_v3";
-const FILE_KEY = "sca_files_v3";
-const TASK_KEY = "sca_tasks_v3";
-const REMINDER_KEY = "sca_reminders_v3";
-const SAVED_KEY = "sca_saved_v3";
-const SNAPSHOT_KEY = "sca_snapshots_v3";
-const PROMPT_KEY = "sca_prompts_v3";
-const DRAFT_KEY = "sca_draft_v3";
-const WORKSPACE_KEY = "sca_workspace_v3";
+const CHAT_KEY = "simple_chat_ai_chats_v4";
+const SETTINGS_KEY = "simple_chat_ai_settings_v4";
+const MEMORY_KEY = "simple_chat_ai_memory_v4";
+const GOAL_KEY = "simple_chat_ai_goal_v4";
 
-let chats = loadJSON(CHAT_KEY, []);
-let settings = loadJSON(SETTINGS_KEY, {
+
+/* =========================================
+   STATE
+========================================= */
+
+let chats = [];
+let currentChatId = null;
+let generating = false;
+let controller = null;
+
+let settings = {
   theme:"light",
   persona:"Assistant",
   mode:"Balanced",
-  tone:"Natural",
   language:"English",
-  temperature:1,
-  maxTokens:2000,
   systemPrompt:"",
-  customInstructions:"",
-  memoryEnabled:true,
-  temporary:false,
-  density:"comfortable",
-  reading:false,
-  focus:false,
-  animations:true,
-  avatar:"AI"
-});
+  temperature:1,
+  maxTokens:2000
+};
 
-let memories = loadJSON(MEMORY_KEY, []);
-let files = loadJSON(FILE_KEY, []);
-let tasks = loadJSON(TASK_KEY, []);
-let reminders = loadJSON(REMINDER_KEY, []);
-let savedAnswers = loadJSON(SAVED_KEY, []);
-let snapshots = loadJSON(SNAPSHOT_KEY, []);
-let promptHistory = loadJSON(PROMPT_KEY, []);
-let workspace = loadJSON(WORKSPACE_KEY, {
-  current:"General",
-  workspaces:[
-    {name:"General",icon:"💬",instructions:""},
-    {name:"School",icon:"🎓",instructions:"Explain things clearly for a student."},
-    {name:"Coding",icon:"💻",instructions:"Give complete working code."},
-    {name:"Projects",icon:"🚀",instructions:"Help plan and complete projects."},
-    {name:"Writing",icon:"✍️",instructions:"Help improve writing."},
-    {name:"Business",icon:"💼",instructions:"Think in practical business terms."}
-  ]
-});
+let memory = [];
+let goal = {
+  title:"",
+  description:"",
+  progress:0
+};
 
-let currentId = null;
-let generating = false;
-let controller = null;
-let selectedImage = null;
-let selectedImageName = "";
-let selectedFile = null;
-let recognition = null;
-let listening = false;
-let homeworkSubject = "";
-let teachMode = false;
 
-/* =========================================================
-   DOM
-========================================================= */
+/* =========================================
+   ELEMENTS
+========================================= */
 
-const $ = id => document.getElementById(id);
+const body = document.body;
+const sidebar = document.getElementById("sidebar");
 
-const sidebar = $("sidebar");
-const messages = $("messages");
-const welcome = $("welcome");
-const input = $("input");
-const sendBtn = $("sendBtn");
-const historyEl = $("history");
-const modalBg = $("modalBg");
-const modal = $("modal");
-const toastEl = $("toast");
-const chatTitle = $("chatTitle");
-const personaBadge = $("personaBadge");
-const counter = $("counter");
-const attachmentText = $("attachmentText");
+const emptyState = document.getElementById("emptyState");
+const messageList = document.getElementById("messageList");
+const messages = document.getElementById("messages");
 
-/* =========================================================
-   HELPERS
-========================================================= */
+const bottomComposer = document.getElementById("bottomComposer");
+const bottomComposerBox = document.getElementById("bottomComposerBox");
 
-function loadJSON(key, fallback){
+const input = document.getElementById("input");
+const centerInput = document.getElementById("centerInput");
+
+const sendBtn = document.getElementById("sendBtn");
+const centerSend = document.getElementById("centerSend");
+
+const chatTitle = document.getElementById("chatTitle");
+const chatSubtitle = document.getElementById("chatSubtitle");
+
+const modalBg = document.getElementById("modalBg");
+const modal = document.getElementById("modal");
+const toastEl = document.getElementById("toast");
+
+
+/* =========================================
+   STORAGE HELPERS
+========================================= */
+
+function save(){
+  localStorage.setItem(CHAT_KEY,JSON.stringify(chats));
+  localStorage.setItem(SETTINGS_KEY,JSON.stringify(settings));
+  localStorage.setItem(MEMORY_KEY,JSON.stringify(memory));
+  localStorage.setItem(GOAL_KEY,JSON.stringify(goal));
+}
+
+function load(){
   try{
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  }catch(error){
-    console.error("Storage error:", error);
-    return fallback;
+    chats = JSON.parse(localStorage.getItem(CHAT_KEY) || "[]");
+  }catch{
+    chats=[];
   }
-}
 
-function saveJSON(key,value){
   try{
-    localStorage.setItem(key,JSON.stringify(value));
-  }catch(error){
-    console.error("Save error:",error);
-    toast("Could not save data.");
-  }
-}
+    settings = {
+      ...settings,
+      ...JSON.parse(localStorage.getItem(SETTINGS_KEY) || "{}")
+    };
+  }catch{}
 
-function uid(prefix="id"){
-  return prefix + "_" + Date.now().toString(36) +
-    "_" + Math.random().toString(36).slice(2,8);
-}
-
-function escapeHTML(text){
-  return String(text ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-}
-
-function formatText(text){
-  let safe = escapeHTML(text);
-
-  safe = safe.replace(
-    /```([\s\S]*?)```/g,
-    "<pre><code>$1</code></pre>"
-  );
-
-  safe = safe.replace(
-    /`([^`]+)`/g,
-    "<code>$1</code>"
-  );
-
-  safe = safe.replace(
-    /\*\*(.*?)\*\*/g,
-    "<strong>$1</strong>"
-  );
-
-  safe = safe.replace(
-    /\*(.*?)\*/g,
-    "<em>$1</em>"
-  );
-
-  safe = safe.replace(
-    /^### (.*)$/gm,
-    "<h3>$1</h3>"
-  );
-
-  safe = safe.replace(
-    /^## (.*)$/gm,
-    "<h2>$1</h2>"
-  );
-
-  safe = safe.replace(
-    /^# (.*)$/gm,
-    "<h1>$1</h1>"
-  );
-
-  return safe.replace(/\n/g,"<br>");
-}
-
-function wordCount(text){
-  const t = String(text || "").trim();
-  return t ? t.split(/\s+/).length : 0;
-}
-
-function currentChat(){
-  return chats.find(c => c.id === currentId) || null;
-}
-
-function now(){
-  return new Date().toLocaleTimeString([],{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
-}
-
-function toast(message){
-  toastEl.textContent = message;
-  toastEl.classList.add("show");
-
-  clearTimeout(toast.timer);
-
-  toast.timer = setTimeout(()=>{
-    toastEl.classList.remove("show");
-  },2200);
-}
-
-function openModal(html){
-  modal.innerHTML = html;
-  modalBg.classList.add("show");
-  document.body.classList.add("modal-open");
-}
-
-function closeModal(){
-  modalBg.classList.remove("show");
-  modal.innerHTML = "";
-  document.body.classList.remove("modal-open");
-}
-
-function saveAll(){
-  if(!settings.temporary){
-    saveJSON(CHAT_KEY,chats);
+  try{
+    memory = JSON.parse(localStorage.getItem(MEMORY_KEY) || "[]");
+  }catch{
+    memory=[];
   }
 
-  saveJSON(SETTINGS_KEY,settings);
-  saveJSON(MEMORY_KEY,memories);
-  saveJSON(FILE_KEY,files);
-  saveJSON(TASK_KEY,tasks);
-  saveJSON(REMINDER_KEY,reminders);
-  saveJSON(SAVED_KEY,savedAnswers);
-  saveJSON(SNAPSHOT_KEY,snapshots);
-  saveJSON(PROMPT_KEY,promptHistory);
-  saveJSON(WORKSPACE_KEY,workspace);
+  try{
+    goal = {
+      ...goal,
+      ...JSON.parse(localStorage.getItem(GOAL_KEY) || "{}")
+    };
+  }catch{}
+
+  if(settings.theme==="dark"){
+    body.classList.add("dark");
+  }
+
+  renderHistory();
 }
 
-/* =========================================================
+
+/* =========================================
    CHAT CREATION
-========================================================= */
+========================================= */
 
 function createChat(){
   const chat = {
-    id:uid("chat"),
-    title:"New Conversation",
+    id:Date.now().toString(),
+    title:"New Chat",
     createdAt:Date.now(),
     updatedAt:Date.now(),
     favorite:false,
-    archived:false,
-    folder:"General",
-    tags:[],
-    locked:false,
-    goal:"",
-    progress:0,
     messages:[]
   };
 
   chats.unshift(chat);
-  currentId = chat.id;
+  currentChatId=chat.id;
 
-  if(!settings.temporary){
-    saveJSON(CHAT_KEY,chats);
-  }
-
-  renderAll();
-  input.focus();
+  save();
+  renderHistory();
+  renderCurrent();
 }
 
-function ensureChat(){
-  if(!currentId || !currentChat()){
-    createChat();
-  }
+
+function currentChat(){
+  return chats.find(c=>c.id===currentChatId);
 }
 
-function renameCurrent(){
-  const chat = currentChat();
 
-  if(!chat) return;
+/* =========================================
+   RENDER HISTORY
+========================================= */
 
-  openModal(`
-    <h2>Rename Chat</h2>
-    <input class="modal-input" id="renameInput"
-      value="${escapeHTML(chat.title)}"
-      placeholder="Chat name">
+function renderHistory(filter=""){
+  const history=document.getElementById("history");
 
-    <div class="modal-actions">
-      <button class="secondary" id="cancelRename">Cancel</button>
-      <button class="primary" id="saveRename">Save</button>
-    </div>
-  `);
-
-  $("cancelRename").onclick = closeModal;
-
-  $("saveRename").onclick = ()=>{
-    const name = $("renameInput").value.trim();
-
-    if(!name) return;
-
-    chat.title = name;
-    chat.updatedAt = Date.now();
-
-    saveAll();
-    renderAll();
-    closeModal();
-    toast("Chat renamed.");
-  };
-}
-
-function autoTitle(text){
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  if(
-    chat.title === "New Conversation" &&
-    chat.messages.length <= 2
-  ){
-    const clean = text
-      .replace(/\s+/g," ")
-      .trim();
-
-    chat.title =
-      clean.length > 35
-        ? clean.slice(0,35) + "…"
-        : clean || "New Conversation";
-  }
-}
-
-/* =========================================================
-   RENDER CHAT
-========================================================= */
-
-function renderHistory(){
-  const query = $("chatSearch").value.trim().toLowerCase();
-
-  const list = chats
-    .filter(c => !c.archived)
-    .filter(c =>
-      !query ||
-      c.title.toLowerCase().includes(query)
-    )
-    .sort((a,b)=>b.updatedAt-a.updatedAt);
-
-  historyEl.innerHTML = "";
+  const list=chats.filter(chat=>
+    chat.title.toLowerCase().includes(filter.toLowerCase())
+  );
 
   if(!list.length){
-    historyEl.innerHTML =
-      `<div style="padding:12px;color:var(--muted);font-size:12px">
-        No chats found.
-      </div>`;
+    history.innerHTML=
+      '<div style="padding:10px;color:var(--muted);font-size:11px;">No conversations yet.</div>';
     return;
   }
 
-  list.forEach(chat=>{
-    const row = document.createElement("div");
-    row.className =
-      "history-item" +
-      (chat.id === currentId ? " active" : "");
+  history.innerHTML=list.slice(0,40).map(chat=>`
+    <button class="history-item ${chat.id===currentChatId?"active":""}"
+      data-id="${escapeHtml(chat.id)}">
+      <span>${chat.favorite?"★ ":""}${escapeHtml(chat.title)}</span>
+    </button>
+  `).join("");
 
-    row.innerHTML = `
-      <span>${chat.favorite ? "★" : "💬"}</span>
-      <span class="history-title">${escapeHTML(chat.title)}</span>
-      <button class="history-more">•••</button>
-    `;
-
-    row.onclick = e=>{
-      if(e.target.closest(".history-more")){
-        showChatMenu(chat);
-        return;
-      }
-
-      currentId = chat.id;
-      renderAll();
-      closeMobileSidebar();
-    };
-
-    historyEl.appendChild(row);
+  history.querySelectorAll(".history-item").forEach(btn=>{
+    btn.addEventListener("click",()=>{
+      currentChatId=btn.dataset.id;
+      renderCurrent();
+      renderHistory(document.getElementById("chatSearch").value);
+      closeSidebarMobile();
+    });
   });
 }
 
-function showChatMenu(chat){
-  openModal(`
-    <h2>Chat Options</h2>
 
-    <div class="feature-list">
+/* =========================================
+   RENDER CURRENT CHAT
+========================================= */
 
-      <div class="feature-row" id="menuRename">
-        ✎ Rename
-        <small>Change title</small>
-      </div>
+function renderCurrent(){
 
-      <div class="feature-row" id="menuDuplicate">
-        📄 Duplicate
-        <small>Create a copy</small>
-      </div>
+  const chat=currentChat();
 
-      <div class="feature-row" id="menuBranch">
-        🌿 Branch
-        <small>Create a conversation branch</small>
-      </div>
+  if(!chat){
+    createChat();
+    return;
+  }
 
-      <div class="feature-row" id="menuArchive">
-        📦 Archive
-        <small>Hide from history</small>
-      </div>
+  chatTitle.textContent=chat.title;
+  chatSubtitle.textContent=
+    `${settings.persona} • ${chat.messages.length} messages`;
 
-      <div class="feature-row" id="menuDelete">
-        🗑️ Delete
-        <small>Remove chat</small>
-      </div>
+  if(chat.messages.length===0){
 
-    </div>
-  `);
+    emptyState.classList.remove("hidden");
+    bottomComposer.classList.add("hidden");
 
-  $("menuRename").onclick = ()=>{
-    closeModal();
-    currentId = chat.id;
-    renameCurrent();
-  };
+    messageList.innerHTML="";
 
-  $("menuDuplicate").onclick = ()=>{
-    const copy = JSON.parse(JSON.stringify(chat));
-    copy.id = uid("chat");
-    copy.title = chat.title + " Copy";
-    copy.createdAt = Date.now();
-    copy.updatedAt = Date.now();
+  }else{
 
-    chats.unshift(copy);
-    saveAll();
-    closeModal();
-    currentId = copy.id;
-    renderAll();
-  };
+    emptyState.classList.add("hidden");
+    bottomComposer.classList.remove("hidden");
 
-  $("menuBranch").onclick = ()=>{
-    branchChat(chat);
-  };
+    renderMessages();
+  }
 
-  $("menuArchive").onclick = ()=>{
-    chat.archived = true;
-    saveAll();
-    closeModal();
-
-    if(currentId === chat.id){
-      currentId = null;
-    }
-
-    renderAll();
-  };
-
-  $("menuDelete").onclick = ()=>{
-    chats = chats.filter(c=>c.id !== chat.id);
-
-    if(currentId === chat.id){
-      currentId = chats[0]?.id || null;
-    }
-
-    saveAll();
-    closeModal();
-    renderAll();
-  };
+  updateStats();
+  updateGoalUI();
 }
+
+
+/* =========================================
+   RENDER MESSAGES
+========================================= */
 
 function renderMessages(){
-  messages.innerHTML = "";
 
-  const chat = currentChat();
+  const chat=currentChat();
 
-  if(!chat || !chat.messages.length){
-    messages.appendChild(welcome);
-    welcome.style.display = "";
-    return;
-  }
+  if(!chat)return;
 
-  welcome.style.display = "none";
+  messageList.innerHTML=chat.messages.map((msg,index)=>{
 
-  chat.messages.forEach(message=>{
-    renderMessage(message);
-  });
+    const isUser=msg.role==="user";
 
-  updateStats();
+    return `
+      <article class="message ${isUser?"user":"assistant"}">
 
-  requestAnimationFrame(()=>{
-    messages.scrollTop = messages.scrollHeight;
-  });
-}
+        <div class="message-avatar">
+          ${isUser?"U":"✦"}
+        </div>
 
-function renderMessage(message){
-  const wrapper = document.createElement("div");
+        <div class="message-content">
 
-  wrapper.className =
-    "message " +
-    (message.role === "user" ? "user" : "assistant");
+          <div class="message-meta">
+            <strong>${isUser?"You":"Simple Chat AI"}</strong>
+            <span>${formatTime(msg.time)}</span>
+          </div>
 
-  const avatar =
-    message.role === "user"
-      ? `<div class="avatar user-avatar">You</div>`
-      : `<div class="avatar ai-avatar">${escapeHTML(settings.avatar || "AI")}</div>`;
+          <div class="message-text">${formatText(msg.content)}</div>
 
-  let attachment = "";
+          <div class="message-actions">
 
-  if(message.imagePreview){
-    attachment =
-      `<img class="attachment-preview"
-        src="${message.imagePreview}"
-        alt="Attached image">`;
-  }
+            <button onclick="copyMessage(${index})">
+              Copy
+            </button>
 
-  const reaction = message.reaction
-    ? ` · ${escapeHTML(message.reaction)}`
-    : "";
+            ${!isUser ? `
+            <button onclick="regenerate(${index})">
+              Regenerate
+            </button>
 
-  wrapper.innerHTML = `
-    ${avatar}
+            <button onclick="readMessage(${index})">
+              Read
+            </button>
 
-    <div class="message-body">
+            <button onclick="saveAnswer(${index})">
+              Save
+            </button>
+            `:""}
 
-      <div class="bubble markdown">
-        ${attachment}
-        ${
-          message.role === "assistant"
-            ? formatText(message.content)
-            : escapeHTML(message.content).replace(/\n/g,"<br>")
-        }
-      </div>
+            <button onclick="deleteMessage(${index})">
+              Delete
+            </button>
 
-      <div class="message-meta">
-        ${escapeHTML(message.time || "")}
-        ${message.pinned ? " · 📌 Pinned" : ""}
-        ${message.bookmarked ? " · 🔖 Saved" : ""}
-        ${reaction}
-      </div>
+          </div>
 
-      <div class="message-actions">
+        </div>
 
-        <button class="mini-btn" data-action="copy">Copy</button>
-
-        ${
-          message.role === "assistant"
-            ? `<button class="mini-btn" data-action="regenerate">Regenerate</button>`
-            : ""
-        }
-
-        <button class="mini-btn" data-action="edit">Edit</button>
-
-        <button class="mini-btn" data-action="pin">
-          ${message.pinned ? "Unpin" : "Pin"}
-        </button>
-
-        <button class="mini-btn" data-action="save">
-          ${message.bookmarked ? "Saved" : "Save"}
-        </button>
-
-        <button class="mini-btn" data-action="react">React</button>
-
-        <button class="mini-btn" data-action="actions">AI Actions</button>
-
-      </div>
-
-    </div>
-  `;
-
-  wrapper.querySelectorAll(".mini-btn").forEach(btn=>{
-    btn.onclick = ()=>{
-      handleMessageAction(
-        btn.dataset.action,
-        message.id
-      );
-    };
-  });
-
-  messages.appendChild(wrapper);
-}
-
-function renderAll(){
-  const chat = currentChat();
-
-  if(chat){
-    chatTitle.textContent = chat.title;
-    $("favoriteBtn").classList.toggle("active",chat.favorite);
-    $("goalInput").value = chat.goal || "";
-    $("goalProgress").style.width =
-      Math.max(0,Math.min(100,chat.progress || 0)) + "%";
-
-    $("goalPercent").textContent =
-      `${chat.progress || 0}% complete`;
-  }else{
-    chatTitle.textContent = "New Conversation";
-    $("favoriteBtn").classList.remove("active");
-    $("goalInput").value = "";
-    $("goalProgress").style.width = "0%";
-    $("goalPercent").textContent = "0% complete";
-  }
-
-  personaBadge.textContent = settings.persona;
-
-  renderHistory();
-  renderMessages();
-  updateStats();
-  applySettings();
-}
-
-/* =========================================================
-   SEND / AI
-========================================================= */
-
-async function sendMessage(customText=null, extraPrompt=""){
-  const text =
-    customText !== null
-      ? String(customText).trim()
-      : input.value.trim();
-
-  if(!text && !selectedImage){
-    toast("Write a message first.");
-    return;
-  }
+      </article>
+    `;
+  }).join("");
 
   if(generating){
-    toast("AI is already responding.");
-    return;
+    messageList.insertAdjacentHTML("beforeend",`
+      <article class="message assistant" id="typingMessage">
+
+        <div class="message-avatar">✦</div>
+
+        <div class="message-content">
+
+          <div class="message-meta">
+            <strong>Simple Chat AI</strong>
+            <span>Thinking...</span>
+          </div>
+
+          <div class="typing">
+            <i></i><i></i><i></i>
+          </div>
+
+        </div>
+
+      </article>
+    `);
   }
 
-  ensureChat();
-
-  const chat = currentChat();
-
-  if(chat.locked){
-    toast("This chat is locked.");
-    return;
-  }
-
-  const imageData = selectedImage;
-
-  const userMessage = {
-    id:uid("msg"),
-    role:"user",
-    content:text || "Please analyze this image.",
-    time:now(),
-    pinned:false,
-    bookmarked:false,
-    reaction:"",
-    imageName:selectedImageName || "",
-    imagePreview:imageData || ""
-  };
-
-  chat.messages.push(userMessage);
-  chat.updatedAt = Date.now();
-
-  autoTitle(text);
-
-  input.value = "";
-  resizeInput();
-  clearAttachment();
-
-  renderAll();
-
-  const history = chat.messages
-    .slice(-20)
-    .map(m=>({
-      role:m.role,
-      content:m.content
-    }));
-
-  await generate(
-    text || "Please analyze this image.",
-    history.slice(0,-1),
-    extraPrompt,
-    imageData
-  );
+  requestAnimationFrame(()=>{
+    messages.scrollTop=messages.scrollHeight;
+  });
 }
 
-async function generate(
-  userText,
-  history=[],
-  extraPrompt="",
-  imageData=null
-){
-  generating = true;
-  sendBtn.textContent = "■";
 
-  const typing = document.createElement("div");
+/* =========================================
+   SEND
+========================================= */
 
-  typing.className = "message assistant";
-  typing.id = "typingMessage";
+async function sendText(text){
 
-  typing.innerHTML = `
-    <div class="avatar ai-avatar">${escapeHTML(settings.avatar || "AI")}</div>
-    <div class="message-body">
-      <div class="bubble">
-        <div class="typing">
-          <span></span><span></span><span></span>
-        </div>
-      </div>
-    </div>
-  `;
+  text=String(text || "").trim();
 
-  messages.appendChild(typing);
+  if(!text || generating)return;
 
-  messages.scrollTop = messages.scrollHeight;
+  let chat=currentChat();
 
-  controller = new AbortController();
+  if(!chat){
+    createChat();
+    chat=currentChat();
+  }
 
-  const systemPrompt = buildSystemPrompt(extraPrompt);
+  if(chat.messages.length===0){
+    chat.title=createTitle(text);
+  }
+
+  chat.messages.push({
+    role:"user",
+    content:text,
+    time:Date.now()
+  });
+
+  chat.updatedAt=Date.now();
+
+  save();
+  renderCurrent();
+
+  await generateAI(text);
+}
+
+
+/* =========================================
+   AI
+========================================= */
+
+async function generateAI(text){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
+  generating=true;
+
+  sendBtn.classList.add("stop");
+  sendBtn.textContent="■";
+
+  renderMessages();
+
+  controller=new AbortController();
+
+  const history=chat.messages.slice(-20).map(msg=>({
+    role:msg.role,
+    content:msg.content
+  }));
+
+  let systemPrompt=buildSystemPrompt();
 
   try{
 
-    const response = await fetch(
+    const response=await fetch(
       "/.netlify/functions/chat",
       {
         method:"POST",
         headers:{
           "Content-Type":"application/json"
         },
-        signal:controller.signal,
         body:JSON.stringify({
-          message:userText,
-          history,
-          systemPrompt,
-          temperature:Number(settings.temperature) || 1,
-          maxTokens:Number(settings.maxTokens) || 2000,
-          imageData:imageData || ""
-        })
+          message:text,
+          history:history,
+          systemPrompt:systemPrompt,
+          temperature:settings.temperature,
+          maxTokens:settings.maxTokens
+        }),
+        signal:controller.signal
       }
     );
 
-    const data = await response.json();
+    const data=await response.json().catch(()=>({}));
 
     if(!response.ok){
       throw new Error(
-        data.error || "The AI request failed."
+        data.error ||
+        `Request failed (${response.status})`
       );
     }
 
-    const reply =
-      typeof data.reply === "string"
+    const reply=
+      typeof data.reply==="string"
         ? data.reply.trim()
         : "";
 
@@ -2101,819 +1907,689 @@ async function generate(
       throw new Error("The AI returned an empty response.");
     }
 
-    $("typingMessage")?.remove();
-
-    const chat = currentChat();
-
-    if(!chat) return;
-
-    const assistantMessage = {
-      id:uid("msg"),
+    chat.messages.push({
       role:"assistant",
       content:reply,
-      time:now(),
-      pinned:false,
-      bookmarked:false,
-      reaction:"",
-      versions:[]
-    };
+      time:Date.now()
+    });
 
-    chat.messages.push(assistantMessage);
-    chat.updatedAt = Date.now();
+    chat.updatedAt=Date.now();
 
-    if(!settings.temporary){
-      saveAll();
-    }
-
-    renderAll();
-
-    addPromptHistory(userText);
-
-    if(teachMode){
-      teachMode = false;
-    }
+    save();
 
   }catch(error){
 
-    $("typingMessage")?.remove();
+    if(error.name!=="AbortError"){
 
-    if(error.name === "AbortError"){
-      toast("Generation stopped.");
-    }else{
-      console.error(error);
+      chat.messages.push({
+        role:"assistant",
+        content:
+          "I couldn't generate a response.\n\n" +
+          "Error: " +
+          error.message,
+        time:Date.now()
+      });
 
-      const chat = currentChat();
-
-      if(chat){
-        chat.messages.push({
-          id:uid("msg"),
-          role:"assistant",
-          content:"⚠️ " + getFriendlyError(error),
-          time:now(),
-          pinned:false,
-          bookmarked:false,
-          reaction:""
-        });
-      }
-
-      renderAll();
+      save();
+      showToast(error.message);
     }
 
   }finally{
-    generating = false;
-    controller = null;
-    sendBtn.textContent = "➤";
+
+    generating=false;
+    controller=null;
+
+    sendBtn.classList.remove("stop");
+    sendBtn.textContent="➤";
+
+    renderCurrent();
+    renderHistory();
   }
 }
 
-function buildSystemPrompt(extraPrompt=""){
-  const personaInstructions = {
-    Assistant:
-      "Be a helpful, accurate and natural AI assistant.",
-    Teacher:
-      "Teach step by step. Use simple explanations, examples and practice.",
-    Coder:
-      "Be a careful programming assistant. Give complete working code when requested and check for syntax mistakes.",
-    Writer:
-      "Help write, rewrite, organize and improve text naturally.",
-    Creative:
-      "Be imaginative while remaining useful and clear.",
-    Business:
-      "Help with practical business planning, organization and analysis."
-  };
 
-  let prompt =
-    personaInstructions[settings.persona] ||
-    personaInstructions.Assistant;
+/* =========================================
+   SYSTEM PROMPT
+========================================= */
 
-  prompt += `\nResponse mode: ${settings.mode}.`;
-  prompt += `\nLanguage: ${settings.language}.`;
-  prompt += `\nTone: ${settings.tone}.`;
+function buildSystemPrompt(){
 
-  if(settings.customInstructions){
-    prompt +=
-      "\nCustom instructions:\n" +
-      settings.customInstructions;
-  }
+  let prompt=
+`You are Simple Chat AI, a helpful professional AI assistant.
 
-  const currentWorkspace =
-    workspace.workspaces.find(
-      w=>w.name === workspace.current
-    );
+Be clear, accurate and friendly.
 
-  if(currentWorkspace?.instructions){
-    prompt +=
-      "\nWorkspace instructions:\n" +
-      currentWorkspace.instructions;
-  }
+Explain difficult subjects in simple language when appropriate.
 
-  if(settings.memoryEnabled && memories.length){
-    prompt +=
-      "\nUseful remembered information:\n" +
-      memories
-        .slice(-20)
-        .map(m=>"- " + m.text)
-        .join("\n");
-  }
+For homework questions, teach the student step by step.
+Do not simply replace the student's learning with an unexplained answer.
 
-  if(homeworkSubject){
-    prompt +=
-      `\nHomework subject: ${homeworkSubject}.`;
-  }
+For coding questions, provide complete working code when the user asks for full code.
 
-  if(teachMode){
-    prompt +=
-      "\nTeach Me Mode is active. Do not immediately give the final answer. Guide the learner step by step and ask short questions when appropriate.";
-  }
+Use headings, lists and examples when they improve readability.
 
-  if(extraPrompt){
-    prompt += "\nSpecial task:\n" + extraPrompt;
-  }
+Current persona: ${settings.persona}
+Response style: ${settings.mode}
+Language: ${settings.language}
+`;
 
-  if(settings.systemPrompt){
-    prompt += "\nAdditional system instructions:\n" +
+  if(settings.systemPrompt.trim()){
+    prompt+=
+      "\nAdditional user instructions:\n"+
       settings.systemPrompt;
+  }
+
+  if(memory.length){
+    prompt+=
+      "\n\nUseful remembered information:\n"+
+      memory.map(x=>"- "+x).join("\n");
+  }
+
+  if(goal.title){
+    prompt+=
+      `\n\nCurrent project goal:
+${goal.title}
+${goal.description}
+Progress: ${goal.progress}%`;
   }
 
   return prompt;
 }
 
-function getFriendlyError(error){
-  const message =
-    error?.message ||
-    String(error);
 
-  const lower = message.toLowerCase();
+/* =========================================
+   INPUT HANDLING
+========================================= */
 
-  if(
-    lower.includes("401") ||
-    lower.includes("unauthorized") ||
-    lower.includes("invalid token") ||
-    lower.includes("authentication")
-  ){
-    return "The API token appears to be invalid. Please check the REPLICATE_API_TOKEN in Netlify.";
-  }
-
-  if(lower.includes("429")){
-    return "The AI service is temporarily rate-limited. Please try again shortly.";
-  }
-
-  if(lower.includes("413")){
-    return "The request or image is too large. Try a smaller image.";
-  }
-
-  if(lower.includes("failed to fetch")){
-    return "Could not connect to the AI service. Check your internet connection and Netlify deployment.";
-  }
-
-  return message;
+function autoResize(el){
+  el.style.height="auto";
+  el.style.height=
+    Math.min(el.scrollHeight,160)+"px";
 }
 
-/* =========================================================
-   MESSAGE ACTIONS
-========================================================= */
+[input,centerInput].forEach(el=>{
 
-function findMessage(messageId){
-  const chat = currentChat();
+  el.addEventListener("input",()=>{
+    autoResize(el);
 
-  return chat?.messages.find(
-    m=>m.id === messageId
-  ) || null;
-}
+    if(el===input){
+      updateCounter();
+    }
+  });
 
-async function handleMessageAction(action,messageId){
-  const message = findMessage(messageId);
+  el.addEventListener("focus",()=>{
+    const box=
+      el===input
+        ? bottomComposerBox
+        : document.getElementById("centerComposer");
 
-  if(!message) return;
+    box.classList.add("focused");
+  });
 
-  if(action === "copy"){
-    await navigator.clipboard.writeText(message.content);
-    toast("Copied.");
+  el.addEventListener("blur",()=>{
+    const box=
+      el===input
+        ? bottomComposerBox
+        : document.getElementById("centerComposer");
+
+    box.classList.remove("focused");
+  });
+
+  el.addEventListener("keydown",event=>{
+
+    if(event.key==="Enter" && !event.shiftKey){
+
+      event.preventDefault();
+
+      if(el.value.trim()){
+        const text=el.value;
+        el.value="";
+        autoResize(el);
+
+        sendText(text);
+      }
+    }
+  });
+});
+
+
+centerSend.addEventListener("click",()=>{
+  const text=centerInput.value.trim();
+
+  if(!text)return;
+
+  centerInput.value="";
+  autoResize(centerInput);
+
+  sendText(text);
+});
+
+
+sendBtn.addEventListener("click",()=>{
+
+  if(generating){
+    if(controller){
+      controller.abort();
+    }
     return;
   }
 
-  if(action === "pin"){
-    message.pinned = !message.pinned;
-    saveAll();
-    renderAll();
-    return;
-  }
+  const text=input.value.trim();
 
-  if(action === "save"){
-    message.bookmarked = !message.bookmarked;
+  if(!text)return;
 
-    if(message.bookmarked){
-      savedAnswers.unshift({
-        id:uid("saved"),
-        chatId:currentId,
-        title:currentChat()?.title || "Chat",
-        content:message.content,
-        createdAt:Date.now()
-      });
+  input.value="";
+  autoResize(input);
+  updateCounter();
+
+  sendText(text);
+});
+
+
+/* =========================================
+   QUICK ACTIONS
+========================================= */
+
+document.querySelectorAll("[data-prompt]").forEach(btn=>{
+
+  btn.addEventListener("click",()=>{
+    const prompt=btn.dataset.prompt;
+
+    centerInput.value=prompt;
+    autoResize(centerInput);
+    centerInput.focus();
+  });
+
+});
+
+
+document.querySelectorAll("[data-action]").forEach(btn=>{
+
+  btn.addEventListener("click",()=>{
+
+    const action=btn.dataset.action;
+
+    const target=
+      currentChat()?.messages.at(-1)?.content ||
+      input.value ||
+      centerInput.value;
+
+    if(!target){
+      showToast("Write or send something first.");
+      return;
     }
 
-    saveAll();
-    renderAll();
-    toast(message.bookmarked ? "Answer saved." : "Removed from saved.");
-    return;
-  }
+    const prompts={
+      rewrite:
+        "Rewrite the following text to make it clearer and more natural:\n\n",
 
-  if(action === "react"){
-    openReactionMenu(message);
-    return;
-  }
+      summarize:
+        "Summarize the following text and keep the most important points:\n\n",
 
-  if(action === "edit"){
-    editMessage(message);
-    return;
-  }
+      translate:
+        "Translate the following text into English:\n\n",
 
-  if(action === "regenerate"){
-    await regenerateMessage(message);
-    return;
-  }
+      grammar:
+        "Check the grammar of the following text and provide the corrected version with a short explanation:\n\n",
 
-  if(action === "actions"){
-    showAIMessageActions(message);
-  }
-}
+      explain:
+        "Explain the following in very easy words with an example:\n\n",
 
-function openReactionMenu(message){
-  openModal(`
-    <h2>Message Reaction</h2>
+      quiz:
+        "Create a useful quiz from the following topic. Include questions and answers:\n\n",
 
-    <div class="control-grid">
-      <button class="control-btn reaction" data-r="👍">👍 Helpful</button>
-      <button class="control-btn reaction" data-r="❤️">❤️ Love</button>
-      <button class="control-btn reaction" data-r="⭐">⭐ Great</button>
-      <button class="control-btn reaction" data-r="🤔">🤔 Confusing</button>
-      <button class="control-btn reaction" data-r="❌">❌ Not useful</button>
-      <button class="control-btn reaction" data-r="">Clear</button>
-    </div>
-  `);
-
-  modal.querySelectorAll(".reaction").forEach(btn=>{
-    btn.onclick = ()=>{
-      message.reaction = btn.dataset.r;
-      saveAll();
-      closeModal();
-      renderAll();
+      flashcards:
+        "Create study flashcards from the following topic. Format them as Question → Answer:\n\n"
     };
-  });
-}
 
-function editMessage(message){
-  openModal(`
-    <h2>Edit Message</h2>
+    const prompt=prompts[action];
 
-    <textarea id="editText" rows="9">${escapeHTML(message.content)}</textarea>
+    if(prompt){
+      const composed=prompt+target;
 
-    <div class="modal-actions">
-      <button class="secondary" id="cancelEdit">Cancel</button>
-      <button class="primary" id="saveEdit">Save</button>
-    </div>
-  `);
+      if(currentChat()?.messages.length){
+        sendText(composed);
+      }else{
+        centerInput.value=composed;
+        autoResize(centerInput);
+        centerInput.focus();
+      }
+    }
 
-  $("cancelEdit").onclick = closeModal;
-
-  $("saveEdit").onclick = ()=>{
-    const value = $("editText").value.trim();
-
-    if(!value) return;
-
-    message.versions = message.versions || [];
-
-    message.versions.push({
-      content:message.content,
-      time:Date.now()
-    });
-
-    message.content = value;
-
-    saveAll();
-    closeModal();
-    renderAll();
-  };
-}
-
-async function regenerateMessage(message){
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  const index = chat.messages.indexOf(message);
-
-  const previousUser =
-    chat.messages
-      .slice(0,index)
-      .reverse()
-      .find(m=>m.role === "user");
-
-  if(!previousUser){
-    toast("No user message found.");
-    return;
-  }
-
-  message.versions = message.versions || [];
-
-  message.versions.push({
-    content:message.content,
-    time:Date.now()
   });
 
-  chat.messages.splice(index,1);
+});
 
-  renderAll();
 
-  await generate(
-    previousUser.content,
-    chat.messages.slice(-20).map(m=>({
-      role:m.role,
-      content:m.content
-    }))
+/* =========================================
+   COUNTER
+========================================= */
+
+function updateCounter(){
+
+  const text=input.value;
+
+  const words=text.trim()
+    ? text.trim().split(/\s+/).length
+    : 0;
+
+  document.getElementById("counter").textContent=
+    `${text.length} characters • ${words} words`;
+}
+
+
+/* =========================================
+   STATS
+========================================= */
+
+function updateStats(){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
+  const messagesCount=chat.messages.length;
+
+  const words=chat.messages.reduce(
+    (sum,msg)=>
+      sum+
+      msg.content.trim().split(/\s+/).filter(Boolean).length,
+    0
   );
+
+  const ai=chat.messages.filter(
+    m=>m.role==="assistant"
+  ).length;
+
+  document.getElementById("messageStat").textContent=
+    messagesCount;
+
+  document.getElementById("wordStat").textContent=
+    words;
+
+  document.getElementById("aiStat").textContent=
+    ai;
 }
 
-function showAIMessageActions(message){
+
+/* =========================================
+   MEMORY CENTER
+========================================= */
+
+function openMemory(){
+
   openModal(`
-    <h2>AI Actions</h2>
-
-    <div class="feature-list">
-
-      <div class="feature-row" data-ai="explain">
-        🧠 Explain
-        <small>Explain this response</small>
-      </div>
-
-      <div class="feature-row" data-ai="summarize">
-        📝 Summarize
-        <small>Make it shorter</small>
-      </div>
-
-      <div class="feature-row" data-ai="rewrite">
-        ✍️ Rewrite
-        <small>Improve the response</small>
-      </div>
-
-      <div class="feature-row" data-ai="tasks">
-        ☑️ Make Tasks
-        <small>Turn it into tasks</small>
-      </div>
-
-      <div class="feature-row" data-ai="quiz">
-        🧪 Make Quiz
-        <small>Create practice questions</small>
-      </div>
-
+    <div class="modal-header">
+      <h2>🧠 Smart Memory Center</h2>
+      <button class="close" onclick="closeModal()">×</button>
     </div>
-  `);
 
-  modal.querySelectorAll("[data-ai]").forEach(row=>{
-    row.onclick = ()=>{
-      const action = row.dataset.ai;
-      closeModal();
-
-      const prompts = {
-        explain:"Explain the following response in a simple step-by-step way:\n",
-        summarize:"Summarize the following response into the key points:\n",
-        rewrite:"Rewrite and improve the following response:\n",
-        tasks:"Turn the following response into an actionable to-do list:\n",
-        quiz:"Create a quiz based on the following response:\n"
-      };
-
-      sendMessage(
-        prompts[action] + message.content
-      );
-    };
-  });
-}
-
-/* =========================================================
-   SIX BIG FEATURES
-========================================================= */
-
-/* 1. MEMORY CENTER */
-
-function showMemoryCenter(){
-  openModal(`
-    <h2>🧠 Smart Memory Center</h2>
-
-    <p style="color:var(--muted)">
-      Useful information can be remembered and used in future conversations.
+    <p style="color:var(--muted);font-size:12px;">
+      Save useful information that Simple Chat AI can use
+      when helping you in future conversations.
     </p>
 
-    <button class="primary" id="addMemory" style="margin-bottom:12px">
-      ＋ Add Memory
-    </button>
+    <label class="modal-label">
+      Add memory
+    </label>
 
-    <div class="feature-list">
+    <textarea
+      class="modal-textarea"
+      id="memoryInput"
+      placeholder="Example: I prefer explanations in simple English."
+    ></textarea>
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Cancel
+      </button>
+
+      <button class="primary" onclick="addMemory()">
+        Save Memory
+      </button>
+    </div>
+
+    <hr style="border:0;border-top:1px solid var(--border);margin:20px 0;">
+
+    <strong>Saved memories</strong>
+
+    <div style="margin-top:10px;">
       ${
-        memories.length
-          ? memories.map((m,i)=>`
-            <div class="feature-row">
-              <div>
-                🧠 ${escapeHTML(m.text)}
-                <small style="display:block">
-                  ${new Date(m.createdAt).toLocaleDateString()}
-                </small>
-              </div>
-              <button class="secondary" data-delete-memory="${i}">
-                Delete
-              </button>
-            </div>
-          `).join("")
-          : `<p style="color:var(--muted)">No memories yet.</p>`
+        memory.length
+        ?
+        memory.map((item,i)=>`
+          <div style="
+            display:flex;
+            gap:8px;
+            align-items:center;
+            padding:9px;
+            margin:5px 0;
+            border:1px solid var(--border);
+            border-radius:10px;
+          ">
+            <span style="flex:1;font-size:12px;">
+              ${escapeHtml(item)}
+            </span>
+
+            <button
+              class="secondary"
+              onclick="deleteMemory(${i})">
+              Delete
+            </button>
+          </div>
+        `).join("")
+        :
+        '<p style="color:var(--muted);font-size:12px;">No memories saved yet.</p>'
       }
     </div>
   `);
 
-  $("addMemory").onclick = ()=>{
-    closeModal();
-    rememberSomething();
-  };
-
-  modal.querySelectorAll("[data-delete-memory]").forEach(btn=>{
-    btn.onclick = ()=>{
-      memories.splice(
-        Number(btn.dataset.deleteMemory),
-        1
-      );
-
-      saveAll();
-      showMemoryCenter();
-    };
-  });
 }
 
-function rememberSomething(){
+
+function addMemory(){
+
+  const el=document.getElementById("memoryInput");
+
+  if(!el || !el.value.trim())return;
+
+  memory.push(el.value.trim());
+
+  save();
+  closeModal();
+
+  showToast("Memory saved.");
+}
+
+
+function deleteMemory(index){
+
+  memory.splice(index,1);
+
+  save();
+
+  openMemory();
+}
+
+
+/* =========================================
+   WORKSPACE
+========================================= */
+
+function openWorkspace(){
+
   openModal(`
-    <h2>🧠 Remember This</h2>
-
-    <textarea id="memoryText" rows="5"
-      placeholder="What should the AI remember?"></textarea>
-
-    <div class="modal-actions">
-      <button class="secondary" id="cancelMemory">Cancel</button>
-      <button class="primary" id="saveMemory">Remember</button>
+    <div class="modal-header">
+      <h2>📚 Knowledge Workspace</h2>
+      <button class="close" onclick="closeModal()">×</button>
     </div>
-  `);
 
-  $("cancelMemory").onclick = closeModal;
-
-  $("saveMemory").onclick = ()=>{
-    const text = $("memoryText").value.trim();
-
-    if(!text) return;
-
-    memories.push({
-      id:uid("memory"),
-      text,
-      createdAt:Date.now()
-    });
-
-    saveAll();
-    closeModal();
-    toast("Memory saved.");
-  };
-}
-
-/* 2. KNOWLEDGE WORKSPACE */
-
-function showWorkspaces(){
-  openModal(`
-    <h2>📚 AI Knowledge Workspace</h2>
-
-    <p style="color:var(--muted)">
-      Each workspace can have its own purpose and instructions.
+    <p style="color:var(--muted);font-size:12px;">
+      Choose a focused environment for your conversation.
     </p>
 
-    <div class="feature-list">
-      ${workspace.workspaces.map(w=>`
-        <div class="feature-row workspace-option"
-          data-workspace="${escapeHTML(w.name)}">
+    <button class="panel-action" onclick="setWorkspace('School')">
+      🎓 School
+      <br>
+      <small>Learning, homework and revision</small>
+    </button>
 
-          <div>
-            ${w.icon} ${escapeHTML(w.name)}
-            <small style="display:block">
-              ${escapeHTML(w.instructions || "No special instructions")}
-            </small>
-          </div>
+    <button class="panel-action" onclick="setWorkspace('Coding')">
+      💻 Coding
+      <br>
+      <small>Programming and app development</small>
+    </button>
 
-          ${
-            workspace.current === w.name
-              ? "<b>✓</b>"
-              : ""
-          }
+    <button class="panel-action" onclick="setWorkspace('Projects')">
+      🚀 Projects
+      <br>
+      <small>Planning and project management</small>
+    </button>
 
-        </div>
-      `).join("")}
-    </div>
+    <button class="panel-action" onclick="setWorkspace('Writing')">
+      ✍️ Writing
+      <br>
+      <small>Stories, essays and communication</small>
+    </button>
 
-    <button class="primary" id="newWorkspace"
-      style="margin-top:12px">
-      ＋ New Workspace
+    <button class="panel-action" onclick="setWorkspace('Business')">
+      💼 Business
+      <br>
+      <small>Business planning and ideas</small>
     </button>
   `);
 
-  modal.querySelectorAll(".workspace-option").forEach(row=>{
-    row.onclick = ()=>{
-      workspace.current = row.dataset.workspace;
-      saveAll();
-      closeModal();
-      toast("Workspace changed.");
-    };
-  });
-
-  $("newWorkspace").onclick = ()=>{
-    openNewWorkspaceModal();
-  };
 }
 
-function openNewWorkspaceModal(){
+
+function setWorkspace(name){
+
+  settings.persona=name==="School"
+    ?"Teacher"
+    :name==="Coding"
+    ?"Coder"
+    :name==="Writing"
+    ?"Writer"
+    :name==="Business"
+    ?"Business"
+    :"Assistant";
+
+  settings.systemPrompt=
+    `Current workspace: ${name}.
+Help the user specifically within this workspace.`;
+
+  save();
+  closeModal();
+
+  showToast(`${name} workspace activated.`);
+}
+
+
+/* =========================================
+   GOALS
+========================================= */
+
+function openGoals(){
+
   openModal(`
-    <h2>Create Workspace</h2>
+    <div class="modal-header">
+      <h2>🎯 Goal & Project Manager</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
 
-    <input class="modal-input" id="workspaceName"
-      placeholder="Workspace name">
+    <label class="modal-label">
+      Goal title
+    </label>
 
-    <input class="modal-input" id="workspaceIcon"
-      placeholder="Icon" value="📁">
+    <input
+      class="modal-input"
+      id="goalTitleInput"
+      value="${escapeHtml(goal.title)}"
+      placeholder="Example: Build my website"
+    >
 
-    <textarea id="workspaceInstructions" rows="4"
-      placeholder="Workspace instructions"></textarea>
+    <label class="modal-label">
+      Goal description
+    </label>
+
+    <textarea
+      class="modal-textarea"
+      id="goalDescriptionInput"
+      placeholder="Describe what you want to accomplish..."
+    >${escapeHtml(goal.description)}</textarea>
+
+    <label class="modal-label">
+      Progress: <span id="goalRangeValue">${goal.progress}</span>%
+    </label>
+
+    <input
+      id="goalRange"
+      type="range"
+      min="0"
+      max="100"
+      value="${goal.progress}"
+      style="width:100%;"
+      oninput="document.getElementById('goalRangeValue').textContent=this.value"
+    >
 
     <div class="modal-actions">
-      <button class="secondary" id="cancelWorkspace">Cancel</button>
-      <button class="primary" id="createWorkspace">Create</button>
+
+      <button class="secondary" onclick="clearGoal()">
+        Clear
+      </button>
+
+      <button class="primary" onclick="saveGoal()">
+        Save Goal
+      </button>
+
     </div>
   `);
 
-  $("cancelWorkspace").onclick = showWorkspaces;
+}
 
-  $("createWorkspace").onclick = ()=>{
-    const name = $("workspaceName").value.trim();
 
-    if(!name) return;
+function saveGoal(){
 
-    workspace.workspaces.push({
-      name,
-      icon:$("workspaceIcon").value.trim() || "📁",
-      instructions:$("workspaceInstructions").value.trim()
-    });
+  goal.title=document.getElementById("goalTitleInput").value.trim();
 
-    workspace.current = name;
+  goal.description=
+    document.getElementById("goalDescriptionInput").value.trim();
 
-    saveAll();
-    closeModal();
-    toast("Workspace created.");
+  goal.progress=
+    Number(document.getElementById("goalRange").value);
+
+  save();
+  closeModal();
+  updateGoalUI();
+
+  showToast("Goal updated.");
+}
+
+
+function clearGoal(){
+
+  goal={
+    title:"",
+    description:"",
+    progress:0
   };
+
+  save();
+  closeModal();
+  updateGoalUI();
 }
 
-/* 3. GOAL & PROJECT MANAGER */
 
-function setGoal(){
-  ensureChat();
+function updateGoalUI(){
 
-  const chat = currentChat();
+  const title=
+    document.getElementById("goalBtn");
 
-  chat.goal = $("goalInput").value.trim();
+  if(!title)return;
 
-  if(!chat.goal){
-    toast("Enter a goal first.");
-    return;
-  }
+  document.getElementById("goalProgressText");
 
-  chat.progress = 0;
-
-  saveAll();
-  renderAll();
-
-  toast("Conversation goal saved.");
 }
 
-function showGoalManager(){
-  const chat = currentChat();
 
-  if(!chat){
-    toast("Create a chat first.");
-    return;
-  }
+/* =========================================
+   DEEP STUDY
+========================================= */
+
+function openStudy(){
 
   openModal(`
-    <h2>🎯 Goal & Project Manager</h2>
-
-    <p>
-      <b>Goal:</b>
-      ${escapeHTML(chat.goal || "No goal set")}
-    </p>
-
-    <div class="progress">
-      <div style="width:${chat.progress || 0}%"></div>
+    <div class="modal-header">
+      <h2>🔬 Deep Study Mode</h2>
+      <button class="close" onclick="closeModal()">×</button>
     </div>
 
-    <p>
-      Progress: ${chat.progress || 0}%
+    <p style="color:var(--muted);font-size:12px;">
+      Enter a topic and Simple Chat AI will create a structured
+      learning session.
     </p>
 
-    <div class="control-grid">
+    <input
+      class="modal-input"
+      id="studyTopic"
+      placeholder="Example: The solar system"
+    >
 
-      <button class="control-btn" id="progress25">25%</button>
-      <button class="control-btn" id="progress50">50%</button>
-      <button class="control-btn" id="progress75">75%</button>
-      <button class="control-btn" id="progress100">100%</button>
-
-    </div>
-
-    <button class="primary" id="makePlan"
-      style="margin-top:12px">
-      Create AI Project Plan
-    </button>
-  `);
-
-  [25,50,75,100].forEach(value=>{
-    $("progress"+value).onclick = ()=>{
-      chat.progress = value;
-      saveAll();
-      renderAll();
-      showGoalManager();
-    };
-  });
-
-  $("makePlan").onclick = ()=>{
-    closeModal();
-    sendMessage(
-      "Create a practical step-by-step project plan for this goal: " +
-      chat.goal
-    );
-  };
-}
-
-/* 4. DEEP STUDY */
-
-function deepStudy(){
-  openModal(`
-    <h2>🔬 Deep Study & Research Mode</h2>
-
-    <p style="color:var(--muted)">
-      Enter a topic. The AI will structure the learning session.
-    </p>
-
-    <input class="modal-input" id="studyTopic"
-      placeholder="Example: Volcanoes">
-
-    <select class="select" id="studyLevel">
+    <select class="modal-select" id="studyLevel">
       <option>Easy</option>
       <option>Intermediate</option>
       <option>Advanced</option>
     </select>
 
     <div class="modal-actions">
-      <button class="secondary" id="cancelStudy">Cancel</button>
-      <button class="primary" id="startStudy">Start Study</button>
-    </div>
-  `);
 
-  $("cancelStudy").onclick = closeModal;
+      <button class="secondary" onclick="closeModal()">
+        Cancel
+      </button>
 
-  $("startStudy").onclick = ()=>{
-    const topic = $("studyTopic").value.trim();
-    const level = $("studyLevel").value;
-
-    if(!topic) return;
-
-    closeModal();
-
-    sendMessage(
-      `Teach me about "${topic}" at ${level} level. Include:
-1. Simple explanation
-2. Key points
-3. Important vocabulary
-4. Examples
-5. Common mistakes
-6. Practice questions
-7. Flashcards
-8. A short quiz
-9. Final summary`
-    );
-  };
-}
-
-/* 5. COMMAND CENTER */
-
-function showCommandCenter(){
-  openModal(`
-    <h2>⚡ AI Command Center</h2>
-
-    <input class="modal-input"
-      id="commandInput"
-      placeholder="Type a command...">
-
-    <div class="command-palette">
-
-      <div class="command-item" data-command="/summarize">
-        /summarize — Summarize current chat
-      </div>
-
-      <div class="command-item" data-command="/rewrite">
-        /rewrite — Rewrite text
-      </div>
-
-      <div class="command-item" data-command="/translate">
-        /translate — Translate text
-      </div>
-
-      <div class="command-item" data-command="/quiz">
-        /quiz — Make a quiz
-      </div>
-
-      <div class="command-item" data-command="/flashcards">
-        /flashcards — Make flashcards
-      </div>
-
-      <div class="command-item" data-command="/tasks">
-        /tasks — Create tasks
-      </div>
-
-      <div class="command-item" data-command="/explain">
-        /explain — Explain simply
-      </div>
-
-      <div class="command-item" data-command="/email">
-        /email — Write an email
-      </div>
-
-      <div class="command-item" data-command="/code">
-        /code — Help with code
-      </div>
+      <button class="primary" onclick="startStudy()">
+        Start Study
+      </button>
 
     </div>
   `);
 
-  modal.querySelectorAll("[data-command]").forEach(item=>{
-    item.onclick = ()=>{
-      $("commandInput").value = item.dataset.command + " ";
-      $("commandInput").focus();
-    };
-  });
-
-  $("commandInput").addEventListener("keydown",e=>{
-    if(e.key === "Enter"){
-      runCommand($("commandInput").value.trim());
-    }
-  });
 }
 
-function runCommand(command){
+
+function startStudy(){
+
+  const topic=
+    document.getElementById("studyTopic").value.trim();
+
+  const level=
+    document.getElementById("studyLevel").value;
+
+  if(!topic){
+    showToast("Enter a topic first.");
+    return;
+  }
+
   closeModal();
 
-  if(!command) return;
+  const prompt=
+`Teach me about "${topic}" at a ${level} level.
 
-  const commands = {
-    "/summarize":
-      "Summarize the current conversation into its most important points.",
-    "/rewrite":
-      "Rewrite the following text professionally and clearly:",
-    "/translate":
-      "Translate the following text. Ask which language if needed:",
-    "/quiz":
-      "Create a useful quiz based on the current conversation.",
-    "/flashcards":
-      "Create study flashcards based on the current conversation.",
-    "/tasks":
-      "Turn the current conversation into a practical to-do list.",
-    "/explain":
-      "Explain the main topic of this conversation in very easy language.",
-    "/email":
-      "Help me write a professional email based on the context of this conversation.",
-    "/code":
-      "Help me with the coding task discussed in this conversation."
-  };
+Create a structured learning session with:
 
-  const commandName =
-    command.split(/\s+/)[0].toLowerCase();
+1. Simple introduction
+2. Main concept
+3. Important facts
+4. Easy examples
+5. Common mistakes
+6. Key points
+7. Practice questions
+8. A short quiz
 
-  const prompt =
-    commands[commandName] ||
-    "Execute this command:\n" + command;
+Teach me clearly and make it easy to understand.`;
 
-  sendMessage(prompt);
+  sendText(prompt);
 }
 
-/* 6. HOMEWORK HELPER */
 
-function openHomework(subject=""){
-  homeworkSubject = subject || "";
+/* =========================================
+   HOMEWORK HELPER
+========================================= */
+
+function openHomework(){
 
   openModal(`
-    <h2>🎓 Homework Helper</h2>
+    <div class="modal-header">
+      <h2>🎓 Homework Helper</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
 
-    <p style="color:var(--muted)">
-      This mode focuses on understanding the answer rather than simply
-      copying it.
+    <p style="color:var(--muted);font-size:12px;">
+      The goal is to help you understand the method,
+      not just give an unexplained final answer.
     </p>
 
-    <select class="select" id="homeworkSubject">
-      <option value="">Choose subject</option>
+    <select class="modal-select" id="homeworkSubject">
       <option>Math</option>
       <option>Science</option>
       <option>English</option>
@@ -2923,2126 +2599,961 @@ function openHomework(subject=""){
       <option>Urdu</option>
     </select>
 
-    <div class="control-grid" style="margin-top:10px">
+    <select class="modal-select" id="homeworkMode">
+      <option>Teach Me</option>
+      <option>Step-by-Step</option>
+      <option>Hint Mode</option>
+      <option>Check My Answer</option>
+      <option>Explain the Concept</option>
+    </select>
 
-      <button class="control-btn" data-hw="Understand">
-        🧠 Understand
+    <textarea
+      class="modal-textarea"
+      id="homeworkQuestion"
+      placeholder="Paste or type your homework question..."
+    ></textarea>
+
+    <div class="modal-actions">
+
+      <button class="secondary" onclick="closeModal()">
+        Cancel
       </button>
 
-      <button class="control-btn" data-hw="Steps">
-        🪜 Step-by-step
-      </button>
-
-      <button class="control-btn" data-hw="Hint">
-        💡 Hint
-      </button>
-
-      <button class="control-btn" data-hw="Practice">
-        📝 Practice
-      </button>
-
-      <button class="control-btn" data-hw="Check">
-        ✅ Check Answer
-      </button>
-
-      <button class="control-btn" data-hw="Concept">
-        📚 Explain Concept
+      <button class="primary" onclick="startHomework()">
+        Help Me
       </button>
 
     </div>
-
-    <button class="primary" id="homeworkTeach"
-      style="width:100%;margin-top:12px">
-      🧑‍🏫 Turn On Teach Me Mode
-    </button>
-
-    <p style="color:var(--muted);font-size:11px;margin-top:12px">
-      You can now paste your homework question into the chat.
-    </p>
   `);
 
-  if(subject){
-    $("homeworkSubject").value = subject;
-  }
-
-  $("homeworkSubject").onchange = ()=>{
-    homeworkSubject = $("homeworkSubject").value;
-  };
-
-  modal.querySelectorAll("[data-hw]").forEach(btn=>{
-    btn.onclick = ()=>{
-      homeworkSubject =
-        $("homeworkSubject").value || homeworkSubject;
-
-      if(!homeworkSubject){
-        toast("Choose a subject first.");
-        return;
-      }
-
-      const mode = btn.dataset.hw;
-
-      const prompts = {
-        Understand:
-          `Help me understand my ${homeworkSubject} homework question. Explain what the question is asking before solving it.`,
-        Steps:
-          `Solve my ${homeworkSubject} homework step by step and explain each step.`,
-        Hint:
-          `Give me a helpful hint for my ${homeworkSubject} homework without immediately giving the final answer.`,
-        Practice:
-          `Create similar ${homeworkSubject} practice questions after helping me understand the topic.`,
-        Check:
-          `Check my ${homeworkSubject} answer carefully and explain any mistakes.`,
-        Concept:
-          `Explain the concept behind my ${homeworkSubject} homework in easy language.`
-      };
-
-      closeModal();
-      sendMessage(prompts[mode]);
-    };
-  });
-
-  $("homeworkTeach").onclick = ()=>{
-    teachMode = true;
-    closeModal();
-    toast("Teach Me Mode enabled.");
-    input.focus();
-  };
 }
 
-/* =========================================================
-   OTHER MAJOR FEATURES
-========================================================= */
 
-function continueResponse(){
-  const chat = currentChat();
+function startHomework(){
 
-  if(!chat?.messages.length){
-    toast("There is no response to continue.");
+  const subject=
+    document.getElementById("homeworkSubject").value;
+
+  const mode=
+    document.getElementById("homeworkMode").value;
+
+  const question=
+    document.getElementById("homeworkQuestion").value.trim();
+
+  if(!question){
+    showToast("Enter your homework question.");
     return;
   }
 
-  sendMessage(
-    "Continue your previous answer from exactly where it stopped. Do not repeat the beginning."
-  );
+  closeModal();
+
+  const prompt=
+`You are helping a student with ${subject} homework.
+
+Homework mode: ${mode}
+
+Question:
+${question}
+
+Rules:
+- Explain clearly.
+- Use simple language.
+- Teach the concept.
+- Show steps when useful.
+- For Teach Me mode, guide the student with questions.
+- For Hint Mode, give hints without immediately revealing the final answer.
+- For Check My Answer mode, identify mistakes and explain how to improve.
+- Do not make the response unnecessarily difficult.`;
+
+  sendText(prompt);
 }
 
-function showFollowUps(){
-  const chat = currentChat();
 
-  if(!chat?.messages.length){
-    toast("Start a conversation first.");
-    return;
-  }
+/* =========================================
+   COMMAND CENTER
+========================================= */
 
-  sendMessage(
-    "Suggest 5 useful follow-up questions I could ask about this conversation."
-  );
+function openCommands(){
+
+  openModal(`
+    <div class="modal-header">
+      <h2>⚡ Command Center</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <p style="color:var(--muted);font-size:12px;">
+      Choose an AI action.
+    </p>
+
+    <button class="panel-action" onclick="runCommand('Explain')">
+      📖 Explain
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Summarize')">
+      📝 Summarize
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Rewrite')">
+      ✍️ Rewrite
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Quiz')">
+      🧠 Make Quiz
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Flashcards')">
+      🗂️ Make Flashcards
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Tasks')">
+      ✅ Make Tasks
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Improve Prompt')">
+      ⚡ Improve Prompt
+    </button>
+
+    <button class="panel-action" onclick="runCommand('Outline')">
+      📑 Make Outline
+    </button>
+  `);
+
 }
 
-function summarizeChat(){
-  const chat = currentChat();
 
-  if(!chat?.messages.length){
-    toast("There is nothing to summarize.");
-    return;
-  }
+function runCommand(command){
 
-  sendMessage(
-    "Create a clear summary of this entire conversation. Include key points, decisions, tasks and useful information."
-  );
-}
+  closeModal();
 
-function saveCurrentAnswer(){
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  const lastAI =
-    [...chat.messages]
-      .reverse()
-      .find(m=>m.role === "assistant");
-
-  if(!lastAI){
-    toast("No AI response to save.");
-    return;
-  }
-
-  savedAnswers.unshift({
-    id:uid("saved"),
-    chatId:chat.id,
-    title:chat.title,
-    content:lastAI.content,
-    createdAt:Date.now()
-  });
-
-  saveAll();
-  toast("Answer saved.");
-}
-
-function createTasksFromResponse(){
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  const last =
-    [...chat.messages]
-      .reverse()
-      .find(m=>m.role === "assistant");
+  const last=
+    currentChat()?.messages.at(-1)?.content ||
+    input.value ||
+    centerInput.value;
 
   if(!last){
-    toast("No AI response found.");
+    showToast("Give me some text first.");
     return;
   }
 
-  const lines = last.content
-    .split("\n")
-    .map(x=>x.replace(/^[-*•\d.)]+\s*/,"").trim())
-    .filter(x=>x.length > 5)
-    .slice(0,15);
+  const instructions={
+    Explain:
+      "Explain the following clearly with simple examples:\n\n",
 
-  lines.forEach(text=>{
-    tasks.unshift({
-      id:uid("task"),
-      text,
-      completed:false,
-      createdAt:Date.now()
-    });
-  });
+    Summarize:
+      "Summarize the following into the most important points:\n\n",
 
-  saveAll();
-  showTasks();
-}
+    Rewrite:
+      "Rewrite the following to make it clearer and more natural:\n\n",
 
-function showTasks(){
-  openModal(`
-    <h2>☑ Smart To-Do List</h2>
+    Quiz:
+      "Create a quiz from the following:\n\n",
 
-    <button class="primary" id="newTaskBtn">
-      ＋ New Task
-    </button>
+    Flashcards:
+      "Create useful study flashcards from the following:\n\n",
 
-    <div class="feature-list" style="margin-top:12px">
+    Tasks:
+      "Turn the following into a practical to-do list:\n\n",
 
-      ${
-        tasks.length
-        ? tasks.map((task,i)=>`
-          <div class="feature-row">
+    "Improve Prompt":
+      "Improve the following prompt so an AI can understand it better. Return only the improved prompt:\n\n",
 
-            <div>
-              <label style="cursor:pointer">
-                <input
-                  type="checkbox"
-                  data-task="${i}"
-                  ${task.completed ? "checked" : ""}
-                >
-                <span style="${
-                  task.completed
-                    ? "text-decoration:line-through"
-                    : ""
-                }">
-                  ${escapeHTML(task.text)}
-                </span>
-              </label>
-            </div>
-
-            <button class="secondary"
-              data-delete-task="${i}">
-              ×
-            </button>
-
-          </div>
-        `).join("")
-        : `<p style="color:var(--muted)">No tasks yet.</p>`
-      }
-
-    </div>
-  `);
-
-  $("newTaskBtn").onclick = ()=>{
-    openModal(`
-      <h2>New Task</h2>
-
-      <input class="modal-input"
-        id="taskText"
-        placeholder="Task description">
-
-      <div class="modal-actions">
-        <button class="secondary" id="cancelTask">Cancel</button>
-        <button class="primary" id="saveTask">Add</button>
-      </div>
-    `);
-
-    $("cancelTask").onclick = showTasks;
-
-    $("saveTask").onclick = ()=>{
-      const text = $("taskText").value.trim();
-
-      if(!text) return;
-
-      tasks.unshift({
-        id:uid("task"),
-        text,
-        completed:false,
-        createdAt:Date.now()
-      });
-
-      saveAll();
-      showTasks();
-    };
+    Outline:
+      "Create a clear structured outline from the following:\n\n"
   };
 
-  modal.querySelectorAll("[data-task]").forEach(cb=>{
-    cb.onchange = ()=>{
-      tasks[Number(cb.dataset.task)].completed =
-        cb.checked;
-
-      saveAll();
-      showTasks();
-    };
-  });
-
-  modal.querySelectorAll("[data-delete-task]").forEach(btn=>{
-    btn.onclick = ()=>{
-      tasks.splice(
-        Number(btn.dataset.deleteTask),
-        1
-      );
-
-      saveAll();
-      showTasks();
-    };
-  });
+  sendText(
+    instructions[command]+last
+  );
 }
 
-function showSavedAnswers(){
-  openModal(`
-    <h2>🔖 Saved Answers</h2>
 
-    <div class="feature-list">
+/* =========================================
+   COPY / DELETE / READ
+========================================= */
 
-      ${
-        savedAnswers.length
-        ? savedAnswers.map((answer,i)=>`
-          <div class="feature-row">
+async function copyMessage(index){
 
-            <div style="min-width:0">
-              <b>${escapeHTML(answer.title)}</b>
-              <small style="display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">
-                ${escapeHTML(answer.content.slice(0,140))}
-              </small>
-            </div>
+  const msg=currentChat()?.messages[index];
 
-            <button class="secondary"
-              data-open-saved="${i}">
-              Open
-            </button>
-
-          </div>
-        `).join("")
-        : `<p style="color:var(--muted)">No saved answers.</p>`
-      }
-
-    </div>
-  `);
-
-  modal.querySelectorAll("[data-open-saved]").forEach(btn=>{
-    btn.onclick = async ()=>{
-      const answer =
-        savedAnswers[Number(btn.dataset.openSaved)];
-
-      await navigator.clipboard.writeText(answer.content);
-
-      toast("Saved answer copied.");
-    };
-  });
-}
-
-function showCalendar(){
-  const grouped = {};
-
-  chats.forEach(chat=>{
-    const date =
-      new Date(chat.createdAt)
-        .toLocaleDateString();
-
-    if(!grouped[date]){
-      grouped[date] = [];
-    }
-
-    grouped[date].push(chat);
-  });
-
-  openModal(`
-    <h2>📅 Chat Calendar</h2>
-
-    <div class="feature-list">
-
-      ${
-        Object.keys(grouped).length
-        ? Object.entries(grouped)
-          .sort((a,b)=>b[0].localeCompare(a[0]))
-          .map(([date,list])=>`
-            <div class="control-card">
-              <b>📅 ${escapeHTML(date)}</b>
-
-              ${list.map(c=>`
-                <div class="feature-row"
-                  data-calendar-chat="${c.id}"
-                  style="margin-top:6px">
-                  💬 ${escapeHTML(c.title)}
-                </div>
-              `).join("")}
-
-            </div>
-          `).join("")
-        : `<p style="color:var(--muted)">No chats yet.</p>`
-      }
-
-    </div>
-  `);
-
-  modal.querySelectorAll("[data-calendar-chat]").forEach(row=>{
-    row.onclick = ()=>{
-      currentId = row.dataset.calendarChat;
-      closeModal();
-      renderAll();
-    };
-  });
-}
-
-function createSnapshot(){
-  const chat = currentChat();
-
-  if(!chat){
-    toast("No chat to snapshot.");
-    return;
-  }
-
-  snapshots.unshift({
-    id:uid("snapshot"),
-    chatId:chat.id,
-    title:chat.title,
-    createdAt:Date.now(),
-    data:JSON.parse(JSON.stringify(chat))
-  });
-
-  saveAll();
-  toast("Conversation snapshot saved.");
-}
-
-function showSnapshots(){
-  openModal(`
-    <h2>📸 Conversation Snapshots</h2>
-
-    <div class="feature-list">
-
-      ${
-        snapshots.length
-        ? snapshots.map((s,i)=>`
-          <div class="feature-row">
-
-            <div>
-              <b>${escapeHTML(s.title)}</b>
-              <small style="display:block">
-                ${new Date(s.createdAt).toLocaleString()}
-              </small>
-            </div>
-
-            <button class="secondary"
-              data-restore="${i}">
-              Restore
-            </button>
-
-          </div>
-        `).join("")
-        : `<p style="color:var(--muted)">No snapshots.</p>`
-      }
-
-    </div>
-  `);
-
-  modal.querySelectorAll("[data-restore]").forEach(btn=>{
-    btn.onclick = ()=>{
-      const snapshot =
-        snapshots[Number(btn.dataset.restore)];
-
-      const copy =
-        JSON.parse(JSON.stringify(snapshot.data));
-
-      copy.id = uid("chat");
-      copy.title += " — Restored";
-
-      chats.unshift(copy);
-      currentId = copy.id;
-
-      saveAll();
-      closeModal();
-      renderAll();
-    };
-  });
-}
-
-/* =========================================================
-   BRANCHING
-========================================================= */
-
-function branchChat(chat){
-  const copy =
-    JSON.parse(JSON.stringify(chat));
-
-  copy.id = uid("chat");
-  copy.title = chat.title + " — Branch";
-  copy.createdAt = Date.now();
-  copy.updatedAt = Date.now();
-
-  chats.unshift(copy);
-  currentId = copy.id;
-
-  saveAll();
-  closeModal();
-  renderAll();
-}
-
-/* =========================================================
-   FILES
-========================================================= */
-
-function handleFile(file){
-  if(!file) return;
-
-  selectedFile = file;
-
-  if(file.type === "application/pdf"){
-    files.unshift({
-      id:uid("file"),
-      name:file.name,
-      type:file.type,
-      size:file.size,
-      createdAt:Date.now()
-    });
-
-    saveAll();
-
-    attachmentText.textContent =
-      `Attached: ${file.name} (PDF metadata only)`;
-
-    toast("PDF attached. PDF extraction is not enabled.");
-    return;
-  }
-
-  const reader = new FileReader();
-
-  reader.onload = ()=>{
-    const text = String(reader.result || "");
-
-    files.unshift({
-      id:uid("file"),
-      name:file.name,
-      type:file.type,
-      size:file.size,
-      text:text.slice(0,200000),
-      createdAt:Date.now()
-    });
-
-    saveAll();
-
-    selectedFile = {
-      name:file.name,
-      text:text.slice(0,200000)
-    };
-
-    attachmentText.textContent =
-      `Attached: ${file.name}`;
-
-    toast("File attached.");
-  };
-
-  reader.readAsText(file);
-}
-
-function showFileLibrary(){
-  openModal(`
-    <h2>📁 File Library</h2>
-
-    <div class="feature-list">
-
-      ${
-        files.length
-        ? files.map((file,i)=>`
-          <div class="feature-row">
-
-            <div>
-              📄 ${escapeHTML(file.name)}
-              <small style="display:block">
-                ${Math.round((file.size || 0)/1024)} KB
-              </small>
-            </div>
-
-            <button class="secondary"
-              data-file-question="${i}">
-              Ask AI
-            </button>
-
-          </div>
-        `).join("")
-        : `<p style="color:var(--muted)">No files uploaded.</p>`
-      }
-
-    </div>
-  `);
-
-  modal.querySelectorAll("[data-file-question]").forEach(btn=>{
-    btn.onclick = ()=>{
-      const file =
-        files[Number(btn.dataset.fileQuestion)];
-
-      closeModal();
-
-      if(file.text){
-        sendMessage(
-          `Answer questions using this attached file as context.\n\nFILE: ${file.name}\n\n${file.text.slice(0,50000)}`
-        );
-      }else{
-        toast("This file does not contain readable text.");
-      }
-    };
-  });
-}
-
-/* =========================================================
-   IMAGE
-========================================================= */
-
-function resizeImage(file){
-  return new Promise((resolve,reject)=>{
-    const reader = new FileReader();
-
-    reader.onload = ()=>{
-      const img = new Image();
-
-      img.onload = ()=>{
-        const max = 1400;
-
-        let width = img.width;
-        let height = img.height;
-
-        if(width > max || height > max){
-          const scale =
-            Math.min(max/width,max/height);
-
-          width = Math.round(width*scale);
-          height = Math.round(height*scale);
-        }
-
-        const canvas =
-          document.createElement("canvas");
-
-        canvas.width = width;
-        canvas.height = height;
-
-        const ctx = canvas.getContext("2d");
-
-        ctx.drawImage(
-          img,
-          0,
-          0,
-          width,
-          height
-        );
-
-        resolve(
-          canvas.toDataURL("image/jpeg",.78)
-        );
-      };
-
-      img.onerror = reject;
-      img.src = reader.result;
-    };
-
-    reader.onerror = reject;
-
-    reader.readAsDataURL(file);
-  });
-}
-
-async function handleImage(file){
-  if(!file) return;
+  if(!msg)return;
 
   try{
-    selectedImage =
-      await resizeImage(file);
-
-    selectedImageName = file.name;
-
-    attachmentText.textContent =
-      `Image attached: ${file.name}`;
-
-    toast("Image attached.");
-  }catch(error){
-    toast("Could not process image.");
+    await navigator.clipboard.writeText(msg.content);
+    showToast("Copied.");
+  }catch{
+    showToast("Copy failed.");
   }
 }
 
-function clearAttachment(){
-  selectedImage = null;
-  selectedImageName = "";
-  selectedFile = null;
 
-  attachmentText.textContent =
-    "AI can make mistakes. Check important information.";
+function deleteMessage(index){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
+  chat.messages.splice(index,1);
+
+  save();
+  renderCurrent();
 }
 
-/* =========================================================
-   VOICE
-========================================================= */
 
-function startVoice(){
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
+function readMessage(index){
 
-  if(!SpeechRecognition){
-    toast("Voice input is not supported by this browser.");
-    return;
-  }
+  const msg=currentChat()?.messages[index];
 
-  if(listening){
-    recognition?.stop();
-    return;
-  }
-
-  recognition = new SpeechRecognition();
-
-  recognition.lang =
-    settings.language.toLowerCase().startsWith("urdu")
-      ? "ur-PK"
-      : "en-US";
-
-  recognition.interimResults = true;
-  recognition.continuous = false;
-
-  recognition.onstart = ()=>{
-    listening = true;
-    $("voiceBtn").textContent = "⏹ Voice";
-    toast("Listening...");
-  };
-
-  recognition.onresult = event=>{
-    let finalText = "";
-
-    for(
-      let i=event.resultIndex;
-      i<event.results.length;
-      i++
-    ){
-      finalText +=
-        event.results[i][0].transcript;
-    }
-
-    input.value = finalText;
-    updateCounter();
-    resizeInput();
-  };
-
-  recognition.onerror = ()=>{
-    listening = false;
-    $("voiceBtn").textContent = "🎙️ Voice";
-  };
-
-  recognition.onend = ()=>{
-    listening = false;
-    $("voiceBtn").textContent = "🎙️ Voice";
-  };
-
-  recognition.start();
-}
-
-function readLastResponse(){
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  const last =
-    [...chat.messages]
-      .reverse()
-      .find(m=>m.role === "assistant");
-
-  if(!last){
-    toast("No AI response.");
-    return;
-  }
+  if(!msg)return;
 
   if(!("speechSynthesis" in window)){
-    toast("Read Aloud is not supported.");
+    showToast("Read aloud is not supported here.");
     return;
   }
 
   speechSynthesis.cancel();
 
-  const utterance =
-    new SpeechSynthesisUtterance(
-      last.content
-    );
-
-  utterance.lang =
-    settings.language === "Urdu"
-      ? "ur-PK"
-      : "en-US";
+  const utterance=
+    new SpeechSynthesisUtterance(msg.content);
 
   speechSynthesis.speak(utterance);
 }
 
-/* =========================================================
-   SAFE CALCULATOR
-========================================================= */
 
-function safeCalculate(expression){
-  const tokens = tokenizeMath(expression);
+function saveAnswer(index){
 
-  if(!tokens.length){
-    throw new Error("Empty expression");
-  }
+  const msg=currentChat()?.messages[index];
 
-  let index = 0;
+  if(!msg)return;
 
-  function parseExpression(){
-    let value = parseTerm();
+  let saved=[];
 
-    while(
-      tokens[index] === "+" ||
-      tokens[index] === "-"
-    ){
-      const operator = tokens[index++];
-      const right = parseTerm();
-
-      value =
-        operator === "+"
-          ? value + right
-          : value - right;
-    }
-
-    return value;
-  }
-
-  function parseTerm(){
-    let value = parsePower();
-
-    while(
-      tokens[index] === "*" ||
-      tokens[index] === "/"
-    ){
-      const operator = tokens[index++];
-      const right = parsePower();
-
-      if(
-        operator === "/" &&
-        right === 0
-      ){
-        throw new Error("Cannot divide by zero");
-      }
-
-      value =
-        operator === "*"
-          ? value * right
-          : value / right;
-    }
-
-    return value;
-  }
-
-  function parsePower(){
-    let value = parseUnary();
-
-    if(tokens[index] === "^"){
-      index++;
-      const right = parsePower();
-      value = Math.pow(value,right);
-    }
-
-    return value;
-  }
-
-  function parseUnary(){
-    if(tokens[index] === "+"){
-      index++;
-      return parseUnary();
-    }
-
-    if(tokens[index] === "-"){
-      index++;
-      return -parseUnary();
-    }
-
-    return parsePrimary();
-  }
-
-  function parsePrimary(){
-    const token = tokens[index++];
-
-    if(token === "("){
-      const value = parseExpression();
-
-      if(tokens[index] !== ")"){
-        throw new Error("Missing closing parenthesis");
-      }
-
-      index++;
-      return value;
-    }
-
-    const number = Number(token);
-
-    if(!Number.isFinite(number)){
-      throw new Error("Invalid number");
-    }
-
-    return number;
-  }
-
-  const result = parseExpression();
-
-  if(index !== tokens.length){
-    throw new Error("Invalid expression");
-  }
-
-  if(!Number.isFinite(result)){
-    throw new Error("Invalid result");
-  }
-
-  return result;
-}
-
-function tokenizeMath(expression){
-  const clean =
-    String(expression)
-      .replace(/\s+/g,"");
-
-  const tokens = [];
-  let i = 0;
-
-  while(i < clean.length){
-
-    const char = clean[i];
-
-    if(/[0-9.]/.test(char)){
-
-      let number = "";
-
-      while(
-        i < clean.length &&
-        /[0-9.]/.test(clean[i])
-      ){
-        number += clean[i++];
-      }
-
-      if(
-        number.split(".").length > 2 ||
-        number === "."
-      ){
-        throw new Error("Invalid number");
-      }
-
-      tokens.push(number);
-      continue;
-    }
-
-    if("+-*/^()".includes(char)){
-      tokens.push(char);
-      i++;
-      continue;
-    }
-
-    throw new Error(
-      "Only numbers and + - * / ^ ( ) are allowed."
+  try{
+    saved=JSON.parse(
+      localStorage.getItem("simple_chat_ai_saved_v4") || "[]"
     );
-  }
+  }catch{}
 
-  return tokens;
-}
+  saved.push({
+    text:msg.content,
+    time:Date.now()
+  });
 
-function calculatorMode(){
-  openModal(`
-    <h2>🧮 Calculator</h2>
-
-    <input class="modal-input"
-      id="calcInput"
-      placeholder="Example: (25 + 15) * 2">
-
-    <button class="primary" id="calculateBtn">
-      Calculate
-    </button>
-
-    <div id="calcResult"
-      style="margin-top:15px;font-size:22px;font-weight:800">
-    </div>
-  `);
-
-  $("calculateBtn").onclick = ()=>{
-    try{
-      const result =
-        safeCalculate(
-          $("calcInput").value
-        );
-
-      $("calcResult").textContent =
-        "= " + result;
-    }catch(error){
-      $("calcResult").textContent =
-        "Error: " + error.message;
-    }
-  };
-}
-
-/* =========================================================
-   WRITING TOOLS
-========================================================= */
-
-function actionTool(action){
-  const text = input.value.trim();
-
-  if(!text){
-    toast("Write or paste some text first.");
-    input.focus();
-    return;
-  }
-
-  const prompts = {
-    summarize:
-      "Summarize this text into clear key points:\n",
-    translate:
-      "Translate this text into clear English. If it is already English, ask what language I want:\n",
-    grammar:
-      "Check and correct the grammar of this text. Explain the important corrections:\n",
-    rewrite:
-      "Rewrite this text to make it clearer and more natural:\n",
-    tone:
-      "Improve the tone of this text while preserving its meaning. Give a polished version:\n",
-    explain:
-      "Explain this text in simple language with examples:\n"
-  };
-
-  if(action === "calculator"){
-    calculatorMode();
-    return;
-  }
-
-  sendMessage(
-    prompts[action] +
-    text
+  localStorage.setItem(
+    "simple_chat_ai_saved_v4",
+    JSON.stringify(saved)
   );
+
+  showToast("Answer saved.");
 }
 
-/* =========================================================
-   FORMATTING TOOLBAR
-========================================================= */
 
-function applyTool(tool){
-  const start = input.selectionStart;
-  const end = input.selectionEnd;
+/* =========================================
+   REGENERATE
+========================================= */
 
-  const selected =
-    input.value.slice(start,end);
+async function regenerate(index){
 
-  let replacement = selected;
+  const chat=currentChat();
 
-  if(tool === "bold"){
-    replacement = "**" + selected + "**";
+  if(!chat || generating)return;
+
+  const msg=chat.messages[index];
+
+  if(!msg || msg.role!=="assistant")return;
+
+  const previousUser=chat.messages
+    .slice(0,index)
+    .reverse()
+    .find(m=>m.role==="user");
+
+  if(!previousUser){
+    showToast("No user message found.");
+    return;
   }
 
-  if(tool === "italic"){
-    replacement = "*" + selected + "*";
-  }
+  chat.messages.splice(index,1);
 
-  if(tool === "heading"){
-    replacement = "### " + selected;
-  }
+  save();
+  renderCurrent();
 
-  if(tool === "list"){
-    replacement = selected
-      .split("\n")
-      .map(line=>"- " + line)
-      .join("\n");
-  }
-
-  if(tool === "code"){
-    replacement = "```text\n" +
-      selected +
-      "\n```";
-  }
-
-  if(tool === "quote"){
-    replacement = selected
-      .split("\n")
-      .map(line=>"> " + line)
-      .join("\n");
-  }
-
-  input.value =
-    input.value.slice(0,start) +
-    replacement +
-    input.value.slice(end);
-
-  input.focus();
-
-  input.selectionStart =
-    start + replacement.length;
-
-  input.selectionEnd =
-    start + replacement.length;
-
-  updateCounter();
-  resizeInput();
+  await generateAI(previousUser.content);
 }
 
-/* =========================================================
-   SETTINGS
-========================================================= */
 
-function showSettings(){
+/* =========================================
+   RENAME
+========================================= */
+
+function renameChat(){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
   openModal(`
-    <h2>⚙️ AI Settings</h2>
+    <div class="modal-header">
+      <h2>Rename Chat</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
 
-    <label>Language</label>
-    <select class="select" id="settingLanguage">
-      <option ${settings.language==="English"?"selected":""}>English</option>
-      <option ${settings.language==="Urdu"?"selected":""}>Urdu</option>
-    </select>
-
-    <label>Tone</label>
-    <select class="select" id="settingTone">
-      <option>Natural</option>
-      <option>Professional</option>
-      <option>Friendly</option>
-      <option>Simple</option>
-      <option>Academic</option>
-    </select>
-
-    <label>Temperature</label>
     <input
-      id="settingTemperature"
-      type="range"
-      min="0"
-      max="2"
-      step=".1"
-      value="${settings.temperature}"
-      style="width:100%"
-    >
-
-    <label>Maximum response tokens</label>
-    <input
-      id="settingTokens"
       class="modal-input"
-      type="number"
-      min="100"
-      max="8000"
-      value="${settings.maxTokens}"
+      id="renameInput"
+      value="${escapeHtml(chat.title)}"
+      autofocus
     >
-
-    <label>Custom Instructions</label>
-
-    <textarea id="settingInstructions"
-      rows="5"
-      placeholder="Tell the AI how you want it to behave">${escapeHTML(settings.customInstructions)}</textarea>
-
-    <div class="feature-row">
-      <span>Long-Term Memory</span>
-      <input
-        id="memoryToggle"
-        type="checkbox"
-        ${settings.memoryEnabled ? "checked":""}>
-    </div>
-
-    <div class="feature-row">
-      <span>Temporary Chat</span>
-      <input
-        id="temporaryToggle"
-        type="checkbox"
-        ${settings.temporary ? "checked":""}>
-    </div>
 
     <div class="modal-actions">
-      <button class="secondary" id="cancelSettings">
+      <button class="secondary" onclick="closeModal()">
         Cancel
       </button>
 
-      <button class="primary" id="saveSettings">
+      <button class="primary" onclick="saveRename()">
+        Save
+      </button>
+    </div>
+  `);
+
+}
+
+
+function saveRename(){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
+  const value=
+    document.getElementById("renameInput").value.trim();
+
+  if(value){
+    chat.title=value;
+    save();
+    renderCurrent();
+    renderHistory();
+  }
+
+  closeModal();
+}
+
+
+/* =========================================
+   FAVORITE
+========================================= */
+
+function toggleFavorite(){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
+  chat.favorite=!chat.favorite;
+
+  document.getElementById("favoriteBtn").textContent=
+    chat.favorite?"★":"☆";
+
+  save();
+  renderHistory();
+}
+
+
+/* =========================================
+   NEW CHAT
+========================================= */
+
+document.getElementById("newChat").addEventListener(
+  "click",
+  ()=>{
+    createChat();
+    closeSidebarMobile();
+  }
+);
+
+
+/* =========================================
+   SEARCH
+========================================= */
+
+document.getElementById("chatSearch").addEventListener(
+  "input",
+  event=>{
+    renderHistory(event.target.value);
+  }
+);
+
+
+/* =========================================
+   THEME
+========================================= */
+
+function toggleTheme(){
+
+  body.classList.toggle("dark");
+
+  settings.theme=
+    body.classList.contains("dark")
+      ?"dark"
+      :"light";
+
+  save();
+
+  showToast(
+    settings.theme==="dark"
+      ?"Dark mode enabled"
+      :"Light mode enabled"
+  );
+}
+
+
+/* =========================================
+   FULLSCREEN
+========================================= */
+
+async function fullscreen(){
+
+  try{
+
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }else{
+      await document.exitFullscreen();
+    }
+
+  }catch{}
+
+}
+
+
+/* =========================================
+   SETTINGS
+========================================= */
+
+function openSettings(){
+
+  openModal(`
+    <div class="modal-header">
+      <h2>⚙ Settings</h2>
+      <button class="close" onclick="closeModal()">×</button>
+    </div>
+
+    <label class="modal-label">
+      AI Persona
+    </label>
+
+    <select class="modal-select" id="personaSetting">
+      <option ${settings.persona==="Assistant"?"selected":""}>Assistant</option>
+      <option ${settings.persona==="Teacher"?"selected":""}>Teacher</option>
+      <option ${settings.persona==="Coder"?"selected":""}>Coder</option>
+      <option ${settings.persona==="Writer"?"selected":""}>Writer</option>
+      <option ${settings.persona==="Creative"?"selected":""}>Creative</option>
+      <option ${settings.persona==="Business"?"selected":""}>Business</option>
+    </select>
+
+    <label class="modal-label">
+      Response style
+    </label>
+
+    <select class="modal-select" id="modeSetting">
+      <option>Balanced</option>
+      <option>Concise</option>
+      <option>Detailed</option>
+      <option>Creative</option>
+    </select>
+
+    <label class="modal-label">
+      Custom instructions
+    </label>
+
+    <textarea
+      class="modal-textarea"
+      id="instructionsSetting"
+      placeholder="Tell the AI how you want it to respond..."
+    >${escapeHtml(settings.systemPrompt)}</textarea>
+
+    <div class="modal-actions">
+      <button class="primary" onclick="saveSettings()">
         Save Settings
       </button>
     </div>
   `);
 
-  $("settingTone").value = settings.tone;
-
-  $("cancelSettings").onclick = closeModal;
-
-  $("saveSettings").onclick = ()=>{
-    settings.language =
-      $("settingLanguage").value;
-
-    settings.tone =
-      $("settingTone").value;
-
-    settings.temperature =
-      Number($("settingTemperature").value);
-
-    settings.maxTokens =
-      Math.max(
-        100,
-        Math.min(
-          8000,
-          Number($("settingTokens").value) || 2000
-        )
-      );
-
-    settings.customInstructions =
-      $("settingInstructions").value.trim();
-
-    settings.memoryEnabled =
-      $("memoryToggle").checked;
-
-    settings.temporary =
-      $("temporaryToggle").checked;
-
-    saveAll();
-    closeModal();
-
-    toast("Settings saved.");
-    renderAll();
-  };
+  document.getElementById("modeSetting").value=
+    settings.mode;
 }
 
-/* =========================================================
-   PROFILE / APPEARANCE
-========================================================= */
 
-function showAppearance(){
-  openModal(`
-    <h2>🎨 Appearance</h2>
+function saveSettings(){
 
-    <div class="control-grid">
+  settings.persona=
+    document.getElementById("personaSetting").value;
 
-      <button class="control-btn" id="lightTheme">
-        ☀️ Light
-      </button>
+  settings.mode=
+    document.getElementById("modeSetting").value;
 
-      <button class="control-btn" id="darkTheme">
-        🌙 Dark
-      </button>
+  settings.systemPrompt=
+    document.getElementById("instructionsSetting").value;
 
-      <button class="control-btn" id="compactMode">
-        Compact
-      </button>
+  save();
+  closeModal();
 
-      <button class="control-btn" id="comfortableMode">
-        Comfortable
-      </button>
+  renderCurrent();
 
-      <button class="control-btn" id="readingMode">
-        📖 Reading
-      </button>
-
-      <button class="control-btn" id="focusMode">
-        🎯 Focus
-      </button>
-
-    </div>
-
-    <h3 style="margin-top:18px">
-      Accent Color
-    </h3>
-
-    <input
-      type="color"
-      id="accentColor"
-      value="${getComputedStyle(document.documentElement).getPropertyValue("--accent").trim() || "#635bff"}"
-      style="width:100%;height:45px;border:0"
-    >
-
-    <h3>AI Avatar</h3>
-
-    <input class="modal-input"
-      id="avatarInput"
-      value="${escapeHTML(settings.avatar)}"
-      maxlength="3"
-      placeholder="AI">
-
-  `);
-
-  $("lightTheme").onclick = ()=>{
-    settings.theme = "light";
-    applySettings();
-  };
-
-  $("darkTheme").onclick = ()=>{
-    settings.theme = "dark";
-    applySettings();
-  };
-
-  $("compactMode").onclick = ()=>{
-    settings.density = "compact";
-    applySettings();
-  };
-
-  $("comfortableMode").onclick = ()=>{
-    settings.density = "comfortable";
-    applySettings();
-  };
-
-  $("readingMode").onclick = ()=>{
-    settings.reading = !settings.reading;
-    applySettings();
-  };
-
-  $("focusMode").onclick = ()=>{
-    settings.focus = !settings.focus;
-    applySettings();
-    closeModal();
-  };
-
-  $("accentColor").oninput = e=>{
-    document.documentElement.style.setProperty(
-      "--accent",
-      e.target.value
-    );
-
-    saveAll();
-  };
-
-  $("avatarInput").onchange = e=>{
-    settings.avatar =
-      e.target.value.trim() || "AI";
-
-    saveAll();
-    renderAll();
-  };
+  showToast("Settings saved.");
 }
 
-/* =========================================================
-   SETTINGS APPLICATION
-========================================================= */
 
-function applySettings(){
-  document.body.classList.toggle(
-    "dark",
-    settings.theme === "dark"
-  );
-
-  document.body.classList.toggle(
-    "compact",
-    settings.density === "compact"
-  );
-
-  document.body.classList.toggle(
-    "reading-mode",
-    settings.reading
-  );
-
-  document.body.classList.toggle(
-    "focus-mode",
-    settings.focus
-  );
-
-  personaBadge.textContent =
-    settings.persona;
-
-  document.documentElement.style.setProperty(
-    "--density",
-    settings.density === "compact" ? ".8" : "1"
-  );
-
-  saveJSON(SETTINGS_KEY,settings);
-}
-
-/* =========================================================
-   STATS
-========================================================= */
-
-function updateStats(){
-  const chat = currentChat();
-
-  if(!chat){
-    $("statMessages").textContent = "0";
-    $("statWords").textContent = "0";
-    $("statAI").textContent = "0";
-    $("statPinned").textContent = "0";
-    return;
-  }
-
-  $("statMessages").textContent =
-    chat.messages.length;
-
-  $("statWords").textContent =
-    chat.messages.reduce(
-      (sum,m)=>sum + wordCount(m.content),
-      0
-    );
-
-  $("statAI").textContent =
-    chat.messages.filter(
-      m=>m.role === "assistant"
-    ).length;
-
-  $("statPinned").textContent =
-    chat.messages.filter(
-      m=>m.pinned
-    ).length;
-}
-
-/* =========================================================
+/* =========================================
    EXPORT
-========================================================= */
+========================================= */
 
-function exportChat(format){
-  const chat = currentChat();
+function exportChat(){
 
-  if(!chat){
-    toast("No chat selected.");
-    return;
-  }
+  const chat=currentChat();
 
-  if(format === "markdown"){
-    let text =
-      "# " + chat.title + "\n\n";
+  if(!chat)return;
 
-    chat.messages.forEach(m=>{
-      text +=
-        `## ${m.role === "user" ? "You" : "AI"}\n\n` +
-        m.content +
-        "\n\n";
-    });
+  let output=
+    `# ${chat.title}\n\n`;
 
-    downloadFile(
-      chat.title + ".md",
-      text,
-      "text/markdown"
-    );
-  }
+  chat.messages.forEach(msg=>{
+    output+=
+      `## ${msg.role==="user"?"You":"Simple Chat AI"}\n\n`+
+      msg.content+
+      "\n\n";
+  });
 
-  if(format === "html"){
-    let body = "";
+  const blob=new Blob(
+    [output],
+    {type:"text/markdown"}
+  );
 
-    chat.messages.forEach(m=>{
-      body += `
-        <h3>${m.role === "user" ? "You" : "AI"}</h3>
-        <p>${formatText(m.content)}</p>
-      `;
-    });
+  const url=URL.createObjectURL(blob);
 
-    const html = `
-      <!DOCTYPE html>
-      <html>
-      <head>
-      <meta charset="UTF-8">
-      <title>${escapeHTML(chat.title)}</title>
-      </head>
-      <body>
-      <h1>${escapeHTML(chat.title)}</h1>
-      ${body}
-      </body>
-      </html>
-    `;
+  const a=document.createElement("a");
 
-    downloadFile(
-      chat.title + ".html",
-      html,
-      "text/html"
-    );
-  }
+  a.href=url;
+  a.download=
+    `${safeFilename(chat.title)}.md`;
 
-  if(format === "text"){
-    const text =
-      chat.messages
-        .map(m=>
-          `${m.role === "user" ? "You" : "AI"}:\n${m.content}`
-        )
-        .join("\n\n");
-
-    downloadFile(
-      chat.title + ".txt",
-      text,
-      "text/plain"
-    );
-  }
-}
-
-function downloadFile(name,content,type){
-  const blob =
-    new Blob([content],{type});
-
-  const url =
-    URL.createObjectURL(blob);
-
-  const a =
-    document.createElement("a");
-
-  a.href = url;
-  a.download = name;
-
-  document.body.appendChild(a);
   a.click();
-  a.remove();
 
   URL.revokeObjectURL(url);
+
+  showToast("Chat exported.");
 }
 
-function showExportMenu(){
+
+/* =========================================
+   CLEAR
+========================================= */
+
+function clearChat(){
+
+  const chat=currentChat();
+
+  if(!chat)return;
+
   openModal(`
-    <h2>Export Conversation</h2>
-
-    <div class="feature-list">
-
-      <div class="feature-row" id="exportMarkdown">
-        📘 Markdown
-      </div>
-
-      <div class="feature-row" id="exportHTML">
-        🌐 HTML
-      </div>
-
-      <div class="feature-row" id="exportText">
-        📄 Text
-      </div>
-
-      <div class="feature-row" id="printChat">
-        🖨️ Print
-      </div>
-
+    <div class="modal-header">
+      <h2>Clear conversation?</h2>
+      <button class="close" onclick="closeModal()">×</button>
     </div>
-  `);
 
-  $("exportMarkdown").onclick = ()=>{
-    exportChat("markdown");
-    closeModal();
-  };
-
-  $("exportHTML").onclick = ()=>{
-    exportChat("html");
-    closeModal();
-  };
-
-  $("exportText").onclick = ()=>{
-    exportChat("text");
-    closeModal();
-  };
-
-  $("printChat").onclick = ()=>{
-    closeModal();
-    window.print();
-  };
-}
-
-/* =========================================================
-   DAILY BRIEF
-========================================================= */
-
-function dailyBrief(){
-  const recent = chats
-    .slice(0,8)
-    .map(c=>c.title)
-    .join("\n");
-
-  if(!recent){
-    toast("No recent chats.");
-    return;
-  }
-
-  sendMessage(
-    "Create my Daily AI Brief from these recent conversation topics. Highlight important things, unfinished tasks and useful next actions:\n\n" +
-    recent
-  );
-}
-
-/* =========================================================
-   TEXT CLEANER
-========================================================= */
-
-function textCleaner(){
-  const text = input.value.trim();
-
-  if(!text){
-    toast("Paste text first.");
-    return;
-  }
-
-  input.value =
-    text
-      .replace(/[ \t]+/g," ")
-      .replace(/\n{3,}/g,"\n\n")
-      .trim();
-
-  updateCounter();
-  resizeInput();
-
-  toast("Text cleaned.");
-}
-
-/* =========================================================
-   PROMPT HISTORY
-========================================================= */
-
-function addPromptHistory(text){
-  if(!text) return;
-
-  promptHistory.unshift({
-    text,
-    createdAt:Date.now()
-  });
-
-  promptHistory =
-    promptHistory.slice(0,100);
-
-  saveJSON(PROMPT_KEY,promptHistory);
-}
-
-function showPromptHistory(){
-  openModal(`
-    <h2>🕘 Prompt History</h2>
-
-    <div class="feature-list">
-
-      ${
-        promptHistory.length
-        ? promptHistory.map((p,i)=>`
-          <div class="feature-row"
-            data-prompt-history="${i}">
-            ${escapeHTML(p.text.slice(0,200))}
-          </div>
-        `).join("")
-        : `<p style="color:var(--muted)">No prompt history.</p>`
-      }
-
-    </div>
-  `);
-
-  modal.querySelectorAll("[data-prompt-history]").forEach(row=>{
-    row.onclick = ()=>{
-      input.value =
-        promptHistory[
-          Number(row.dataset.promptHistory)
-        ].text;
-
-      closeModal();
-      updateCounter();
-      resizeInput();
-      input.focus();
-    };
-  });
-}
-
-/* =========================================================
-   PROFILE / MORE MENU
-========================================================= */
-
-function showMoreMenu(){
-  openModal(`
-    <h2>More Tools</h2>
-
-    <div class="feature-list">
-
-      <div class="feature-row" id="moreExport">
-        📤 Export Conversation
-      </div>
-
-      <div class="feature-row" id="moreFiles">
-        📁 File Library
-      </div>
-
-      <div class="feature-row" id="morePrompts">
-        🕘 Prompt History
-      </div>
-
-      <div class="feature-row" id="moreSnapshots">
-        📸 Snapshots
-      </div>
-
-      <div class="feature-row" id="moreDaily">
-        ☀️ Daily AI Brief
-      </div>
-
-      <div class="feature-row" id="moreStudy">
-        🔬 Deep Study Mode
-      </div>
-
-      <div class="feature-row" id="moreRead">
-        🔊 Read Last Response
-      </div>
-
-      <div class="feature-row" id="moreClean">
-        🧹 Text Cleaner
-      </div>
-
-    </div>
-  `);
-
-  $("moreExport").onclick = showExportMenu;
-  $("moreFiles").onclick = showFileLibrary;
-  $("morePrompts").onclick = showPromptHistory;
-  $("moreSnapshots").onclick = showSnapshots;
-
-  $("moreDaily").onclick = ()=>{
-    closeModal();
-    dailyBrief();
-  };
-
-  $("moreStudy").onclick = deepStudy;
-
-  $("moreRead").onclick = ()=>{
-    closeModal();
-    readLastResponse();
-  };
-
-  $("moreClean").onclick = ()=>{
-    closeModal();
-    textCleaner();
-  };
-}
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-function updateCounter(){
-  const length = input.value.length;
-
-  counter.textContent =
-    `${length} / 6000`;
-
-  if(length > 6000){
-    input.value =
-      input.value.slice(0,6000);
-  }
-}
-
-function resizeInput(){
-  input.style.height = "auto";
-
-  input.style.height =
-    Math.min(
-      input.scrollHeight,
-      180
-    ) + "px";
-}
-
-function stopGeneration(){
-  if(controller){
-    controller.abort();
-  }
-}
-
-/* =========================================================
-   MOBILE
-========================================================= */
-
-function closeMobileSidebar(){
-  sidebar.classList.remove("open");
-}
-
-/* =========================================================
-   KEYBOARD SHORTCUTS
-========================================================= */
-
-function showShortcuts(){
-  openModal(`
-    <h2>⌨️ Keyboard Shortcuts</h2>
-
-    <div class="feature-list">
-
-      <div class="feature-row">
-        <b>Ctrl + K</b>
-        <span>Command Center</span>
-      </div>
-
-      <div class="feature-row">
-        <b>Ctrl + Enter</b>
-        <span>Send message</span>
-      </div>
-
-      <div class="feature-row">
-        <b>Esc</b>
-        <span>Close modal</span>
-      </div>
-
-      <div class="feature-row">
-        <b>Ctrl + Shift + F</b>
-        <span>Focus mode</span>
-      </div>
-
-    </div>
-  `);
-}
-
-/* =========================================================
-   EVENTS
-========================================================= */
-
-$("newChatBtn").onclick = createChat;
-
-$("chatSearch").oninput = renderHistory;
-
-$("renameBtn").onclick = renameCurrent;
-
-$("favoriteBtn").onclick = ()=>{
-  ensureChat();
-
-  const chat = currentChat();
-
-  chat.favorite = !chat.favorite;
-
-  saveAll();
-  renderAll();
-};
-
-$("archiveBtn").onclick = ()=>{
-  const chat = currentChat();
-
-  if(!chat) return;
-
-  chat.archived = true;
-
-  saveAll();
-  currentId = null;
-  renderAll();
-};
-
-$("fullscreenBtn").onclick = ()=>{
-  if(!document.fullscreenElement){
-    document.documentElement.requestFullscreen?.();
-  }else{
-    document.exitFullscreen?.();
-  }
-};
-
-$("moreBtn").onclick = showMoreMenu;
-
-$("settingsBtn").onclick = showSettings;
-
-$("themeBtn").onclick = showAppearance;
-
-$("focusBtn").onclick = ()=>{
-  settings.focus = !settings.focus;
-  applySettings();
-};
-
-$("memoryBtn").onclick = showMemoryCenter;
-
-$("workspaceBtn").onclick = showWorkspaces;
-
-$("calendarBtn").onclick = showCalendar;
-
-$("savedBtn").onclick = showSavedAnswers;
-
-$("tasksBtn").onclick = showTasks;
-
-$("homeworkBtn").onclick = ()=>openHomework();
-
-$("commandBtn").onclick = showCommandCenter;
-
-$("mobileMenuBtn").onclick = ()=>{
-  sidebar.classList.toggle("open");
-};
-
-$("continueBtn").onclick = continueResponse;
-
-$("followBtn").onclick = showFollowUps;
-
-$("summaryBtn").onclick = summarizeChat;
-
-$("snapshotBtn").onclick = createSnapshot;
-
-$("saveAnswerBtn").onclick = saveCurrentAnswer;
-
-$("tasksResponseBtn").onclick = createTasksFromResponse;
-
-$("rememberBtn").onclick = rememberSomething;
-
-$("viewMemoryBtn").onclick = showMemoryCenter;
-
-$("goalBtn").onclick = setGoal;
-
-$("teachMeBtn").onclick = ()=>{
-  teachMode = !teachMode;
-
-  toast(
-    teachMode
-      ? "Teach Me Mode enabled."
-      : "Teach Me Mode disabled."
-  );
-};
-
-$("fileBtn").onclick = ()=>{
-  $("fileInput").click();
-};
-
-$("imageBtn").onclick = ()=>{
-  $("imageInput").click();
-};
-
-$("voiceBtn").onclick = startVoice;
-
-$("fileInput").onchange = e=>{
-  handleFile(e.target.files[0]);
-  e.target.value = "";
-};
-
-$("imageInput").onchange = async e=>{
-  await handleImage(e.target.files[0]);
-  e.target.value = "";
-};
-
-sendBtn.onclick = ()=>{
-  if(generating){
-    stopGeneration();
-  }else{
-    sendMessage();
-  }
-};
-
-input.addEventListener("input",()=>{
-  updateCounter();
-  resizeInput();
-});
-
-input.addEventListener("keydown",e=>{
-  if(e.key === "Enter" && e.ctrlKey){
-    e.preventDefault();
-    sendMessage();
-  }
-});
-
-document.querySelectorAll(".quick").forEach(btn=>{
-  btn.onclick = ()=>{
-    input.value = btn.dataset.prompt;
-    updateCounter();
-    resizeInput();
-    input.focus();
-  };
-});
-
-document.querySelectorAll("[data-tool]").forEach(btn=>{
-  btn.onclick = ()=>{
-    applyTool(btn.dataset.tool);
-  };
-});
-
-document.querySelectorAll("[data-action]").forEach(btn=>{
-  btn.onclick = ()=>{
-    actionTool(btn.dataset.action);
-  };
-});
-
-document.querySelectorAll("[data-persona]").forEach(btn=>{
-  btn.onclick = ()=>{
-    settings.persona =
-      btn.dataset.persona;
-
-    saveAll();
-
-    document
-      .querySelectorAll("[data-persona]")
-      .forEach(x=>
-        x.classList.toggle(
-          "active",
-          x.dataset.persona === settings.persona
-        )
-      );
-
-    renderAll();
-  };
-});
-
-document.querySelectorAll("[data-mode]").forEach(btn=>{
-  btn.onclick = ()=>{
-    settings.mode = btn.dataset.mode;
-
-    saveAll();
-
-    document
-      .querySelectorAll("[data-mode]")
-      .forEach(x=>
-        x.classList.toggle(
-          "active",
-          x.dataset.mode === settings.mode
-        )
-      );
-
-    toast("Response mode: " + settings.mode);
-  };
-});
-
-document.querySelectorAll("[data-homework]").forEach(btn=>{
-  btn.onclick = ()=>{
-    openHomework(btn.dataset.homework);
-  };
-});
-
-$("customPersonaBtn").onclick = ()=>{
-  openModal(`
-    <h2>Custom AI Persona</h2>
-
-    <input class="modal-input"
-      id="customPersonaName"
-      placeholder="Persona name">
-
-    <textarea id="customPersonaInstructions"
-      rows="6"
-      placeholder="Describe how the AI should behave"></textarea>
+    <p style="color:var(--muted);">
+      All messages in this conversation will be removed.
+    </p>
 
     <div class="modal-actions">
-      <button class="secondary" id="cancelPersona">
+
+      <button class="secondary" onclick="closeModal()">
         Cancel
       </button>
 
-      <button class="primary" id="savePersona">
-        Save Persona
+      <button
+        class="primary"
+        style="background:var(--danger);"
+        onclick="confirmClear()">
+        Clear
       </button>
+
     </div>
   `);
+}
 
-  $("cancelPersona").onclick = closeModal;
 
-  $("savePersona").onclick = ()=>{
-    const name =
-      $("customPersonaName").value.trim();
+function confirmClear(){
 
-    const instructions =
-      $("customPersonaInstructions").value.trim();
+  const chat=currentChat();
 
-    if(!name || !instructions){
-      toast("Fill in both fields.");
+  if(chat){
+    chat.messages=[];
+    chat.title="New Chat";
+    save();
+    renderCurrent();
+    renderHistory();
+  }
+
+  closeModal();
+}
+
+
+/* =========================================
+   VOICE INPUT
+========================================= */
+
+function startVoice(){
+
+  const SpeechRecognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  if(!SpeechRecognition){
+    showToast("Voice input is not supported in this browser.");
+    return;
+  }
+
+  const recognition=new SpeechRecognition();
+
+  recognition.lang="en-US";
+  recognition.interimResults=false;
+  recognition.maxAlternatives=1;
+
+  recognition.onstart=()=>{
+    showToast("Listening...");
+  };
+
+  recognition.onresult=event=>{
+
+    const text=
+      event.results[0][0].transcript;
+
+    if(currentChat()?.messages.length){
+      input.value=text;
+      autoResize(input);
+      input.focus();
+    }else{
+      centerInput.value=text;
+      autoResize(centerInput);
+      centerInput.focus();
+    }
+  };
+
+  recognition.onerror=()=>{
+    showToast("Voice input stopped.");
+  };
+
+  recognition.start();
+}
+
+
+/* =========================================
+   FILE INPUT
+========================================= */
+
+function chooseFile(){
+
+  const fileInput=document.createElement("input");
+
+  fileInput.type="file";
+  fileInput.accept=".txt,.md,.csv,.json";
+
+  fileInput.onchange=async()=>{
+
+    const file=fileInput.files[0];
+
+    if(!file)return;
+
+    const text=await file.text();
+
+    const prompt=
+`I uploaded a file named "${file.name}".
+
+Please help me understand and work with its contents.
+
+File contents:
+
+${text.slice(0,50000)}`;
+
+    if(currentChat()?.messages.length){
+      sendText(prompt);
+    }else{
+      centerInput.value=prompt;
+      autoResize(centerInput);
+      centerInput.focus();
+    }
+  };
+
+  fileInput.click();
+}
+
+
+/* =========================================
+   MODALS
+========================================= */
+
+function openModal(html){
+
+  modal.innerHTML=html;
+
+  modalBg.classList.add("show");
+
+  body.classList.add("modal-open");
+}
+
+
+function closeModal(){
+
+  modalBg.classList.remove("show");
+
+  modal.innerHTML="";
+
+  body.classList.remove("modal-open");
+}
+
+
+modalBg.addEventListener("click",event=>{
+
+  if(event.target===modalBg){
+    closeModal();
+  }
+
+});
+
+
+/* =========================================
+   TOAST
+========================================= */
+
+let toastTimer;
+
+function showToast(text){
+
+  toastEl.textContent=text;
+
+  toastEl.classList.add("show");
+
+  clearTimeout(toastTimer);
+
+  toastTimer=setTimeout(()=>{
+    toastEl.classList.remove("show");
+  },2500);
+}
+
+
+/* =========================================
+   MOBILE
+========================================= */
+
+function closeSidebarMobile(){
+  sidebar.classList.remove("open");
+}
+
+document.getElementById("mobileMenu").addEventListener(
+  "click",
+  ()=>{
+    sidebar.classList.toggle("open");
+  }
+);
+
+
+/* =========================================
+   BUTTON EVENTS
+========================================= */
+
+document.getElementById("memoryBtn")
+  .addEventListener("click",openMemory);
+
+document.getElementById("viewMemory")
+  .addEventListener("click",openMemory);
+
+document.getElementById("workspaceBtn")
+  .addEventListener("click",openWorkspace);
+
+document.getElementById("openWorkspace")
+  .addEventListener("click",openWorkspace);
+
+document.getElementById("goalBtn")
+  .addEventListener("click",openGoals);
+
+document.getElementById("openGoals")
+  .addEventListener("click",openGoals);
+
+document.getElementById("studyBtn")
+  .addEventListener("click",openStudy);
+
+document.getElementById("openStudy")
+  .addEventListener("click",openStudy);
+
+document.getElementById("homeworkBtn")
+  .addEventListener("click",openHomework);
+
+document.getElementById("openHomework")
+  .addEventListener("click",openHomework);
+
+document.getElementById("commandBtn")
+  .addEventListener("click",openCommands);
+
+document.getElementById("openCommands")
+  .addEventListener("click",openCommands);
+
+document.getElementById("themeBtn")
+  .addEventListener("click",toggleTheme);
+
+document.getElementById("settingsBtn")
+  .addEventListener("click",openSettings);
+
+document.getElementById("renameBtn")
+  .addEventListener("click",renameChat);
+
+document.getElementById("favoriteBtn")
+  .addEventListener("click",toggleFavorite);
+
+document.getElementById("fullscreenBtn")
+  .addEventListener("click",fullscreen);
+
+document.getElementById("sendBtn")
+  .addEventListener("click",()=>{
+    if(generating){
+      controller?.abort();
       return;
     }
 
-    settings.persona = name;
-    settings.customInstructions =
-      instructions;
+    const text=input.value.trim();
 
-    saveAll();
-    closeModal();
-    renderAll();
-  };
-};
-
-modalBg.onclick = e=>{
-  if(e.target === modalBg){
-    closeModal();
-  }
-};
-
-document.addEventListener("keydown",e=>{
-
-  if(e.key === "Escape"){
-    closeModal();
-  }
-
-  if(e.ctrlKey && e.key.toLowerCase() === "k"){
-    e.preventDefault();
-    showCommandCenter();
-  }
-
-  if(
-    e.ctrlKey &&
-    e.shiftKey &&
-    e.key.toLowerCase() === "f"
-  ){
-    e.preventDefault();
-
-    settings.focus = !settings.focus;
-    applySettings();
-  }
-
-  if(
-    e.key === "?" &&
-    !e.ctrlKey &&
-    !e.shiftKey
-  ){
-    showShortcuts();
-  }
-});
-
-/* =========================================================
-   DRAG AND DROP
-========================================================= */
-
-document.addEventListener("dragover",e=>{
-  e.preventDefault();
-});
-
-document.addEventListener("drop",e=>{
-  e.preventDefault();
-
-  const file =
-    e.dataTransfer.files[0];
-
-  if(!file) return;
-
-  if(file.type.startsWith("image/")){
-    handleImage(file);
-  }else{
-    handleFile(file);
-  }
-});
-
-/* =========================================================
-   AUTO SAVE RECOVERY
-========================================================= */
-
-setInterval(()=>{
-  try{
-    localStorage.setItem(
-      DRAFT_KEY,
-      JSON.stringify({
-        text:input.value,
-        time:Date.now()
-      })
-    );
-  }catch(error){}
-},3000);
-
-function restoreDraft(){
-  try{
-    const draft =
-      JSON.parse(
-        localStorage.getItem(DRAFT_KEY) || "null"
-      );
-
-    if(
-      draft &&
-      typeof draft.text === "string" &&
-      draft.text.trim()
-    ){
-      input.value = draft.text;
+    if(text){
+      input.value="";
+      autoResize(input);
       updateCounter();
-      resizeInput();
+      sendText(text);
     }
-  }catch(error){}
+  });
+
+document.getElementById("centerFileBtn")
+  .addEventListener("click",chooseFile);
+
+document.getElementById("fileBtn")
+  .addEventListener("click",chooseFile);
+
+document.getElementById("centerVoiceBtn")
+  .addEventListener("click",startVoice);
+
+document.getElementById("voiceBtn")
+  .addEventListener("click",startVoice);
+
+
+/* =========================================
+   KEYBOARD SHORTCUTS
+========================================= */
+
+document.addEventListener("keydown",event=>{
+
+  if(
+    (event.ctrlKey || event.metaKey) &&
+    event.key.toLowerCase()==="k"
+  ){
+    event.preventDefault();
+    openCommands();
+  }
+
+  if(event.key==="Escape"){
+    closeModal();
+  }
+
+});
+
+
+/* =========================================
+   HELPERS
+========================================= */
+
+function createTitle(text){
+
+  const clean=text
+    .replace(/\s+/g," ")
+    .trim();
+
+  if(clean.length<=35){
+    return clean;
+  }
+
+  return clean.slice(0,35)+"…";
 }
 
-/* =========================================================
-   INITIALIZATION
-========================================================= */
 
-function initialize(){
+function formatTime(time){
 
-  if(chats.length){
-    currentId = chats[0].id;
+  try{
+    return new Date(time).toLocaleTimeString(
+      [],
+      {
+        hour:"2-digit",
+        minute:"2-digit"
+      }
+    );
+  }catch{
+    return "";
   }
+}
 
-  applySettings();
-  renderAll();
-  restoreDraft();
-  updateCounter();
-  resizeInput();
 
-  if(!currentId){
-    welcome.style.display = "";
-  }
+function formatText(text){
 
-  console.log(
-    "Simple Chat AI initialized successfully."
+  let safe=escapeHtml(text);
+
+  safe=safe.replace(
+    /```([\s\S]*?)```/g,
+    "<pre style='padding:12px;border-radius:10px;background:var(--bg2);overflow:auto;'>$1</pre>"
   );
+
+  safe=safe.replace(
+    /\*\*(.*?)\*\*/g,
+    "<strong>$1</strong>"
+  );
+
+  safe=safe.replace(
+    /`([^`]+)`/g,
+    "<code style='padding:2px 5px;border-radius:5px;background:var(--bg2);'>$1</code>"
+  );
+
+  return safe;
 }
 
-initialize();
+
+function escapeHtml(value){
+
+  return String(value)
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
+}
+
+
+function safeFilename(name){
+
+  return name
+    .replace(/[<>:"/\\|?*]/g,"")
+    .replace(/\s+/g,"-")
+    .slice(0,60) ||
+    "chat";
+}
+
+
+/* =========================================
+   INIT
+========================================= */
+
+load();
+
+if(!chats.length){
+  createChat();
+}else{
+  currentChatId=chats[0].id;
+  renderCurrent();
+}
+
+updateCounter();
 
 </script>
 
