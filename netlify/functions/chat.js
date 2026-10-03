@@ -14,8 +14,7 @@ exports.handler = async function (event) {
 
   if (!token) {
     return response(500, {
-      error:
-        "REPLICATE_API_TOKEN is missing from Netlify."
+      error: "REPLICATE_API_TOKEN is missing from Netlify."
     });
   }
 
@@ -37,12 +36,6 @@ exports.handler = async function (event) {
   if (!message) {
     return response(400, {
       error: "Message is empty."
-    });
-  }
-
-  if (message.length > 30000) {
-    return response(413, {
-      error: "Message is too long."
     });
   }
 
@@ -102,34 +95,29 @@ exports.handler = async function (event) {
       continue;
     }
 
-    const content =
-      item.content.trim();
-
-    if (!content) {
+    if (!item.content.trim()) {
       continue;
     }
 
     messages.push({
       role: item.role,
-      content: content.slice(0, 30000)
+      content: item.content.trim()
     });
   }
-
-  let userContent = message;
 
   const imageData =
     typeof body.imageData === "string"
       ? body.imageData
       : "";
 
+  let userContent = message;
+
   if (imageData) {
 
-    if (
-      imageData.length > 9000000
-    ) {
+    if (imageData.length > 9000000) {
       return response(413, {
         error:
-          "Image is too large. Please use a smaller image."
+          "Image is too large. Please choose a smaller image."
       });
     }
 
@@ -159,34 +147,32 @@ exports.handler = async function (event) {
   };
 
   if (systemPrompt) {
-    input.system_prompt =
-      systemPrompt.slice(0, 30000);
+    input.system_prompt = systemPrompt;
   }
 
   try {
 
-    const apiResponse =
-      await fetch(
-        MODEL_URL,
-        {
-          method: "POST",
+    const apiResponse = await fetch(
+      MODEL_URL,
+      {
+        method: "POST",
 
-          headers: {
-            "Authorization":
-              "Bearer " + token,
+        headers: {
+          "Authorization":
+            "Bearer " + token,
 
-            "Content-Type":
-              "application/json",
+          "Content-Type":
+            "application/json",
 
-            "Prefer":
-              "wait"
-          },
+          "Prefer":
+            "wait"
+        },
 
-          body: JSON.stringify({
-            input: input
-          })
-        }
-      );
+        body: JSON.stringify({
+          input: input
+        })
+      }
+    );
 
     const text =
       await apiResponse.text();
@@ -195,10 +181,9 @@ exports.handler = async function (event) {
 
     try {
 
-      data =
-        text
-          ? JSON.parse(text)
-          : {};
+      data = text
+        ? JSON.parse(text)
+        : {};
 
     } catch (error) {
 
@@ -361,6 +346,7 @@ function response(
 ) {
 
   return {
+
     statusCode: statusCode,
 
     headers: {
