@@ -3,54 +3,41 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1.0">
-
 <title>Simple Chat AI</title>
 
 <style>
 :root{
-  --bg:#f5f7fb;
+  --bg:#f4f6fb;
   --panel:#ffffff;
-  --panel2:#f0f2f7;
+  --panel2:#f8f9fd;
   --text:#172033;
   --muted:#718096;
-  --border:#dfe4ee;
+  --border:#e3e7ef;
   --accent:#5b5cf0;
-  --accent2:#7475ff;
-  --danger:#e5484d;
-  --success:#20a464;
-  --warning:#d99a00;
-  --bubble:#edf0ff;
-  --shadow:0 10px 35px rgba(30,40,70,.10);
+  --accent2:#7c3aed;
+  --danger:#ef4444;
+  --success:#16a34a;
+  --warning:#f59e0b;
+  --bubble:#f1f3f8;
+  --shadow:0 12px 35px rgba(20,30,60,.08);
 }
 
 *{
   box-sizing:border-box;
 }
 
-html,
-body{
+html,body{
   width:100%;
   height:100%;
   margin:0;
-  padding:0;
-}
-
-body{
-  font-family:Inter,Arial,sans-serif;
-  background:var(--bg);
-  color:var(--text);
   overflow:hidden;
 }
 
-body.dark{
-  --bg:#090d17;
-  --panel:#111827;
-  --panel2:#182131;
-  --text:#f2f5fa;
-  --muted:#9ca8bb;
-  --border:#293449;
-  --bubble:#202a42;
-  --shadow:0 10px 35px rgba(0,0,0,.35);
+body{
+  min-height:100vh;
+  background:var(--bg);
+  color:var(--text);
+  font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
 }
 
 button,
@@ -65,213 +52,181 @@ button{
 }
 
 .app{
-  display:flex;
   width:100%;
   height:100vh;
   min-height:0;
+  display:grid;
+  grid-template-columns:280px minmax(0,1fr) 315px;
   overflow:hidden;
+}
+
+body.dark{
+  --bg:#0c1020;
+  --panel:#13182a;
+  --panel2:#181e32;
+  --text:#edf2ff;
+  --muted:#9aa6c0;
+  --border:#283149;
+  --bubble:#1d2539;
+  --shadow:0 15px 40px rgba(0,0,0,.3);
 }
 
 /* SIDEBAR */
 
 .sidebar{
-  width:285px;
-  flex:0 0 285px;
-  height:100vh;
+  min-width:0;
+  min-height:0;
+  overflow-y:auto;
+  overflow-x:hidden;
   background:var(--panel);
   border-right:1px solid var(--border);
+  padding:16px;
   display:flex;
   flex-direction:column;
-  min-height:0;
-  transition:.25s;
-  overflow:hidden;
-  z-index:50;
-}
-
-.sidebar.collapsed{
-  width:70px;
-  flex-basis:70px;
-}
-
-.sidebar.collapsed .brand-text,
-.sidebar.collapsed .side-label,
-.sidebar.collapsed .history,
-.sidebar.collapsed .side-button span{
-  display:none;
+  gap:12px;
 }
 
 .brand{
-  height:70px;
   display:flex;
   align-items:center;
-  gap:12px;
-  padding:12px 16px;
-  border-bottom:1px solid var(--border);
+  gap:10px;
+  padding:6px 4px 14px;
 }
 
 .logo{
   width:42px;
   height:42px;
-  border-radius:13px;
+  border-radius:14px;
+  display:grid;
+  place-items:center;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:white;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:20px;
-  font-weight:800;
-  flex-shrink:0;
+  font-size:22px;
+  box-shadow:var(--shadow);
 }
 
-.brand-text{
-  font-weight:800;
-  white-space:nowrap;
+.brand strong{
+  font-size:18px;
 }
 
-.brand-text small{
+.brand small{
   display:block;
-  font-size:10px;
   color:var(--muted);
-  font-weight:500;
-  margin-top:3px;
+  margin-top:2px;
 }
 
-.side-top{
-  padding:12px;
+.side-btn{
+  width:100%;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:12px;
+  padding:11px 12px;
+  text-align:left;
+  transition:.18s;
 }
 
-.side-button{
+.side-btn:hover{
+  border-color:var(--accent);
+  transform:translateY(-1px);
+}
+
+.side-btn.primary{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  color:white;
+  border:0;
+}
+
+.search-box{
+  position:relative;
+}
+
+.search-box input{
   width:100%;
   border:1px solid var(--border);
   background:var(--panel2);
   color:var(--text);
   border-radius:11px;
-  padding:10px;
-  margin-bottom:7px;
-  text-align:left;
-  display:flex;
-  align-items:center;
-  gap:9px;
-}
-
-.side-button:hover,
-.pbtn:hover,
-.tool:hover,
-.menu button:hover{
-  background:var(--bubble);
-}
-
-.side-button.primary{
-  background:var(--accent);
-  color:#fff;
-  border-color:var(--accent);
-}
-
-.search-wrap{
-  padding:0 12px 10px;
-}
-
-.search{
-  width:100%;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:10px;
-  padding:10px;
+  padding:10px 12px;
   outline:none;
 }
 
-.side-label{
-  font-size:10px;
+.section-title{
+  color:var(--muted);
+  font-size:11px;
   text-transform:uppercase;
   letter-spacing:.08em;
-  color:var(--muted);
-  padding:5px 14px;
+  margin:7px 3px 2px;
 }
 
-.history{
-  flex:1;
-  min-height:0;
-  overflow-y:auto;
-  padding:5px 8px 12px;
-}
-
-.history-item{
+.chat-list{
   display:flex;
-  align-items:center;
-  gap:7px;
-  padding:9px;
-  border-radius:10px;
-  margin-bottom:3px;
+  flex-direction:column;
+  gap:5px;
+}
+
+.chat-item{
+  padding:10px;
+  border-radius:11px;
+  border:1px solid transparent;
   cursor:pointer;
 }
 
-.history-item:hover{
+.chat-item:hover,
+.chat-item.active{
   background:var(--panel2);
+  border-color:var(--border);
 }
 
-.history-item.active{
-  background:var(--bubble);
-}
-
-.history-name{
-  flex:1;
-  min-width:0;
+.chat-item-title{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   font-size:13px;
 }
 
-.history-more{
-  border:0;
-  background:transparent;
+.chat-item-meta{
+  font-size:10px;
   color:var(--muted);
-  border-radius:6px;
-  padding:3px 6px;
-}
-
-.history-more:hover{
-  background:var(--border);
+  margin-top:3px;
 }
 
 .side-bottom{
-  padding:10px 12px;
-  border-top:1px solid var(--border);
+  margin-top:auto;
+  display:flex;
+  flex-direction:column;
+  gap:7px;
 }
 
 /* MAIN */
 
 .main{
-  flex:1;
   min-width:0;
   min-height:0;
   height:100vh;
+  overflow:hidden;
   display:flex;
   flex-direction:column;
-  overflow:hidden;
+  background:var(--bg);
 }
 
-/* HEADER */
-
 .topbar{
-  height:68px;
-  flex:0 0 68px;
+  height:64px;
+  flex-shrink:0;
   display:flex;
   align-items:center;
   gap:10px;
   padding:10px 15px;
-  background:var(--panel);
   border-bottom:1px solid var(--border);
-  z-index:20;
+  background:var(--panel);
 }
 
-.chat-title{
+.top-title{
   min-width:0;
   flex:1;
 }
 
-.chat-title strong{
+.top-title strong{
   display:block;
   white-space:nowrap;
   overflow:hidden;
@@ -285,14 +240,15 @@ button{
 }
 
 .badge{
-  font-size:9px;
+  font-size:10px;
+  padding:3px 7px;
+  border-radius:999px;
   background:var(--panel2);
   color:var(--muted);
-  border-radius:20px;
-  padding:3px 7px;
+  border:1px solid var(--border);
 }
 
-.top-action{
+.icon-btn{
   width:36px;
   height:36px;
   border:1px solid var(--border);
@@ -301,39 +257,36 @@ button{
   border-radius:10px;
 }
 
-.top-action:hover{
-  background:var(--panel2);
+.icon-btn:hover{
+  border-color:var(--accent);
 }
 
-/* CHAT */
-
 .messages{
-  flex:1 1 auto;
   min-height:0;
+  flex:1 1 auto;
   overflow-y:auto !important;
   overflow-x:hidden;
-  padding:24px max(20px,calc((100% - 900px)/2));
-  scroll-behavior:smooth;
+  overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
+  padding:25px clamp(14px,4vw,55px);
 }
 
 .welcome{
   max-width:850px;
-  margin:35px auto;
+  margin:30px auto;
   text-align:center;
 }
 
-.welcome-icon{
+.welcome-logo{
   width:70px;
   height:70px;
-  border-radius:22px;
   margin:auto;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  display:grid;
+  place-items:center;
+  border-radius:22px;
   color:white;
-  font-size:30px;
+  font-size:34px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
   box-shadow:var(--shadow);
 }
 
@@ -343,80 +296,74 @@ button{
 
 .welcome p{
   color:var(--muted);
-  font-size:13px;
+}
+
+.quick-prompts{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:10px;
+  margin-top:22px;
 }
 
 .quick{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:10px;
-  margin-top:25px;
-}
-
-.quick button{
+  padding:14px;
   border:1px solid var(--border);
   background:var(--panel);
   color:var(--text);
-  padding:13px;
-  border-radius:12px;
+  border-radius:14px;
   text-align:left;
 }
 
-.quick button:hover{
+.quick:hover{
   border-color:var(--accent);
-  transform:translateY(-1px);
 }
 
-.message{
-  max-width:850px;
-  margin:0 auto 18px;
+.message-row{
   display:flex;
-  gap:10px;
+  margin:14px 0;
 }
 
-.message.user{
+.message-row.user{
   justify-content:flex-end;
 }
 
-.message-avatar{
-  width:35px;
-  height:35px;
-  border-radius:11px;
-  background:var(--panel2);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  flex-shrink:0;
-  font-size:13px;
-}
-
-.message.user .message-avatar{
-  order:2;
-}
-
-.message-content{
-  max-width:min(760px,85%);
+.message{
+  max-width:min(820px,88%);
 }
 
 .message-bubble{
   padding:13px 15px;
-  border:1px solid var(--border);
-  border-radius:15px;
+  border-radius:17px;
   background:var(--panel);
+  border:1px solid var(--border);
+  box-shadow:0 3px 12px rgba(0,0,0,.025);
   line-height:1.6;
-  font-size:14px;
   overflow-wrap:anywhere;
 }
 
-.message.user .message-bubble{
-  background:var(--accent);
+.user .message-bubble{
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:white;
-  border-color:var(--accent);
-  border-bottom-right-radius:5px;
+  border:0;
 }
 
-.message.assistant .message-bubble{
-  border-bottom-left-radius:5px;
+.message-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:15px;
+  margin-bottom:5px;
+}
+
+.message-role{
+  font-size:11px;
+  font-weight:700;
+  opacity:.7;
+}
+
+.message-time{
+  font-size:10px;
+  opacity:.55;
 }
 
 .message-actions{
@@ -431,433 +378,438 @@ button{
   background:var(--panel);
   color:var(--muted);
   border-radius:7px;
+  padding:4px 7px;
   font-size:10px;
-  padding:5px 8px;
 }
 
 .message-actions button:hover{
-  color:var(--text);
-  background:var(--panel2);
+  color:var(--accent);
 }
 
-.markdown p{
-  margin:0 0 10px;
+.message img{
+  max-width:100%;
+  max-height:350px;
+  border-radius:12px;
+  margin-top:8px;
 }
 
-.markdown p:last-child{
-  margin-bottom:0;
+.md h1,.md h2,.md h3{
+  line-height:1.25;
 }
 
-.markdown ul,
-.markdown ol{
-  padding-left:22px;
-}
-
-.markdown code{
-  background:var(--panel2);
-  border-radius:5px;
+.md code{
+  background:rgba(127,127,127,.13);
   padding:2px 5px;
-  font-family:monospace;
-  font-size:.9em;
+  border-radius:5px;
 }
 
-.markdown pre{
-  background:#111827;
-  color:#f5f7fa;
-  border-radius:10px;
-  padding:14px;
+.md pre{
+  background:#101522;
+  color:#e8eefc;
+  padding:13px;
+  border-radius:11px;
   overflow:auto;
-  white-space:pre-wrap;
 }
 
-.markdown pre code{
-  background:transparent;
-  padding:0;
-}
-
-.markdown blockquote{
-  border-left:3px solid var(--accent);
-  margin:10px 0;
+.md blockquote{
+  margin:8px 0;
   padding-left:12px;
+  border-left:3px solid var(--accent);
   color:var(--muted);
 }
 
 .typing{
   display:flex;
   gap:5px;
-  padding:8px 0;
+  align-items:center;
 }
 
-.typing span{
+.dot{
   width:7px;
   height:7px;
   border-radius:50%;
-  background:var(--muted);
+  background:var(--accent);
   animation:bounce 1s infinite;
 }
 
-.typing span:nth-child(2){
-  animation-delay:.15s;
-}
-
-.typing span:nth-child(3){
-  animation-delay:.3s;
-}
+.dot:nth-child(2){animation-delay:.15s}
+.dot:nth-child(3){animation-delay:.3s}
 
 @keyframes bounce{
   0%,100%{transform:translateY(0);opacity:.4}
-  50%{transform:translateY(-4px);opacity:1}
-}
-
-/* FOLLOWUPS */
-
-.followups{
-  max-width:850px;
-  margin:-8px auto 12px;
-  display:flex;
-  flex-wrap:wrap;
-  gap:6px;
-}
-
-.followups button{
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  padding:7px 10px;
-  border-radius:20px;
-  font-size:11px;
+  50%{transform:translateY(-5px);opacity:1}
 }
 
 /* COMPOSER */
 
 .composer{
-  flex-shrink:0;
   position:relative;
-  z-index:30;
-  background:var(--panel);
-  border-top:1px solid var(--border);
-  padding:10px max(15px,calc((100% - 900px)/2));
+  z-index:20;
+  flex-shrink:0;
   pointer-events:auto !important;
+  padding:10px 15px 14px;
+  background:var(--bg);
+}
+
+.composer-inner{
+  max-width:1000px;
+  margin:auto;
+  border:1px solid var(--border);
+  background:var(--panel);
+  border-radius:18px;
+  box-shadow:var(--shadow);
+  overflow:hidden;
 }
 
 .toolbar{
   display:flex;
-  gap:5px;
+  gap:4px;
+  padding:7px;
   overflow-x:auto;
-  padding-bottom:7px;
+  border-bottom:1px solid var(--border);
 }
 
-.tool{
+.toolbar button{
   flex:0 0 auto;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
+  border:1px solid transparent;
+  background:transparent;
+  color:var(--muted);
   border-radius:7px;
-  padding:5px 8px;
-  font-size:10px;
+  padding:6px 8px;
+  font-size:11px;
+}
+
+.toolbar button:hover{
+  background:var(--panel2);
+  color:var(--accent);
 }
 
 .input-row{
   display:flex;
-  gap:8px;
   align-items:flex-end;
-}
-
-.input-wrap{
-  flex:1;
-  position:relative;
-  min-width:0;
+  gap:8px;
+  padding:8px;
 }
 
 #input{
-  display:block;
-  width:100%;
-  min-height:48px;
-  max-height:150px;
-  resize:none;
-  overflow-y:auto;
-  border:1px solid var(--border);
-  border-radius:14px;
-  padding:13px 45px 13px 14px;
-  background:var(--panel2);
-  color:var(--text);
-  outline:none;
-  line-height:1.4;
   position:relative;
-  z-index:40;
+  z-index:30;
+  flex:1;
+  min-height:48px;
+  max-height:180px;
+  border:0;
+  outline:0;
+  resize:none;
+  background:transparent;
+  color:var(--text);
   pointer-events:auto !important;
   user-select:text !important;
   -webkit-user-select:text !important;
+  cursor:text;
+  overflow-y:auto;
+  line-height:1.5;
 }
 
-#input:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 3px rgba(91,92,240,.10);
-}
-
-.voice-inside{
-  position:absolute;
-  right:8px;
-  bottom:8px;
+.send{
+  width:44px;
+  height:44px;
   border:0;
-  background:transparent;
-  color:var(--muted);
-  z-index:45;
-}
-
-#send{
-  width:48px;
-  height:48px;
-  flex:0 0 48px;
-  border:0;
-  border-radius:14px;
-  background:var(--accent);
+  border-radius:13px;
   color:white;
-  font-size:18px;
-  position:relative;
-  z-index:45;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
 }
 
-#send:hover{
-  filter:brightness(1.08);
-}
-
-#send:disabled{
-  opacity:.5;
-  cursor:not-allowed;
-}
-
-.counter{
+.composer-bottom{
+  display:flex;
+  justify-content:space-between;
   color:var(--muted);
-  font-size:9px;
-  padding:5px 3px 0;
+  padding:0 11px 8px;
+  font-size:10px;
 }
 
 /* RIGHT PANEL */
 
 .right-panel{
-  width:320px;
-  flex:0 0 320px;
-  height:100vh;
+  min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
   background:var(--panel);
   border-left:1px solid var(--border);
-  padding:15px;
+  padding:14px;
 }
 
 .panel-title{
-  font-size:13px;
+  font-size:16px;
   font-weight:800;
-  margin-bottom:10px;
+  margin-bottom:12px;
 }
 
-.section{
+.control-section{
+  padding:12px 0;
   border-bottom:1px solid var(--border);
-  padding-bottom:15px;
-  margin-bottom:15px;
 }
 
-.personas{
+.control-section h3{
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  color:var(--muted);
+  margin:0 0 9px;
+}
+
+.grid-buttons{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,1fr);
   gap:6px;
 }
 
-.pbtn{
+.control-btn{
   border:1px solid var(--border);
   background:var(--panel2);
   color:var(--text);
   border-radius:9px;
-  padding:8px;
+  padding:8px 6px;
   font-size:11px;
 }
 
-.pbtn.active{
-  background:var(--accent);
+.control-btn.active{
   border-color:var(--accent);
-  color:white;
+  color:var(--accent);
+  background:rgba(91,92,240,.08);
 }
 
-.stats{
+.stat-grid{
   display:grid;
-  grid-template-columns:1fr 1fr;
+  grid-template-columns:repeat(2,1fr);
   gap:7px;
 }
 
 .stat{
   background:var(--panel2);
+  border:1px solid var(--border);
   border-radius:10px;
   padding:9px;
-}
-
-.stat small{
-  display:block;
-  color:var(--muted);
-  font-size:9px;
 }
 
 .stat strong{
   display:block;
-  margin-top:3px;
+  font-size:17px;
 }
 
-.grid2{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
+.stat span{
+  color:var(--muted);
+  font-size:10px;
 }
 
-.feature-btn{
-  width:100%;
-  text-align:left;
-  border:1px solid var(--border);
+.progress{
+  height:8px;
   background:var(--panel2);
-  color:var(--text);
-  padding:9px;
-  border-radius:9px;
-  font-size:11px;
-  margin-bottom:5px;
+  border-radius:99px;
+  overflow:hidden;
 }
 
-/* MODALS */
+.progress div{
+  height:100%;
+  width:0;
+  background:linear-gradient(90deg,var(--accent),var(--accent2));
+}
+
+/* MODAL */
 
 #modalBg{
+  display:none !important;
   position:fixed;
   inset:0;
-  background:rgba(0,0,0,.45);
-  display:none;
+  z-index:9999;
+  background:rgba(0,0,0,.55);
+  padding:20px;
   align-items:center;
   justify-content:center;
-  padding:20px;
-  z-index:1000;
-  pointer-events:none;
 }
 
 #modalBg.show{
-  display:flex;
-  pointer-events:auto;
+  display:flex !important;
 }
 
 .modal{
-  width:min(620px,100%);
-  max-height:85vh;
-  overflow-y:auto;
+  width:min(900px,100%);
+  max-height:90vh;
+  overflow:auto;
   background:var(--panel);
   color:var(--text);
   border:1px solid var(--border);
   border-radius:18px;
-  box-shadow:var(--shadow);
-  padding:18px;
+  box-shadow:0 25px 80px rgba(0,0,0,.3);
 }
 
 .modal-head{
+  position:sticky;
+  top:0;
+  z-index:2;
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:10px;
-  margin-bottom:15px;
+  padding:15px;
+  background:var(--panel);
+  border-bottom:1px solid var(--border);
 }
 
-.modal-head h2{
-  flex:1;
-  margin:0;
-  font-size:18px;
+.modal-body{
+  padding:15px;
 }
 
-.close{
-  width:32px;
-  height:32px;
-  border:0;
-  border-radius:8px;
+.modal-close{
+  border:1px solid var(--border);
   background:var(--panel2);
   color:var(--text);
-  font-size:20px;
+  border-radius:8px;
+  padding:6px 10px;
 }
 
-.field{
-  margin-bottom:13px;
+.form{
+  display:grid;
+  gap:10px;
 }
 
-.field label{
-  display:block;
-  color:var(--muted);
-  font-size:11px;
-  margin-bottom:5px;
-}
-
-.field input,
-.field textarea,
-.field select{
+.form input,
+.form textarea,
+.form select{
   width:100%;
   border:1px solid var(--border);
-  border-radius:9px;
-  padding:10px;
   background:var(--panel2);
   color:var(--text);
+  border-radius:9px;
+  padding:10px;
   outline:none;
 }
 
-.field textarea{
-  min-height:110px;
-  resize:vertical;
-}
-
-.save{
+.primary-btn{
   border:0;
-  background:var(--accent);
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:white;
-  padding:10px 15px;
   border-radius:9px;
+  padding:10px 14px;
 }
 
-.menu{
-  display:flex;
-  flex-direction:column;
-  gap:6px;
-}
-
-.menu button{
+.item{
   border:1px solid var(--border);
   background:var(--panel2);
-  color:var(--text);
-  padding:10px;
-  border-radius:9px;
-  text-align:left;
-}
-
-.result-card{
-  margin-top:12px;
-  padding:12px;
-  border:1px solid var(--border);
   border-radius:10px;
-  background:var(--panel2);
+  padding:10px;
+  margin-bottom:7px;
 }
 
-.memory,
-.file-item{
+.item-row{
   display:flex;
+  justify-content:space-between;
   align-items:center;
-  gap:8px;
+  gap:10px;
+}
+
+.small{
+  color:var(--muted);
+  font-size:11px;
+}
+
+.toast{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:10000;
+  background:#111827;
+  color:white;
+  padding:11px 15px;
+  border-radius:10px;
+  transform:translateY(100px);
+  opacity:0;
+  transition:.2s;
+  pointer-events:none;
+}
+
+.toast.show{
+  transform:translateY(0);
+  opacity:1;
+}
+
+.hidden{
+  display:none !important;
+}
+
+.focus-mode .sidebar,
+.focus-mode .right-panel{
+  display:none;
+}
+
+.focus-mode .app{
+  grid-template-columns:1fr;
+}
+
+.reading{
+  max-width:800px;
+  margin:auto;
+  font-size:17px;
+  line-height:1.9;
+}
+
+.quiz-option{
+  display:block;
+  width:100%;
+  text-align:left;
+  margin:6px 0;
   padding:9px;
-  border:1px solid var(--border);
-  border-radius:9px;
-  margin-bottom:6px;
-}
-
-.memory span,
-.file-item span:first-child{
-  flex:1;
-  min-width:0;
-  overflow-wrap:anywhere;
-}
-
-.file-use{
   border:1px solid var(--border);
   background:var(--panel);
   color:var(--text);
-  border-radius:7px;
-  padding:5px 8px;
-  font-size:10px;
+  border-radius:9px;
+}
+
+.workspace-tabs{
+  display:flex;
+  gap:4px;
+  overflow:auto;
+  padding:5px 15px;
+  border-bottom:1px solid var(--border);
+  background:var(--panel);
+}
+
+.workspace-tab{
+  flex:0 0 auto;
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:8px;
+  padding:6px 9px;
+  font-size:11px;
+}
+
+.workspace-tab.active{
+  border-color:var(--accent);
+}
+
+.calendar{
+  display:grid;
+  grid-template-columns:repeat(7,1fr);
+  gap:5px;
+}
+
+.calendar div{
+  min-height:45px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  padding:5px;
+  font-size:11px;
+}
+
+.bar{
+  height:8px;
+  background:var(--panel2);
+  border-radius:99px;
+  overflow:hidden;
+}
+
+.bar div{
+  height:100%;
+  background:var(--accent);
 }
 
 .dropzone{
@@ -865,135 +817,67 @@ button{
   border-radius:12px;
   padding:25px;
   text-align:center;
-  margin-bottom:12px;
-}
-
-.dropzone.drag{
-  border-color:var(--accent);
-  background:var(--bubble);
-}
-
-/* TOAST */
-
-#toast{
-  position:fixed;
-  left:50%;
-  bottom:25px;
-  transform:translate(-50%,20px);
-  background:#111827;
-  color:white;
-  padding:10px 15px;
-  border-radius:10px;
-  font-size:12px;
-  opacity:0;
-  pointer-events:none;
-  transition:.2s;
-  z-index:2000;
-}
-
-#toast.show{
-  opacity:1;
-  transform:translate(-50%,0);
-}
-
-/* CONTEXT MENU */
-
-#contextMenu{
-  position:fixed;
-  display:none;
-  background:var(--panel);
-  border:1px solid var(--border);
-  box-shadow:var(--shadow);
-  border-radius:10px;
-  z-index:900;
-  min-width:170px;
-  padding:5px;
-}
-
-#contextMenu.show{
-  display:block;
-}
-
-#contextMenu button{
-  width:100%;
-  text-align:left;
-  border:0;
-  background:transparent;
-  color:var(--text);
-  padding:8px;
-  border-radius:7px;
-}
-
-#contextMenu button:hover{
-  background:var(--panel2);
-}
-
-/* SPECIAL STATES */
-
-body.compact .message{
-  margin-bottom:8px;
-}
-
-body.noanimations *,
-body.noanimations *::before,
-body.noanimations *::after{
-  animation:none !important;
-  transition:none !important;
-}
-
-body.fullscreen .sidebar,
-body.fullscreen .right-panel{
-  display:none;
+  color:var(--muted);
 }
 
 /* MOBILE */
 
-#mobileMenuBtn{
-  display:none;
-}
-
 @media(max-width:1100px){
+  .app{
+    grid-template-columns:250px minmax(0,1fr);
+  }
+
   .right-panel{
     display:none;
   }
-
-  #mobileMenuBtn{
-    display:block;
-  }
 }
 
-@media(max-width:700px){
-
-  .sidebar{
-    position:fixed;
-    left:-290px;
-    top:0;
-    box-shadow:var(--shadow);
-  }
-
-  body.mobile-sidebar .sidebar{
-    left:0;
-  }
-
-  .quick{
+@media(max-width:750px){
+  .app{
     grid-template-columns:1fr;
   }
 
-  .messages{
-    padding:15px 10px;
+  .sidebar{
+    display:none;
+    position:fixed;
+    inset:0 auto 0 0;
+    width:290px;
+    z-index:5000;
+    box-shadow:20px 0 50px rgba(0,0,0,.2);
   }
 
-  .composer{
-    padding:8px;
+  .sidebar.mobile-open{
+    display:flex;
   }
 
-  .message-content{
-    max-width:85%;
+  .quick-prompts{
+    grid-template-columns:1fr;
   }
 
   .topbar{
     padding:8px;
   }
+
+  .messages{
+    padding:15px 9px;
+  }
+
+  .composer{
+    padding:7px;
+  }
+
+  .toolbar{
+    max-width:100%;
+  }
+
+  #input{
+    min-height:46px;
+    max-height:150px;
+  }
+}
+
+body.modal-open{
+  overflow:hidden;
 }
 </style>
 </head>
@@ -1002,172 +886,93 @@ body.fullscreen .right-panel{
 
 <div class="app">
 
-  <!-- SIDEBAR -->
   <aside class="sidebar" id="sidebar">
 
     <div class="brand">
-      <div class="logo" id="appLogo">AI</div>
-
-      <div class="brand-text">
-        Simple Chat AI
-        <small>Private AI workspace</small>
+      <div class="logo">✦</div>
+      <div>
+        <strong>Simple Chat AI</strong>
+        <small>Smart • Private • Personal</small>
       </div>
     </div>
 
-    <div class="side-top">
+    <button class="side-btn primary" id="newChatBtn">＋ New Chat</button>
 
-      <button class="side-button primary" id="newChat">
-        ＋ <span>New Chat</span>
-      </button>
-
-      <button class="side-button" id="dashboardBtn">
-        📊 <span>Dashboard</span>
-      </button>
-
+    <div class="search-box">
+      <input id="chatSearch" placeholder="🔎 Search chats...">
     </div>
 
-    <div class="search-wrap">
-      <input
-        class="search"
-        id="search"
-        placeholder="Search chats..."
-      >
-    </div>
+    <div class="section-title">Workspace</div>
 
-    <div class="side-label">
-      Chat History
-    </div>
+    <button class="side-btn" data-command="dashboard">📊 Command Center</button>
+    <button class="side-btn" data-command="calendar">📅 Chat Calendar</button>
+    <button class="side-btn" data-command="saved">🔖 Saved Answers</button>
+    <button class="side-btn" data-command="tasks">☑️ To-Do List</button>
+    <button class="side-btn" data-command="files">📁 File Library</button>
 
-    <div class="history" id="history"></div>
+    <div class="section-title">Chats</div>
+    <div class="chat-list" id="chatList"></div>
 
     <div class="side-bottom">
-
-      <button class="side-button" id="collapseBtn">
-        ◀ <span>Collapse</span>
-      </button>
-
-      <button class="side-button" id="themeBtn">
-        🌙 <span>Theme</span>
-      </button>
-
-      <button class="side-button" id="settingsBtn">
-        ⚙ <span>Settings</span>
-      </button>
-
+      <button class="side-btn" id="themeBtn">🌙 Theme</button>
+      <button class="side-btn" id="focusBtn">🎯 Focus Mode</button>
+      <button class="side-btn" id="settingsBtn">⚙️ Settings</button>
+      <button class="side-btn" id="collapseBtn">◀ Collapse</button>
     </div>
 
   </aside>
 
-
-  <!-- MAIN -->
   <main class="main">
 
     <header class="topbar">
 
-      <button
-        class="top-action"
-        id="mobileMenuBtn">
-        ☰
-      </button>
+      <button class="icon-btn" id="mobileBtn">☰</button>
 
-      <div class="chat-title">
-        <strong id="chatTitle">
-          Simple Chat AI
-        </strong>
-
+      <div class="top-title">
+        <strong id="chatTitle">New Chat</strong>
         <div class="badges">
-
-          <span class="badge" id="personaBadge">
-            Assistant
-          </span>
-
-          <span class="badge">
-            🔒 Local
-          </span>
-
+          <span class="badge" id="personaBadge">Assistant</span>
+          <span class="badge">🔒 Local UI</span>
         </div>
       </div>
 
-      <button
-        class="top-action"
-        id="favoriteBtn"
-        title="Favorite">
-        ☆
-      </button>
-
-      <button
-        class="top-action"
-        id="renameBtn"
-        title="Rename">
-        ✎
-      </button>
-
-      <button
-        class="top-action"
-        id="archiveBtn"
-        title="Archive">
-        🗄
-      </button>
-
-      <button
-        class="top-action"
-        id="fullscreenBtn"
-        title="Fullscreen">
-        ⛶
-      </button>
-
-      <button
-        class="top-action"
-        id="moreBtn"
-        title="More">
-        ⋮
-      </button>
+      <button class="icon-btn" id="favoriteBtn" title="Favorite">☆</button>
+      <button class="icon-btn" id="renameBtn" title="Rename">✎</button>
+      <button class="icon-btn" id="moreBtn" title="More">⋯</button>
 
     </header>
 
+    <div class="workspace-tabs" id="workspaceTabs"></div>
 
-    <!-- MESSAGES -->
     <section class="messages" id="messages">
 
       <div class="welcome" id="welcome">
 
-        <div class="welcome-icon">
-          🤖
-        </div>
+        <div class="welcome-logo">✦</div>
 
-        <h1>
-          Simple Chat AI
-        </h1>
+        <h1>What can I help you with?</h1>
 
         <p>
-          Ask questions, write, learn, code, analyze files,
-          understand images and work with your AI assistant.
+          Ask questions, write, learn, plan, calculate,
+          analyze files, understand images and organize your work.
         </p>
 
-        <div class="quick">
+        <div class="quick-prompts">
 
-          <button data-prompt="Explain something to me step by step.">
+          <button class="quick" data-prompt="Explain something to me step by step.">
             📚 Explain something
           </button>
 
-          <button data-prompt="Give me 10 creative ideas about ">
+          <button class="quick" data-prompt="Help me make a detailed plan.">
+            🗺️ Make a plan
+          </button>
+
+          <button class="quick" data-prompt="Help me write something professionally.">
+            ✍️ Write something
+          </button>
+
+          <button class="quick" data-prompt="Give me useful ideas for a new project.">
             💡 Give me ideas
-          </button>
-
-          <button data-prompt="Help me write ">
-            ✍ Help me write
-          </button>
-
-          <button data-prompt="Help me create complete working code for ">
-            💻 Write code
-          </button>
-
-          <button data-prompt="Summarize this clearly: ">
-            📝 Summarize
-          </button>
-
-          <button data-prompt="Teach me ">
-            🎓 Teach me
           </button>
 
         </div>
@@ -1176,292 +981,174 @@ body.fullscreen .right-panel{
 
     </section>
 
+    <div class="composer">
 
-    <!-- FOLLOWUPS -->
-    <div
-      class="followups"
-      id="followups">
-    </div>
+      <div class="composer-inner">
 
+        <div class="toolbar">
 
-    <!-- COMPOSER -->
-    <section class="composer">
+          <button data-tool="bold">B</button>
+          <button data-tool="italic">I</button>
+          <button data-tool="heading">H</button>
+          <button data-tool="list">☷ List</button>
+          <button data-tool="code">{"</>"}</button>
+          <button data-tool="quote">❝</button>
+          <button data-tool="summarize">Summarize</button>
+          <button data-tool="translate">Translate</button>
+          <button data-tool="grammar">Grammar</button>
+          <button data-tool="rewrite">Rewrite</button>
+          <button data-tool="tone">Tone</button>
+          <button data-tool="language">Language</button>
+          <button data-tool="calculator">Calculator</button>
+          <button data-tool="explain">Explain</button>
+          <button id="fileBtn">📎 File</button>
+          <button id="imageBtn">🖼️ Image</button>
+          <button id="voiceBtn">🎤 Voice</button>
 
-      <div class="toolbar">
+        </div>
 
-        <button class="tool" data-action="bold">
-          B
-        </button>
-
-        <button class="tool" data-action="italic">
-          I
-        </button>
-
-        <button class="tool" data-action="heading">
-          H
-        </button>
-
-        <button class="tool" data-action="bullet">
-          • List
-        </button>
-
-        <button class="tool" data-action="code">
-          Code
-        </button>
-
-        <button class="tool" data-action="quote">
-          Quote
-        </button>
-
-        <button class="tool" data-action="summarize">
-          Summarize
-        </button>
-
-        <button class="tool" data-action="translate">
-          Translate
-        </button>
-
-        <button class="tool" data-action="grammar">
-          Grammar
-        </button>
-
-        <button class="tool" id="rewriteBtn">
-          Rewrite
-        </button>
-
-        <button class="tool" id="toneBtn">
-          Tone
-        </button>
-
-        <button class="tool" id="languageBtn">
-          Language
-        </button>
-
-        <button class="tool" id="calculatorBtn">
-          Calculator
-        </button>
-
-        <button class="tool" id="explainSelectionBtn">
-          Explain
-        </button>
-
-        <button class="tool" id="filesBtn">
-          Files
-        </button>
-
-        <button class="tool" id="imageBtn">
-          Image
-        </button>
-
-        <button class="tool" id="voiceBtn">
-          🎙 Voice
-        </button>
-
-        <button class="tool" id="promptLibrary">
-          Prompts
-        </button>
-
-        <button class="tool" id="compareBtn">
-          Compare
-        </button>
-
-        <button class="tool" id="variationsBtn">
-          Variations
-        </button>
-
-      </div>
-
-
-      <div class="input-row">
-
-        <div class="input-wrap">
+        <div class="input-row">
 
           <textarea
             id="input"
             rows="1"
             placeholder="Message Simple Chat AI..."
-            autocomplete="off"
-            spellcheck="true"></textarea>
+          ></textarea>
 
-          <button
-            class="voice-inside"
-            id="voiceInside"
-            title="Voice input">
-            🎙
-          </button>
+          <button class="send" id="sendBtn">➤</button>
 
         </div>
 
-        <button id="send">
-          ➤
-        </button>
+        <div class="composer-bottom">
+          <span id="attachmentLabel">No attachment</span>
+          <span id="counter">0 characters • 0 words</span>
+        </div>
 
       </div>
 
-      <div
-        class="counter"
-        id="counter">
-        0 characters · 0 words
-      </div>
-
-    </section>
+    </div>
 
   </main>
 
-
-  <!-- RIGHT PANEL -->
   <aside class="right-panel">
 
-    <div class="section">
+    <div class="panel-title">AI Control Center</div>
 
-      <div class="panel-title">
-        AI Control Center
+    <div class="control-section">
+
+      <h3>AI Persona</h3>
+
+      <div class="grid-buttons">
+
+        <button class="control-btn active" data-persona="Assistant">🤖 Assistant</button>
+        <button class="control-btn" data-persona="Teacher">📚 Teacher</button>
+        <button class="control-btn" data-persona="Coder">💻 Coder</button>
+        <button class="control-btn" data-persona="Writer">✍️ Writer</button>
+        <button class="control-btn" data-persona="Creative">🎨 Creative</button>
+        <button class="control-btn" data-persona="Business">💼 Business</button>
+
       </div>
-
-      <div
-        class="personas"
-        id="personas">
-      </div>
-
-      <button
-        class="feature-btn"
-        id="customPersona">
-        🧠 Custom Persona
-      </button>
 
     </div>
 
+    <div class="control-section">
 
-    <div class="section">
+      <h3>Response Mode</h3>
 
-      <div class="panel-title">
-        Conversation Stats
+      <div class="grid-buttons">
+
+        <button class="control-btn active" data-mode="Balanced">Balanced</button>
+        <button class="control-btn" data-mode="Concise">Concise</button>
+        <button class="control-btn" data-mode="Detailed">Detailed</button>
+        <button class="control-btn" data-mode="Creative">Creative</button>
+
       </div>
 
-      <div class="stats">
+    </div>
+
+    <div class="control-section">
+
+      <h3>Conversation Stats</h3>
+
+      <div class="stat-grid">
 
         <div class="stat">
-          <small>Messages</small>
           <strong id="statMessages">0</strong>
+          <span>Messages</span>
         </div>
 
         <div class="stat">
-          <small>Words</small>
           <strong id="statWords">0</strong>
+          <span>Words</span>
         </div>
 
         <div class="stat">
-          <small>AI Replies</small>
           <strong id="statAI">0</strong>
+          <span>AI Replies</span>
         </div>
 
         <div class="stat">
-          <small>Pinned</small>
           <strong id="statPinned">0</strong>
+          <span>Pinned</span>
         </div>
 
       </div>
 
     </div>
 
+    <div class="control-section">
 
-    <div class="section">
+      <h3>Conversation Goal</h3>
 
-      <div class="panel-title">
-        Response Mode
+      <input
+        id="goalInput"
+        class="form-input"
+        style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);color:var(--text)"
+        placeholder="Set a goal..."
+      >
+
+      <div style="margin-top:8px">
+        <input id="progressInput" type="range" min="0" max="100" value="0" style="width:100%">
+        <div class="small" id="progressText">0% complete</div>
       </div>
 
-      <div class="grid2">
+    </div>
 
-        <button class="pbtn active" data-mode="Balanced">
-          ⚖ Balanced
-        </button>
+    <div class="control-section">
 
-        <button class="pbtn" data-mode="Concise">
-          ⚡ Concise
-        </button>
+      <h3>AI Tools</h3>
 
-        <button class="pbtn" data-mode="Detailed">
-          📖 Detailed
-        </button>
+      <div class="grid-buttons">
 
-        <button class="pbtn" data-mode="Creative">
-          🎨 Creative
-        </button>
+        <button class="control-btn" data-command="memory">🧠 Memory</button>
+        <button class="control-btn" data-command="prompts">🧩 Prompts</button>
+        <button class="control-btn" data-command="compare">⚖️ Compare</button>
+        <button class="control-btn" data-command="variations">🔁 Variations</button>
+        <button class="control-btn" data-command="quiz">❓ Quiz Maker</button>
+        <button class="control-btn" data-command="cards">🃏 Study Cards</button>
+        <button class="control-btn" data-command="keypoints">📌 Key Points</button>
+        <button class="control-btn" data-command="decision">📊 Decision Table</button>
+        <button class="control-btn" data-command="meeting">📝 Meeting Notes</button>
+        <button class="control-btn" data-command="email">✉️ Email Writer</button>
+        <button class="control-btn" data-command="outline">📑 Outline</button>
+        <button class="control-btn" data-command="brief">📰 Daily Brief</button>
 
       </div>
 
     </div>
 
+    <div class="control-section">
 
-    <div class="section">
+      <h3>Workspace</h3>
 
-      <div class="panel-title">
-        AI Features
+      <div class="grid-buttons">
+
+        <button class="control-btn" data-command="statistics">📈 Statistics</button>
+        <button class="control-btn" data-command="snapshot">📸 Snapshot</button>
+        <button class="control-btn" data-command="read">📖 Reading Mode</button>
+        <button class="control-btn" data-command="clean">🧹 Text Cleaner</button>
+
       </div>
-
-      <button
-        class="feature-btn"
-        id="memoryBtn">
-        🧠 Long-Term Memory
-      </button>
-
-      <button
-        class="feature-btn"
-        id="continueBtn">
-        ▶ Continue Response
-      </button>
-
-      <button
-        class="feature-btn"
-        id="summaryBtn">
-        📝 Summarize Chat
-      </button>
-
-      <button
-        class="feature-btn"
-        id="customInstructionsBtn">
-        📌 Custom Instructions
-      </button>
-
-      <button
-        class="feature-btn"
-        id="privacyBtn">
-        🕶 Temporary / Privacy Chat
-      </button>
-
-      <button
-        class="feature-btn"
-        id="conversationSettings">
-        ⚙ AI Settings
-      </button>
-
-    </div>
-
-
-    <div class="section">
-
-      <div class="panel-title">
-        Workspace
-      </div>
-
-      <button
-        class="feature-btn"
-        id="backgroundBtn">
-        🖼 Background
-      </button>
-
-      <button
-        class="feature-btn"
-        id="appearanceBtn">
-        🎨 Appearance
-      </button>
-
-      <button
-        class="feature-btn"
-        id="attachBtn">
-        📎 Select File
-      </button>
 
     </div>
 
@@ -1469,62 +1156,14 @@ body.fullscreen .right-panel{
 
 </div>
 
-
-<!-- HIDDEN FILE INPUTS -->
-
-<input
-  type="file"
-  id="fileInput"
-  hidden
-  multiple
-  accept=".txt,.md,.csv">
-
-<input
-  type="file"
-  id="imageInput"
-  hidden
-  accept="image/*">
-
-
-<!-- MODAL -->
+<input id="fileInput" type="file" hidden accept=".txt,.md,.csv">
+<input id="imageInput" type="file" hidden accept="image/*">
 
 <div id="modalBg">
-
-  <div
-    class="modal"
-    id="modal">
-  </div>
-
+  <div class="modal" id="modal"></div>
 </div>
 
-
-<!-- CONTEXT MENU -->
-
-<div id="contextMenu">
-
-  <button id="contextCopy">
-    📋 Copy
-  </button>
-
-  <button id="contextPin">
-    📌 Pin
-  </button>
-
-  <button id="contextBranch">
-    🌿 Branch
-  </button>
-
-  <button id="contextDelete">
-    🗑 Delete
-  </button>
-
-</div>
-
-
-<!-- TOAST -->
-
-<div id="toast"></div>
-
+<div class="toast" id="toast"></div>
 
 <script>
 "use strict";
@@ -1533,919 +1172,936 @@ body.fullscreen .right-panel{
    STORAGE
 ========================================================= */
 
-const CHAT_KEY =
-  "simple_chat_ai_68_chats";
+const KEYS = {
+  chats:"sca_chats_v2",
+  settings:"sca_settings_v2",
+  files:"sca_files_v2",
+  memory:"sca_memory_v2",
+  prompts:"sca_prompts_v2",
+  saved:"sca_saved_v2",
+  tasks:"sca_tasks_v2",
+  reminders:"sca_reminders_v2",
+  snapshots:"sca_snapshots_v2",
+  workspace:"sca_workspace_v2",
+  draft:"sca_drafts_v2"
+};
 
-const SETTING_KEY =
-  "simple_chat_ai_68_settings";
+const DEFAULT_SETTINGS = {
+  theme:"light",
+  persona:"Assistant",
+  mode:"Balanced",
+  language:"English",
+  tone:"Natural",
+  answerLength:"Balanced",
+  temperature:1,
+  maxTokens:2000,
+  systemPrompt:"",
+  customInstructions:"",
+  memoryEnabled:true,
+  animations:true,
+  temporary:false,
+  accent:"#5b5cf0"
+};
 
-const FILE_KEY =
-  "simple_chat_ai_68_files";
+let settings = loadJSON(KEYS.settings, DEFAULT_SETTINGS);
+let chats = loadJSON(KEYS.chats, []);
+let files = loadJSON(KEYS.files, []);
+let memories = loadJSON(KEYS.memory, []);
+let prompts = loadJSON(KEYS.prompts, []);
+let savedAnswers = loadJSON(KEYS.saved, []);
+let tasks = loadJSON(KEYS.tasks, []);
+let reminders = loadJSON(KEYS.reminders, []);
+let snapshots = loadJSON(KEYS.snapshots, []);
+let workspace = loadJSON(KEYS.workspace, {
+  openTabs:[],
+  dailyBrief:"",
+  lastRecovery:""
+});
 
-const PROMPT_KEY =
-  "simple_chat_ai_prompt_history";
-
-const SNAPSHOT_KEY =
-  "simple_chat_ai_snapshots";
-
+let currentId = null;
+let generating = false;
+let controller = null;
+let selectedImage = null;
+let selectedImageName = "";
+let selectedFile = null;
+let recognition = null;
+let listening = false;
 
 /* =========================================================
    DOM
 ========================================================= */
 
-const $ = id =>
-  document.getElementById(id);
+const $ = id => document.getElementById(id);
 
-const messages =
-  $("messages");
-
-const input =
-  $("input");
-
-const send =
-  $("send");
-
-const welcome =
-  $("welcome");
-
-const modalBg =
-  $("modalBg");
-
-const modal =
-  $("modal");
-
-const toast =
-  $("toast");
-
-const followups =
-  $("followups");
-
+const messagesEl = $("messages");
+const input = $("input");
+const sendBtn = $("sendBtn");
+const chatList = $("chatList");
+const chatTitle = $("chatTitle");
+const welcome = $("welcome");
+const toastEl = $("toast");
+const modalBg = $("modalBg");
+const modal = $("modal");
 
 /* =========================================================
-   STATE
+   HELPERS
 ========================================================= */
 
-let chats = [];
-
-let files = [];
-
-let currentId = null;
-
-let generating = false;
-
-let controller = null;
-
-let temporaryMode = false;
-
-let selectedImage = null;
-
-let selectedImageName = "";
-
-let recognition = null;
-
-let listening = false;
-
-let contextMessage = null;
-
-
-/* =========================================================
-   SETTINGS
-========================================================= */
-
-let settings = {
-
-  theme:"light",
-
-  accent:"#5b5cf0",
-
-  persona:"Assistant",
-
-  mode:"Balanced",
-
-  answerLength:"Balanced",
-
-  temperature:1,
-
-  maxTokens:2000,
-
-  systemPrompt:"",
-
-  customInstructions:"",
-
-  language:"English",
-
-  tone:"Natural",
-
-  density:"comfortable",
-
-  background:"default",
-
-  avatar:"AI",
-
-  animations:true,
-
-  memory:[],
-
-  folders:[],
-
-  customPersonas:[],
-
-  selectedFile:"",
-
-  privacy:false,
-
-  tags:[],
-
-  lockedChats:{},
-
-  feedback:{}
-
-};
-
-
-/* =========================================================
-   LOAD / SAVE
-========================================================= */
-
-function load(){
-
+function loadJSON(key,fallback){
   try{
-
-    chats =
-      JSON.parse(
-        localStorage.getItem(CHAT_KEY)
-      ) || [];
-
+    const value = localStorage.getItem(key);
+    return value ? JSON.parse(value) : fallback;
   }catch{
-
-    chats=[];
-
+    return fallback;
   }
+}
 
-
+function saveJSON(key,value){
   try{
-
-    files =
-      JSON.parse(
-        localStorage.getItem(FILE_KEY)
-      ) || [];
-
-  }catch{
-
-    files=[];
-
+    localStorage.setItem(key,JSON.stringify(value));
+  }catch(error){
+    console.warn("Storage error:",error);
   }
-
-
-  try{
-
-    const saved =
-      JSON.parse(
-        localStorage.getItem(SETTING_KEY)
-      );
-
-    if(saved){
-
-      settings =
-        Object.assign(
-          settings,
-          saved
-        );
-
-    }
-
-  }catch{}
-
-
-  temporaryMode =
-    !!settings.privacy;
-
-
-  if(!chats.length){
-
-    createChat(false);
-
-  }else{
-
-    currentId =
-      chats[0].id;
-
-  }
-
-
-  applySettings();
-
-  updatePersonaButtons();
-
-  renderHistory();
-
-  renderChat();
-
 }
 
-
-function save(){
-
-  if(!temporaryMode){
-
-    localStorage.setItem(
-      CHAT_KEY,
-      JSON.stringify(chats)
-    );
-
-  }
-
-  localStorage.setItem(
-    SETTING_KEY,
-    JSON.stringify(settings)
-  );
-
-  localStorage.setItem(
-    FILE_KEY,
-    JSON.stringify(files)
-  );
-
+function uid(prefix="id"){
+  return prefix + "_" + Date.now().toString(36) + "_" +
+    Math.random().toString(36).slice(2,8);
 }
 
-
-function saveChatsOnly(){
-
-  if(temporaryMode){
-    return;
-  }
-
-  localStorage.setItem(
-    CHAT_KEY,
-    JSON.stringify(chats)
-  );
-
+function now(){
+  return new Date().toLocaleTimeString([],{
+    hour:"2-digit",
+    minute:"2-digit"
+  });
 }
 
+function escapeHTML(value){
+  return String(value ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+function toast(message){
+  toastEl.textContent = message;
+  toastEl.classList.add("show");
+
+  clearTimeout(toast.timer);
+
+  toast.timer = setTimeout(()=>{
+    toastEl.classList.remove("show");
+  },2600);
+}
+
+function saveAll(){
+  saveJSON(KEYS.chats,chats);
+  saveJSON(KEYS.settings,settings);
+  saveJSON(KEYS.files,files);
+  saveJSON(KEYS.memory,memories);
+  saveJSON(KEYS.prompts,prompts);
+  saveJSON(KEYS.saved,savedAnswers);
+  saveJSON(KEYS.tasks,tasks);
+  saveJSON(KEYS.reminders,reminders);
+  saveJSON(KEYS.snapshots,snapshots);
+  saveJSON(KEYS.workspace,workspace);
+}
+
+function currentChat(){
+  return chats.find(c=>c.id===currentId) || null;
+}
 
 /* =========================================================
-   CHAT
+   CHAT CREATION
 ========================================================= */
 
-function current(){
-
-  return chats.find(
-    c => c.id === currentId
-  ) || null;
-
-}
-
-
-function createChat(saveIt=true){
-
-  const id =
-    Date.now().toString()+
-    Math.random()
-      .toString(36)
-      .slice(2);
-
-  const chat={
-
-    id:id,
-
-    name:"New Chat",
-
-    created:Date.now(),
-
+function createChat(){
+  const chat = {
+    id:uid("chat"),
+    title:"New Chat",
+    createdAt:Date.now(),
+    updatedAt:Date.now(),
     favorite:false,
-
     archived:false,
-
     folder:"",
-
     tags:[],
-
-    messages:[],
-
-    snapshots:[],
-
-    versions:{}
-
+    locked:false,
+    goal:"",
+    progress:0,
+    messages:[]
   };
-
 
   chats.unshift(chat);
+  currentId = chat.id;
 
-  currentId=id;
-
-  followups.innerHTML="";
-
-  if(saveIt){
-
-    saveChatsOnly();
-
+  if(!workspace.openTabs.includes(chat.id)){
+    workspace.openTabs.push(chat.id);
   }
 
-  renderHistory();
+  if(!settings.temporary){
+    saveAll();
+  }
 
-  renderChat();
-
+  renderEverything();
 }
 
+function ensureChat(){
+  if(!currentChat()){
+    createChat();
+  }
+}
+
+/* =========================================================
+   RENDER HISTORY
+========================================================= */
 
 function renderHistory(){
+  const query = $("chatSearch").value.toLowerCase().trim();
 
-  const el =
-    $("history");
-
-  const query =
-    $("search").value
-      .trim()
-      .toLowerCase();
-
-
-  el.innerHTML="";
-
+  chatList.innerHTML = "";
 
   chats
-    .filter(chat =>
-      !chat.archived &&
-      (
-        !query ||
-        chat.name
-          .toLowerCase()
-          .includes(query) ||
-        chat.messages.some(
-          m =>
-            m.content
-              .toLowerCase()
-              .includes(query)
-        )
-      )
-    )
-    .forEach(chat => {
+    .filter(c=>!c.archived)
+    .filter(c=>!query || c.title.toLowerCase().includes(query))
+    .forEach(chat=>{
 
-      const row =
-        document.createElement("div");
+      const item = document.createElement("div");
 
-      row.className =
-        "history-item"+
-        (
-          chat.id===currentId
-            ?" active"
-            :""
-        );
+      item.className =
+        "chat-item " +
+        (chat.id===currentId ? "active":"");
 
+      item.innerHTML = `
+        <div class="chat-item-title">
+          ${chat.favorite ? "⭐ ":""}${escapeHTML(chat.title)}
+        </div>
+        <div class="chat-item-meta">
+          ${chat.messages.length} messages
+        </div>
+      `;
 
-      const star =
-        document.createElement("span");
-
-      star.textContent =
-        chat.favorite
-          ?"★"
-          :"";
-
-
-      const name =
-        document.createElement("div");
-
-      name.className =
-        "history-name";
-
-      name.textContent =
-        chat.name;
-
-
-      const more =
-        document.createElement("button");
-
-      more.className =
-        "history-more";
-
-      more.textContent="⋮";
-
-
-      row.onclick=e=>{
-
-        if(
-          e.target===more
-        ){
-          return;
-        }
-
-        currentId=chat.id;
-
-        renderHistory();
-
-        renderChat();
-
+      item.onclick = ()=>{
+        openChat(chat.id);
       };
 
-
-      more.onclick=e=>{
-
-        e.stopPropagation();
-
-        openChatMenu(
-          chat,
-          more
-        );
-
+      item.oncontextmenu = event=>{
+        event.preventDefault();
+        chatMenu(chat.id);
       };
 
-
-      row.append(
-        star,
-        name,
-        more
-      );
-
-      el.appendChild(row);
-
+      chatList.appendChild(item);
     });
-
 }
 
+function openChat(id){
+  const chat = chats.find(c=>c.id===id);
 
-function openChatMenu(chat,button){
+  if(!chat) return;
 
-  const rect =
-    button.getBoundingClientRect();
+  if(chat.locked){
+    const code = prompt("Enter chat lock code:");
 
-  const menu =
-    $("contextMenu");
+    if(code !== chat.locked){
+      toast("Incorrect lock code.");
+      return;
+    }
+  }
 
-  menu.style.left =
-    Math.min(
-      rect.left,
-      window.innerWidth-190
-    )+"px";
+  currentId = id;
 
-  menu.style.top =
-    Math.min(
-      rect.bottom+4,
-      window.innerHeight-170
-    )+"px";
+  if(!workspace.openTabs.includes(id)){
+    workspace.openTabs.push(id);
+  }
 
-
-  contextMessage=null;
-
-  menu.classList.add("show");
-
-
-  $("contextCopy").onclick=()=>{
-
-    copyChat(chat);
-
-    menu.classList.remove("show");
-
-  };
-
-
-  $("contextPin").onclick=()=>{
-
-    moveFolder(chat);
-
-    menu.classList.remove("show");
-
-  };
-
-
-  $("contextBranch").onclick=()=>{
-
-    branchChat(chat);
-
-    menu.classList.remove("show");
-
-  };
-
-
-  $("contextDelete").onclick=()=>{
-
-    deleteChat(chat);
-
-    menu.classList.remove("show");
-
-  };
-
+  renderEverything();
 }
 
+function chatMenu(id){
+  const chat = chats.find(c=>c.id===id);
+
+  if(!chat) return;
+
+  openModal(`
+    <div class="modal-head">
+      <strong>Chat Options</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="grid-buttons">
+
+        <button class="control-btn" onclick="renameChat('${id}');closeModal()">✏️ Rename</button>
+        <button class="control-btn" onclick="duplicateChat('${id}');closeModal()">📋 Duplicate</button>
+        <button class="control-btn" onclick="branchChat('${id}');closeModal()">🌿 Branch</button>
+        <button class="control-btn" onclick="archiveChat('${id}');closeModal()">📦 Archive</button>
+        <button class="control-btn" onclick="toggleFavorite('${id}');closeModal()">⭐ Favorite</button>
+        <button class="control-btn" onclick="deleteChat('${id}');closeModal()">🗑️ Delete</button>
+
+      </div>
+
+    </div>
+  `);
+}
+
+/* =========================================================
+   RENDER CHAT
+========================================================= */
 
 function renderChat(){
+  const chat = currentChat();
 
-  const chat =
-    current();
+  messagesEl.innerHTML = "";
 
   if(!chat){
+    messagesEl.appendChild(welcome);
     return;
   }
 
-
-  $("chatTitle").textContent =
-    chat.name;
-
-  $("personaBadge").textContent =
-    settings.persona;
-
-
-  messages.innerHTML="";
-
-
-  if(!chat.messages.length){
-
-    messages.appendChild(welcome);
-
+  if(chat.messages.length===0){
+    messagesEl.appendChild(welcome);
   }else{
 
-    chat.messages.forEach(
-      (message,index) =>
-        addMessage(
-          message,
-          index,
-          false
-        )
-    );
+    chat.messages.forEach(message=>{
+      renderMessage(message);
+    });
 
   }
 
+  chatTitle.textContent = chat.title;
+  $("personaBadge").textContent = settings.persona;
 
   updateStats();
+  updateGoalUI();
 
-  updateFavoriteIcon();
-
-  followups.innerHTML="";
-
-
-  requestAnimationFrame(
-    () => {
-      messages.scrollTop =
-        messages.scrollHeight;
-    }
-  );
-
+  setTimeout(()=>{
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  },20);
 }
 
+function renderMessage(message){
 
-function addMessage(
-  message,
-  index,
-  scroll=true
-){
+  const row = document.createElement("div");
 
-  const wrap =
-    document.createElement("div");
+  row.className =
+    "message-row " +
+    (message.role==="user" ? "user":"assistant");
 
-  wrap.className =
-    "message "+
-    message.role;
+  const box = document.createElement("div");
+  box.className = "message";
 
+  const imageHTML =
+    message.imagePreview
+      ? `<img src="${message.imagePreview}" alt="Uploaded image">`
+      : "";
 
-  const avatar =
-    document.createElement("div");
+  box.innerHTML = `
+    <div class="message-head">
+      <span class="message-role">
+        ${message.role==="user" ? "You":"Simple Chat AI"}
+      </span>
+      <span class="message-time">${message.time || ""}</span>
+    </div>
 
-  avatar.className =
-    "message-avatar";
+    <div class="message-bubble md">
+      ${message.role==="assistant"
+        ? markdown(message.content)
+        : escapeHTML(message.content).replaceAll("\n","<br>")}
+      ${imageHTML}
+    </div>
 
-  avatar.textContent =
-    message.role==="user"
-      ?"You"
-      :settings.avatar;
+    <div class="message-actions">
 
+      <button onclick="copyMessage('${message.id}')">Copy</button>
+      ${message.role==="assistant"
+        ? `<button onclick="regenerate('${message.id}')">Regenerate</button>`
+        : `<button onclick="editMessage('${message.id}')">Edit</button>`}
 
-  const content =
-    document.createElement("div");
+      ${message.role==="assistant"
+        ? `<button onclick="continueResponse('${message.id}')">Continue</button>`
+        : ""}
 
-  content.className =
-    "message-content";
+      <button onclick="pinMessage('${message.id}')">
+        ${message.pinned ? "📌 Unpin":"📌 Pin"}
+      </button>
 
+      <button onclick="bookmarkMessage('${message.id}')">
+        ${message.bookmarked ? "🔖 Saved":"🔖 Save"}
+      </button>
 
-  const bubble =
-    document.createElement("div");
+      ${message.role==="assistant"
+        ? `<button onclick="readAloud('${message.id}')">🔊 Read</button>`
+        : ""}
 
-  bubble.className =
-    "message-bubble markdown";
+      ${message.role==="assistant"
+        ? `<button onclick="improveMessage('${message.id}')">✨ Improve</button>`
+        : ""}
 
+      ${message.role==="assistant"
+        ? `<button onclick="askResponse('${message.id}')">❓ Ask</button>`
+        : ""}
 
-  if(message.imagePreview){
+    </div>
+  `;
 
-    const img =
-      document.createElement("img");
-
-    img.src =
-      message.imagePreview;
-
-    img.style.maxWidth="100%";
-
-    img.style.maxHeight="300px";
-
-    img.style.borderRadius="10px";
-
-    img.style.display="block";
-
-    img.style.marginBottom="8px";
-
-    bubble.appendChild(img);
-
-  }
-
-
-  bubble.insertAdjacentHTML(
-    "beforeend",
-    message.role==="assistant"
-      ?markdown(message.content)
-      :escapeHTML(message.content)
-          .replace(/\n/g,"<br>")
-  );
-
-
-  const actions =
-    document.createElement("div");
-
-  actions.className =
-    "message-actions";
-
-
-  if(message.role==="assistant"){
-
-    addAction(
-      actions,
-      "📋 Copy",
-      () => copy(message.content)
-    );
-
-    addAction(
-      actions,
-      "↻ Regenerate",
-      () => regenerate(index)
-    );
-
-    addAction(
-      actions,
-      "▶ Continue",
-      () => continueResponse(index)
-    );
-
-    addAction(
-      actions,
-      "📝 Summarize",
-      () => summarizeResponse(index)
-    );
-
-    addAction(
-      actions,
-      "✍ Rewrite",
-      () => improve(index)
-    );
-
-    addAction(
-      actions,
-      "❓ Ask",
-      () => askAboutResponse(index)
-    );
-
-    addAction(
-      actions,
-      "🔊 Read",
-      () => readAloud(message.content)
-    );
-
-    addAction(
-      actions,
-      message.pinned
-        ?"📌 Unpin"
-        :"📍 Pin",
-      () => pinMessage(index)
-    );
-
-  }else{
-
-    addAction(
-      actions,
-      "✎ Edit",
-      () => editMessage(index)
-    );
-
-    addAction(
-      actions,
-      "🌿 Branch",
-      () => branchFromMessage(index)
-    );
-
-  }
-
-
-  content.append(
-    bubble,
-    actions
-  );
-
-  wrap.append(
-    avatar,
-    content
-  );
-
-  messages.appendChild(wrap);
-
-
-  if(scroll){
-
-    requestAnimationFrame(
-      () => {
-        messages.scrollTop =
-          messages.scrollHeight;
-      }
-    );
-
-  }
-
+  row.appendChild(box);
+  messagesEl.appendChild(row);
 }
-
-
-function addAction(
-  container,
-  label,
-  handler
-){
-
-  const button =
-    document.createElement("button");
-
-  button.textContent=label;
-
-  button.onclick=handler;
-
-  container.appendChild(button);
-
-}
-
 
 /* =========================================================
    MARKDOWN
 ========================================================= */
 
-function escapeHTML(text){
-
-  return String(text ?? "")
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;")
-    .replace(/'/g,"&#039;");
-
-}
-
-
 function inlineMD(text){
 
-  let value =
-    escapeHTML(text);
+  let result = escapeHTML(text);
 
+  result = result.replace(
+    /`([^`]+)`/g,
+    "<code>$1</code>"
+  );
 
-  value =
-    value.replace(
-      /\*\*(.*?)\*\*/g,
-      "<strong>$1</strong>"
-    );
+  result = result.replace(
+    /\*\*([^*]+)\*\*/g,
+    "<strong>$1</strong>"
+  );
 
+  result = result.replace(
+    /\*([^*]+)\*/g,
+    "<em>$1</em>"
+  );
 
-  value =
-    value.replace(
-      /(?<!\*)\*(.*?)\*(?!\*)/g,
-      "<em>$1</em>"
-    );
-
-
-  value =
-    value.replace(
-      /`([^`]+)`/g,
-      "<code>$1</code>"
-    );
-
-
-  value =
-    value.replace(
-      /\[([^\]]+)\]\((https?:\/\/[^)\s]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener">$1</a>'
-    );
-
-
-  return value;
-
+  return result;
 }
-
 
 function markdown(text){
 
-  let source =
-    String(text ?? "")
-      .replace(/\r/g,"");
+  if(!text) return "";
 
+  const lines = String(text).split("\n");
+  let html = "";
+  let inCode = false;
+  let code = "";
 
-  const codeBlocks=[];
+  for(const line of lines){
 
+    if(line.trim().startsWith("```")){
 
-  source =
-    source.replace(
-      /```([\s\S]*?)```/g,
-      (_,code)=>{
+      if(inCode){
 
-        const key =
-          "___CODE_"+codeBlocks.length+"___";
+        html += `<pre>${escapeHTML(code)}</pre>`;
+        code="";
+        inCode=false;
 
-        codeBlocks.push(code.trim());
+      }else{
 
-        return key;
+        inCode=true;
 
       }
-    );
 
+      continue;
+    }
 
-  let html =
-    source
-      .split("\n")
-      .map(line => {
+    if(inCode){
+      code += line + "\n";
+      continue;
+    }
 
-        if(/^### /.test(line)){
-          return "<h3>"+
-            inlineMD(
-              line.slice(4)
-            )+
-            "</h3>";
-        }
+    if(/^### /.test(line)){
+      html += `<h3>${inlineMD(line.slice(4))}</h3>`;
+    }
+    else if(/^## /.test(line)){
+      html += `<h2>${inlineMD(line.slice(3))}</h2>`;
+    }
+    else if(/^# /.test(line)){
+      html += `<h1>${inlineMD(line.slice(2))}</h1>`;
+    }
+    else if(/^> /.test(line)){
+      html += `<blockquote>${inlineMD(line.slice(2))}</blockquote>`;
+    }
+    else if(/^[-*] /.test(line)){
+      html += `<div>• ${inlineMD(line.slice(2))}</div>`;
+    }
+    else if(/^\d+\. /.test(line)){
+      html += `<div>${inlineMD(line)}</div>`;
+    }
+    else if(!line.trim()){
+      html += "<br>";
+    }
+    else{
+      html += `<div>${inlineMD(line)}</div>`;
+    }
+  }
 
-        if(/^## /.test(line)){
-          return "<h2>"+
-            inlineMD(
-              line.slice(3)
-            )+
-            "</h2>";
-        }
+  return html;
+}
 
-        if(/^# /.test(line)){
-          return "<h1>"+
-            inlineMD(
-              line.slice(2)
-            )+
-            "</h1>";
-        }
+/* =========================================================
+   MESSAGE ACTIONS
+========================================================= */
 
-        if(/^> /.test(line)){
-          return "<blockquote>"+
-            inlineMD(
-              line.slice(2)
-            )+
-            "</blockquote>";
-        }
+function addMessage(role,content,extra={}){
+  ensureChat();
 
-        if(/^- /.test(line)){
-          return "<li>"+
-            inlineMD(
-              line.slice(2)
-            )+
-            "</li>";
-        }
+  const chat = currentChat();
 
-        if(/^\d+\. /.test(line)){
-          return "<li>"+
-            inlineMD(
-              line.replace(/^\d+\. /,"")
-            )+
-            "</li>";
-        }
+  const message = {
+    id:uid("msg"),
+    role,
+    content:String(content ?? ""),
+    time:now(),
+    pinned:false,
+    bookmarked:false,
+    reaction:"",
+    feedback:"",
+    versions:[],
+    ...extra
+  };
 
-        if(!line.trim()){
-          return "";
-        }
+  chat.messages.push(message);
+  chat.updatedAt=Date.now();
 
-        return "<p>"+
-          inlineMD(line)+
-          "</p>";
+  if(!settings.temporary){
+    saveAll();
+  }
 
-      })
-      .join("");
+  renderChat();
 
+  return message;
+}
 
-  html =
-    html.replace(
-      /(<li>.*?<\/li>)+/g,
-      match =>
-        "<ul>"+match+"</ul>"
-    );
+function copyMessage(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
 
+  if(!msg) return;
 
-  codeBlocks.forEach(
-    (code,i)=>{
+  navigator.clipboard.writeText(msg.content)
+    .then(()=>toast("Copied."));
+}
 
-      html =
-        html.replace(
-          "___CODE_"+i+"___",
-          "<pre><code>"+
-          escapeHTML(code)+
-          "</code></pre>"
-        );
+function copyAll(){
+  const chat=currentChat();
 
+  if(!chat) return;
+
+  const text=chat.messages
+    .map(m=>(m.role==="user"?"You":"AI")+": "+m.content)
+    .join("\n\n");
+
+  navigator.clipboard.writeText(text)
+    .then(()=>toast("Conversation copied."));
+}
+
+function pinMessage(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  msg.pinned=!msg.pinned;
+
+  saveAll();
+  renderChat();
+}
+
+function bookmarkMessage(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  msg.bookmarked=!msg.bookmarked;
+
+  if(msg.bookmarked){
+    savedAnswers.unshift({
+      id:uid("saved"),
+      content:msg.content,
+      chatId:chat.id,
+      createdAt:Date.now()
+    });
+  }
+
+  saveAll();
+  renderChat();
+  toast(msg.bookmarked ? "Saved answer." : "Bookmark removed.");
+}
+
+function editMessage(id){
+
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg || msg.role!=="user") return;
+
+  input.value=msg.content;
+  input.focus();
+
+  chat.messages=chat.messages.slice(
+    0,
+    chat.messages.indexOf(msg)
+  );
+
+  saveAll();
+  renderChat();
+  updateCounter();
+}
+
+function regenerate(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg || msg.role!=="assistant") return;
+
+  const index=chat.messages.indexOf(msg);
+
+  const previousUser=
+    [...chat.messages.slice(0,index)]
+      .reverse()
+      .find(m=>m.role==="user");
+
+  if(!previousUser){
+    toast("No user message found.");
+    return;
+  }
+
+  chat.messages.splice(index,1);
+
+  generate(previousUser.content);
+}
+
+function continueResponse(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  generate(
+    "Continue the previous response naturally. Do not repeat what has already been said.",
+    null,
+    msg.content
+  );
+}
+
+function improveMessage(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  generate(
+    "Improve this response while preserving its meaning:\n\n"+msg.content
+  );
+}
+
+function askResponse(id){
+
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  openModal(`
+    <div class="modal-head">
+      <strong>Ask About This Response</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <div class="item">
+        ${markdown(msg.content)}
+      </div>
+
+      <textarea id="askResponseInput" rows="4"
+        placeholder="What would you like to know about this response?"></textarea>
+
+      <button class="primary-btn" onclick="
+        const q=document.getElementById('askResponseInput').value.trim();
+        closeModal();
+        if(q) generate(q,null,'Previous response:\\n'+${JSON.stringify(msg.content)});
+      ">
+        Ask AI
+      </button>
+
+    </div>
+  `);
+}
+
+function readAloud(id){
+  const chat=currentChat();
+  const msg=chat?.messages.find(m=>m.id===id);
+
+  if(!msg) return;
+
+  if(!("speechSynthesis" in window)){
+    toast("Read aloud is not supported here.");
+    return;
+  }
+
+  speechSynthesis.cancel();
+
+  const utterance=new SpeechSynthesisUtterance(msg.content);
+  speechSynthesis.speak(utterance);
+}
+
+/* =========================================================
+   AI GENERATION
+========================================================= */
+
+async function generate(userText,file=null,extraPrompt="",imageData=null){
+
+  if(generating){
+    toast("AI is already responding.");
+    return;
+  }
+
+  ensureChat();
+
+  const chat=currentChat();
+
+  const history=chat.messages
+    .slice(-20)
+    .map(m=>({
+      role:m.role,
+      content:m.content
+    }));
+
+  let systemPrompt=getSystemPrompt();
+
+  if(extraPrompt){
+    systemPrompt += "\n\nAdditional context:\n"+extraPrompt;
+  }
+
+  if(file){
+    systemPrompt +=
+      "\n\nThe user supplied this file content:\n"+file;
+  }
+
+  if(selectedFile){
+    systemPrompt +=
+      "\n\nRelevant uploaded file:\n"+selectedFile.content;
+  }
+
+  if(settings.memoryEnabled && memories.length){
+    systemPrompt +=
+      "\n\nUseful remembered information:\n"+
+      memories.slice(0,15).join("\n");
+  }
+
+  if(settings.customInstructions){
+    systemPrompt +=
+      "\n\nCustom instructions:\n"+
+      settings.customInstructions;
+  }
+
+  const userMessage=addMessage(
+    "user",
+    userText,
+    {
+      imageName:imageData ? selectedImageName : ""
     }
   );
 
+  if(imageData){
+    userMessage.imagePreview=imageData;
+    if(!settings.temporary) saveAll();
+    renderChat();
+  }
 
-  return html;
+  generating=true;
+  sendBtn.textContent="■";
 
+  showTyping();
+
+  controller=new AbortController();
+
+  try{
+
+    const response=await fetch(
+      "/.netlify/functions/chat",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        body:JSON.stringify({
+          message:userText,
+          history,
+          systemPrompt,
+          temperature:Number(settings.temperature)||1,
+          maxTokens:Number(settings.maxTokens)||2000,
+          imageData:imageData || null
+        }),
+        signal:controller.signal
+      }
+    );
+
+    const data=await response.json().catch(()=>({}));
+
+    if(!response.ok){
+      throw new Error(
+        data.error ||
+        "The AI request failed."
+      );
+    }
+
+    const reply=
+      typeof data.reply==="string"
+        ? data.reply.trim()
+        : "";
+
+    if(!reply){
+      throw new Error("AI returned an empty response.");
+    }
+
+    removeTyping();
+
+    const aiMessage=addMessage(
+      "assistant",
+      reply
+    );
+
+    if(chat.messages.length===2){
+      chat.title=
+        userText.length>35
+          ? userText.slice(0,35)+"…"
+          : userText;
+    }
+
+    saveAll();
+    renderEverything();
+
+    showFollowups(aiMessage);
+
+  }catch(error){
+
+    removeTyping();
+
+    if(error.name==="AbortError"){
+      toast("Generation stopped.");
+    }else{
+      addMessage(
+        "assistant",
+        "⚠️ **Error:** "+error.message
+      );
+
+      toast(error.message);
+    }
+
+  }finally{
+
+    generating=false;
+    controller=null;
+    sendBtn.textContent="➤";
+
+  }
 }
 
+function showTyping(){
+
+  removeTyping();
+
+  const row=document.createElement("div");
+  row.className="message-row assistant";
+  row.id="typingRow";
+
+  row.innerHTML=`
+    <div class="message">
+      <div class="message-bubble">
+        <div class="typing">
+          <span class="dot"></span>
+          <span class="dot"></span>
+          <span class="dot"></span>
+        </div>
+      </div>
+    </div>
+  `;
+
+  messagesEl.appendChild(row);
+
+  messagesEl.scrollTop=messagesEl.scrollHeight;
+}
+
+function removeTyping(){
+  $("typingRow")?.remove();
+}
+
+function stopGeneration(){
+  if(controller){
+    controller.abort();
+  }
+}
+
+/* =========================================================
+   AI SYSTEM
+========================================================= */
+
+function getSystemPrompt(){
+
+  const persona={
+    Assistant:"You are a helpful, accurate and friendly AI assistant.",
+    Teacher:"You are a patient teacher. Explain clearly and step by step.",
+    Coder:"You are an expert programming assistant. Provide complete working code when requested.",
+    Writer:"You are a skilled writing assistant. Produce polished natural writing.",
+    Creative:"You are a creative assistant. Generate original useful ideas.",
+    Business:"You are a practical business assistant. Focus on clear plans, operations and useful calculations."
+  };
+
+  const mode={
+    Balanced:"Give a balanced amount of detail.",
+    Concise:"Be concise while still answering completely.",
+    Detailed:"Give detailed explanations and examples.",
+    Creative:"Use a creative and engaging approach."
+  };
+
+  return (
+    persona[settings.persona] ||
+    persona.Assistant
+  )+
+  "\n"+
+  (mode[settings.mode] || mode.Balanced)+
+  "\nRespond in "+settings.language+"."+
+  "\nTone: "+settings.tone+".";
+}
+
+/* =========================================================
+   FOLLOW UPS
+========================================================= */
+
+function showFollowups(message){
+
+  if(!message || !message.content) return;
+
+  const row=document.createElement("div");
+
+  row.className="message-row assistant";
+
+  row.innerHTML=`
+    <div class="message">
+      <div class="message-actions">
+        <button>💡 Give an example</button>
+        <button>🔎 Explain more</button>
+        <button>📌 Summarize</button>
+      </div>
+    </div>
+  `;
+
+  [...row.querySelectorAll("button")].forEach(button=>{
+    button.onclick=()=>{
+      input.value=button.textContent
+        .replace("💡 ","")
+        .replace("🔎 ","")
+        .replace("📌 ","");
+      input.focus();
+      updateCounter();
+    };
+  });
+
+  messagesEl.appendChild(row);
+}
 
 /* =========================================================
    SEND
@@ -2453,4903 +2109,2006 @@ function markdown(text){
 
 async function sendMessage(){
 
-  if(generating){
+  const text=input.value.trim();
+
+  if(!text && !selectedImage){
     return;
   }
 
+  const imageData=selectedImage;
+  const file=selectedFile;
 
-  const text =
-    input.value.trim();
-
-
-  if(!text){
-    return;
-  }
-
-
-  const chat =
-    current();
-
-
-  if(!chat){
-    return;
-  }
-
-
-  const file =
-    getSelectedFile();
-
-
-  /* FIX:
-     Save image before clearing attachment. */
-
-  const imageData =
-    selectedImage;
-
-  const imageName =
-    selectedImageName;
-
-
-  chat.messages.push({
-
-    role:"user",
-
-    content:text,
-
-    fileName:
-      file
-        ?file.name
-        :"",
-
-    imageName:
-      imageName || "",
-
-    imagePreview:
-      imageData
-        ?imageData
-        :""
-
-  });
-
-
-  if(
-    chat.name==="New Chat"
-  ){
-
-    chat.name =
-      generateTitle(text);
-
-  }
-
-
-  saveChatsOnly();
+  const finalText=
+    text ||
+    "Please analyze the uploaded image.";
 
   input.value="";
-
-  resizeInput();
-
   updateCounter();
 
   clearAttachment();
 
-  renderChat();
-
   await generate(
-    text,
+    finalText,
     file,
     "",
     imageData
   );
-
 }
 
+function clearAttachment(){
 
-function generateTitle(text){
+  selectedImage=null;
+  selectedImageName="";
+  selectedFile=null;
 
-  const clean =
-    text.replace(/\s+/g," ").trim();
-
-  if(!clean){
-    return "New Chat";
-  }
-
-  return clean.length>38
-    ?clean.slice(0,38)+"…"
-    :clean;
-
+  $("attachmentLabel").textContent="No attachment";
 }
-
-
-/* =========================================================
-   GENERATE
-========================================================= */
-
-async function generate(
-  userText,
-  file=null,
-  extraPrompt="",
-  imageData=null
-){
-
-  if(generating){
-    return;
-  }
-
-
-  generating=true;
-
-  send.disabled=true;
-
-
-  controller =
-    new AbortController();
-
-
-  const chat =
-    current();
-
-
-  if(!chat){
-    return;
-  }
-
-
-  showTyping();
-
-
-  const history =
-    chat.messages
-      .slice(0,-1)
-      .map(
-        item => ({
-          role:item.role,
-          content:item.content
-        })
-      );
-
-
-  const persona =
-    getPersona();
-
-
-  let instructions =
-    persona;
-
-
-  instructions +=
-    "\n\nResponse mode: "+
-    settings.mode+".";
-
-
-  if(settings.answerLength==="Short"){
-
-    instructions +=
-      "\nKeep answers concise.";
-
-  }else if(
-    settings.answerLength==="Long"
-  ){
-
-    instructions +=
-      "\nGive a longer, useful answer.";
-
-  }else if(
-    settings.answerLength==="Detailed"
-  ){
-
-    instructions +=
-      "\nGive a detailed explanation.";
-
-  }
-
-
-  if(settings.language &&
-     settings.language!=="Auto"){
-
-    instructions +=
-      "\nRespond in "+
-      settings.language+".";
-
-  }
-
-
-  instructions +=
-    "\nTone: "+
-    settings.tone+".";
-
-
-  instructions +=
-    "\nUse useful context from the conversation.";
-
-
-  if(settings.customInstructions){
-
-    instructions +=
-      "\n\nCustom instructions:\n"+
-      settings.customInstructions;
-
-  }
-
-
-  if(settings.systemPrompt){
-
-    instructions +=
-      "\n\nSystem prompt:\n"+
-      settings.systemPrompt;
-
-  }
-
-
-  if(settings.memory.length){
-
-    instructions +=
-      "\n\nRelevant local memory:\n"+
-      settings.memory
-        .map(x=>"- "+x)
-        .join("\n");
-
-  }
-
-
-  if(file){
-
-    instructions +=
-      "\n\nThe user attached this file. Use its contents when answering:\n"+
-      file.content.slice(0,50000);
-
-  }
-
-
-  if(extraPrompt){
-
-    instructions +=
-      "\n\nAdditional instruction:\n"+
-      extraPrompt;
-
-  }
-
-
-  const body={
-
-    message:userText,
-
-    history:history,
-
-    systemPrompt:instructions,
-
-    temperature:Number(
-      settings.temperature
-    ),
-
-    maxTokens:Number(
-      settings.maxTokens
-    )
-
-  };
-
-
-  /* FIX:
-     imageData is passed explicitly. */
-
-  if(imageData){
-
-    body.imageData =
-      imageData;
-
-  }
-
-
-  try{
-
-    const response =
-      await fetch(
-        "/.netlify/functions/chat",
-        {
-          method:"POST",
-
-          headers:{
-            "Content-Type":
-              "application/json"
-          },
-
-          body:
-            JSON.stringify(body),
-
-          signal:
-            controller.signal
-        }
-      );
-
-
-    const data =
-      await response.json()
-        .catch(
-          () => ({})
-        );
-
-
-    if(!response.ok){
-
-      throw new Error(
-        data.error ||
-        "AI request failed."
-      );
-
-    }
-
-
-    const reply =
-      typeof data.reply==="string"
-        ?data.reply.trim()
-        :"";
-
-
-    if(!reply){
-
-      throw new Error(
-        "The AI returned an empty response."
-      );
-
-    }
-
-
-    chat.messages.push({
-
-      role:"assistant",
-
-      content:reply,
-
-      pinned:false,
-
-      created:Date.now(),
-
-      version:1
-
-    });
-
-
-    saveChatsOnly();
-
-    renderChat();
-
-    showFollowupChips(reply);
-
-
-  }catch(error){
-
-    if(
-      error.name==="AbortError"
-    ){
-
-      toastMsg(
-        "Generation stopped."
-      );
-
-    }else{
-
-      chat.messages.push({
-
-        role:"assistant",
-
-        content:
-          "**Error:** "+
-          (
-            error.message ||
-            "Could not connect to AI."
-          )
-
-      });
-
-
-      saveChatsOnly();
-
-      renderChat();
-
-    }
-
-  }finally{
-
-    removeTyping();
-
-    generating=false;
-
-    send.disabled=false;
-
-    controller=null;
-
-  }
-
-}
-
-
-function getPersona(){
-
-  const builtIn={
-
-    Assistant:
-      "You are a helpful AI assistant. Give accurate, clear and useful answers.",
-
-    Teacher:
-      "You are a patient teacher. Explain step by step and use simple examples.",
-
-    Coder:
-      "You are an expert coding assistant. Provide complete working code when requested and explain important parts.",
-
-    Writer:
-      "You are a skilled writing assistant. Produce natural, polished writing.",
-
-    Creative:
-      "You are a creative assistant. Generate original and imaginative ideas.",
-
-    Business:
-      "You are a practical business assistant. Give structured and realistic business guidance."
-
-  };
-
-
-  if(builtIn[settings.persona]){
-
-    return builtIn[
-      settings.persona
-    ];
-
-  }
-
-
-  const custom =
-    settings.customPersonas.find(
-      p =>
-        p.name===settings.persona
-    );
-
-
-  return custom
-    ?custom.instructions
-    :"You are a helpful AI assistant.";
-
-}
-
-
-/* =========================================================
-   TYPING
-========================================================= */
-
-function showTyping(){
-
-  const wrap =
-    document.createElement("div");
-
-  wrap.className=
-    "message assistant";
-
-  wrap.id=
-    "typingIndicator";
-
-
-  wrap.innerHTML=`
-
-    <div class="message-avatar">
-      ${escapeHTML(settings.avatar)}
-    </div>
-
-    <div class="message-content">
-
-      <div class="message-bubble">
-
-        <div class="typing">
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-
-      </div>
-
-    </div>
-  `;
-
-
-  messages.appendChild(wrap);
-
-  messages.scrollTop =
-    messages.scrollHeight;
-
-}
-
-
-function removeTyping(){
-
-  const el =
-    $("typingIndicator");
-
-  if(el){
-    el.remove();
-  }
-
-}
-
-
-/* =========================================================
-   STOP
-========================================================= */
-
-function stopGeneration(){
-
-  if(controller){
-
-    controller.abort();
-
-  }
-
-}
-
-
-/* =========================================================
-   COPY
-========================================================= */
-
-async function copy(text){
-
-  try{
-
-    await navigator.clipboard.writeText(
-      text
-    );
-
-    toastMsg(
-      "Copied"
-    );
-
-  }catch{
-
-    toastMsg(
-      "Copy failed"
-    );
-
-  }
-
-}
-
-
-async function copyChat(chat){
-
-  const text =
-    chat.messages
-      .map(
-        m =>
-          (
-            m.role==="user"
-              ?"You"
-              :"AI"
-          )+
-          ":\n"+
-          m.content
-      )
-      .join("\n\n");
-
-
-  await copy(text);
-
-}
-
-
-async function copyAll(){
-
-  const chat =
-    current();
-
-  if(!chat){
-    return;
-  }
-
-  await copyChat(chat);
-
-}
-
-
-/* =========================================================
-   MESSAGE ACTIONS
-========================================================= */
-
-function pinMessage(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  chat.messages[index].pinned =
-    !chat.messages[index].pinned;
-
-
-  saveChatsOnly();
-
-  renderChat();
-
-}
-
-
-async function regenerate(index){
-
-  const chat=current();
-
-  if(!chat ||
-     chat.messages[index].role!=="assistant"){
-    return;
-  }
-
-
-  let userIndex =
-    index-1;
-
-
-  while(
-    userIndex>=0 &&
-    chat.messages[userIndex].role!=="user"
-  ){
-
-    userIndex--;
-
-  }
-
-
-  if(userIndex<0){
-    return;
-  }
-
-
-  chat.messages.splice(index,1);
-
-  saveChatsOnly();
-
-  renderChat();
-
-  await generate(
-    chat.messages[userIndex].content
-  );
-
-}
-
-
-async function continueResponse(index){
-
-  const chat=current();
-
-  if(!chat ||
-     chat.messages[index].role!=="assistant"){
-    return;
-  }
-
-
-  const prompt =
-    "Continue the previous answer naturally. Do not repeat what has already been written.";
-
-
-  await generate(
-    prompt,
-    null,
-    "Continue the assistant's previous response."
-  );
-
-}
-
-
-function editMessage(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const old =
-    chat.messages[index].content;
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Edit Message</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <textarea id="editValue"></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      id="saveEdit">
-      Save
-    </button>
-
-  `);
-
-
-  $("editValue").value=old;
-
-
-  $("saveEdit").onclick=()=>{
-
-    const value =
-      $("editValue")
-        .value
-        .trim();
-
-
-    if(!value){
-      return;
-    }
-
-
-    if(!chat.versions[index]){
-
-      chat.versions[index]=[];
-
-    }
-
-
-    chat.versions[index].push(old);
-
-    chat.messages[index].content=value;
-
-    saveChatsOnly();
-
-    closeModal();
-
-    renderChat();
-
-  };
-
-}
-
-
-async function improve(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const text =
-    chat.messages[index].content;
-
-
-  input.value =
-    "Rewrite this naturally while preserving its meaning:\n\n"+
-    text;
-
-  resizeInput();
-
-  updateCounter();
-
-  input.focus();
-
-}
-
-
-async function summarizeResponse(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const text =
-    chat.messages[index].content;
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Summary</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div id="summaryResult">
-      Creating summary...
-    </div>
-
-  `);
-
-
-  try{
-
-    const answer =
-      await directAI(
-        "Summarize this response clearly:\n\n"+
-        text
-      );
-
-
-    $("summaryResult").innerHTML =
-      markdown(answer);
-
-  }catch(error){
-
-    $("summaryResult").textContent =
-      error.message;
-
-  }
-
-}
-
-
-async function askAboutResponse(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const text =
-    chat.messages[index].content;
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Ask About This Response</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <textarea
-        id="askResponseInput"
-        placeholder="Ask a question about this response..."></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      id="askResponseButton">
-      Ask AI
-    </button>
-
-    <div id="askResponseResult"></div>
-
-  `);
-
-
-  $("askResponseButton").onclick=
-    async()=>{
-
-      const question =
-        $("askResponseInput")
-          .value
-          .trim();
-
-
-      if(!question){
-        return;
-      }
-
-
-      $("askResponseResult")
-        .textContent=
-        "Thinking...";
-
-
-      try{
-
-        const answer =
-          await directAI(
-            "Answer this question about the following AI response.\n\n"+
-            "Response:\n"+
-            text+
-            "\n\nQuestion:\n"+
-            question
-          );
-
-
-        $("askResponseResult")
-          .innerHTML=
-          markdown(answer);
-
-      }catch(error){
-
-        $("askResponseResult")
-          .textContent=
-          error.message;
-
-      }
-
-    };
-
-}
-
-
-function readAloud(text){
-
-  if(
-    !("speechSynthesis" in window)
-  ){
-
-    toastMsg(
-      "Read aloud is not supported."
-    );
-
-    return;
-
-  }
-
-
-  speechSynthesis.cancel();
-
-  const utterance =
-    new SpeechSynthesisUtterance(
-      text
-    );
-
-  speechSynthesis.speak(
-    utterance
-  );
-
-}
-
-
-/* =========================================================
-   VOICE
-========================================================= */
-
-function startVoice(){
-
-  const SpeechRecognition =
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-
-  if(!SpeechRecognition){
-
-    toastMsg(
-      "Voice input is not supported in this browser."
-    );
-
-    return;
-
-  }
-
-
-  if(listening){
-
-    recognition.stop();
-
-    return;
-
-  }
-
-
-  recognition =
-    new SpeechRecognition();
-
-  recognition.lang =
-    settings.language==="Urdu"
-      ?"ur-PK"
-      :"en-US";
-
-  recognition.interimResults=true;
-
-  recognition.continuous=false;
-
-
-  recognition.onstart=()=>{
-
-    listening=true;
-
-    toastMsg(
-      "Listening..."
-    );
-
-  };
-
-
-  recognition.onresult=e=>{
-
-    let result="";
-
-
-    for(
-      let i=e.resultIndex;
-      i<e.results.length;
-      i++
-    ){
-
-      result +=
-        e.results[i][0].transcript;
-
-    }
-
-
-    input.value=result;
-
-    resizeInput();
-
-    updateCounter();
-
-  };
-
-
-  recognition.onerror=()=>{
-
-    listening=false;
-
-    toastMsg(
-      "Voice input error."
-    );
-
-  };
-
-
-  recognition.onend=()=>{
-
-    listening=false;
-
-  };
-
-
-  recognition.start();
-
-}
-
-
-$("voiceInside").onclick =
-  startVoice;
-
-
-/* =========================================================
-   FOLLOWUPS
-========================================================= */
-
-async function showFollowupChips(reply){
-
-  followups.innerHTML="";
-
-  try{
-
-    const result =
-      await directAI(
-        "Suggest exactly 3 short useful follow-up questions the user could ask about this answer. Return only the three questions, one per line.",
-        {
-          maxTokens:300
-        }
-      );
-
-
-    result
-      .split("\n")
-      .map(x =>
-        x
-          .replace(/^[-*•\d.)]+\s*/,"")
-          .trim()
-      )
-      .filter(Boolean)
-      .slice(0,3)
-      .forEach(question=>{
-
-        const button =
-          document.createElement("button");
-
-        button.textContent=
-          question;
-
-        button.onclick=()=>{
-
-          input.value=
-            question;
-
-          resizeInput();
-
-          updateCounter();
-
-          input.focus();
-
-        };
-
-        followups.appendChild(button);
-
-      });
-
-  }catch{
-
-    /* Followups are optional. */
-
-  }
-
-}
-
-
-/* =========================================================
-   DIRECT AI
-========================================================= */
-
-async function directAI(
-  prompt,
-  options={}
-){
-
-  const chat=current();
-
-  const history =
-    chat
-      ?chat.messages.slice(-10).map(
-        m => ({
-          role:m.role,
-          content:m.content
-        })
-      )
-      :[];
-
-
-  const response =
-    await fetch(
-      "/.netlify/functions/chat",
-      {
-        method:"POST",
-
-        headers:{
-          "Content-Type":
-            "application/json"
-        },
-
-        body:
-          JSON.stringify({
-
-            message:prompt,
-
-            history:history,
-
-            systemPrompt:
-              getPersona()+
-              "\n"+
-              settings.customInstructions,
-
-            temperature:
-              settings.temperature,
-
-            maxTokens:
-              options.maxTokens ||
-              settings.maxTokens
-
-          })
-      }
-    );
-
-
-  const data =
-    await response.json()
-      .catch(
-        ()=>({})
-      );
-
-
-  if(!response.ok){
-
-    throw new Error(
-      data.error ||
-      "AI request failed."
-    );
-
-  }
-
-
-  if(
-    typeof data.reply!=="string"
-  ){
-
-    throw new Error(
-      "AI returned no text."
-    );
-
-  }
-
-
-  return data.reply;
-
-}
-
-
-/* =========================================================
-   MEMORY
-========================================================= */
-
-$("memoryBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Long-Term Memory</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <p style="font-size:11px;color:var(--muted)">
-      Memories are stored locally in this browser.
-    </p>
-
-    <div id="memoryList"></div>
-
-    <div class="field">
-
-      <label>New memory</label>
-
-      <input
-        id="memoryInput"
-        placeholder="Example: I prefer simple explanations.">
-
-    </div>
-
-    <button
-      class="save"
-      onclick="addMemory()">
-      Add Memory
-    </button>
-
-  `);
-
-  renderMemory();
-
-};
-
-
-window.addMemory=()=>{
-
-  const value =
-    $("memoryInput")
-      .value
-      .trim();
-
-
-  if(!value){
-    return;
-  }
-
-
-  settings.memory.push(value);
-
-  save();
-
-  renderMemory();
-
-  $("memoryInput").value="";
-
-};
-
-
-function renderMemory(){
-
-  const el =
-    $("memoryList");
-
-  if(!el){
-    return;
-  }
-
-
-  el.innerHTML="";
-
-
-  if(!settings.memory.length){
-
-    el.innerHTML=
-      '<p style="font-size:11px;color:var(--muted)">No memories yet.</p>';
-
-    return;
-
-  }
-
-
-  settings.memory.forEach(
-    (memory,index)=>{
-
-      const row =
-        document.createElement("div");
-
-      row.className="memory";
-
-
-      const span =
-        document.createElement("span");
-
-      span.textContent=
-        memory;
-
-
-      const button =
-        document.createElement("button");
-
-      button.textContent="×";
-
-      button.style.border="0";
-
-      button.style.background="transparent";
-
-      button.style.color=
-        "var(--danger)";
-
-
-      button.onclick=()=>{
-
-        settings.memory.splice(
-          index,
-          1
-        );
-
-        save();
-
-        renderMemory();
-
-      };
-
-
-      row.append(
-        span,
-        button
-      );
-
-      el.appendChild(row);
-
-    }
-  );
-
-}
-
-
-/* =========================================================
-   CUSTOM INSTRUCTIONS
-========================================================= */
-
-$("customInstructionsBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Custom Instructions</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Instructions for every conversation
-      </label>
-
-      <textarea
-        id="customInstructionsInput"
-        placeholder="Example: Always explain technical topics step by step."></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      id="saveCustomInstructions">
-      Save Instructions
-    </button>
-
-  `);
-
-
-  $("customInstructionsInput").value =
-    settings.customInstructions;
-
-
-  $("saveCustomInstructions").onclick=()=>{
-
-    settings.customInstructions =
-      $("customInstructionsInput")
-        .value
-        .trim();
-
-    save();
-
-    closeModal();
-
-    toastMsg(
-      "Custom instructions saved"
-    );
-
-  };
-
-};
-
-
-/* =========================================================
-   PRIVACY MODE
-========================================================= */
-
-$("privacyBtn").onclick=()=>{
-
-  temporaryMode =
-    !temporaryMode;
-
-  settings.privacy =
-    temporaryMode;
-
-
-  if(temporaryMode){
-
-    createChat(false);
-
-    toastMsg(
-      "Temporary chat enabled"
-    );
-
-  }else{
-
-    toastMsg(
-      "Temporary chat disabled"
-    );
-
-  }
-
-
-  save();
-
-  renderHistory();
-
-  renderChat();
-
-};
-
-
-/* =========================================================
-   CUSTOM PERSONA
-========================================================= */
-
-$("customPersona").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Create Custom Persona</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>Name</label>
-
-      <input
-        id="personaName"
-        placeholder="Science Tutor">
-
-    </div>
-
-    <div class="field">
-
-      <label>Instructions</label>
-
-      <textarea
-        id="personaInstructions"
-        placeholder="Describe how this persona behaves."></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      onclick="savePersona()">
-      Create Persona
-    </button>
-
-  `);
-
-};
-
-
-window.savePersona=()=>{
-
-  const name =
-    $("personaName")
-      .value
-      .trim();
-
-  const instructions =
-    $("personaInstructions")
-      .value
-      .trim();
-
-
-  if(!name){
-
-    toastMsg(
-      "Enter a persona name."
-    );
-
-    return;
-
-  }
-
-
-  settings.customPersonas.push({
-
-    name:name,
-
-    instructions:
-      instructions ||
-      "Be a helpful AI assistant."
-
-  });
-
-
-  settings.persona=name;
-
-  save();
-
-  closeModal();
-
-  updatePersonaButtons();
-
-  applySettings();
-
-  toastMsg(
-    name+" selected"
-  );
-
-};
-
-
-function updatePersonaButtons(){
-
-  const container =
-    $("personas");
-
-  if(!container){
-    return;
-  }
-
-
-  container.innerHTML="";
-
-
-  const builtIn=[
-
-    ["Assistant","🤖"],
-    ["Teacher","📚"],
-    ["Coder","💻"],
-    ["Writer","✍"],
-    ["Creative","🎨"],
-    ["Business","💼"]
-
-  ];
-
-
-  builtIn.forEach(
-    ([name,icon])=>{
-
-      const button =
-        document.createElement("button");
-
-      button.className =
-        "pbtn"+
-        (
-          settings.persona===name
-            ?" active"
-            :""
-        );
-
-      button.textContent =
-        icon+" "+name;
-
-      button.onclick =
-        ()=>selectPersona(name);
-
-      container.appendChild(button);
-
-    }
-  );
-
-
-  settings.customPersonas.forEach(
-    persona=>{
-
-      const button =
-        document.createElement("button");
-
-      button.className =
-        "pbtn"+
-        (
-          settings.persona===persona.name
-            ?" active"
-            :""
-        );
-
-      button.textContent =
-        "🧠 "+persona.name;
-
-      button.onclick =
-        ()=>selectPersona(
-          persona.name
-        );
-
-      container.appendChild(button);
-
-    }
-  );
-
-}
-
-
-function selectPersona(name){
-
-  settings.persona=name;
-
-  save();
-
-  updatePersonaButtons();
-
-  applySettings();
-
-  toastMsg(
-    name+" selected"
-  );
-
-}
-
-
-/* =========================================================
-   RESPONSE MODES
-========================================================= */
-
-function setupModes(){
-
-  document
-    .querySelectorAll(
-      "[data-mode]"
-    )
-    .forEach(button=>{
-
-      button.onclick=()=>{
-
-        settings.mode =
-          button.dataset.mode;
-
-        document
-          .querySelectorAll(
-            "[data-mode]"
-          )
-          .forEach(
-            x =>
-              x.classList.remove(
-                "active"
-              )
-          );
-
-        button.classList.add("active");
-
-        save();
-
-      };
-
-    });
-
-}
-
-
-/* =========================================================
-   FAVORITE
-========================================================= */
-
-function toggleFavorite(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  chat.favorite =
-    !chat.favorite;
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  updateFavoriteIcon();
-
-}
-
-
-function updateFavoriteIcon(){
-
-  const chat=current();
-
-  $("favoriteBtn").textContent =
-    chat && chat.favorite
-      ?"★"
-      :"☆";
-
-}
-
-
-/* =========================================================
-   ARCHIVE / DELETE / DUPLICATE
-========================================================= */
-
-function archiveChat(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  chat.archived=true;
-
-  const next =
-    chats.find(
-      c =>
-        !c.archived &&
-        c.id!==chat.id
-    );
-
-
-  if(next){
-
-    currentId=next.id;
-
-  }else{
-
-    createChat(false);
-
-  }
-
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  renderChat();
-
-  toastMsg(
-    "Chat archived."
-  );
-
-}
-
-
-function deleteChat(chat){
-
-  if(
-    !confirm(
-      "Delete this chat permanently?"
-    )
-  ){
-    return;
-  }
-
-
-  chats =
-    chats.filter(
-      c => c.id!==chat.id
-    );
-
-
-  if(!chats.length){
-
-    createChat(false);
-
-  }else if(
-    currentId===chat.id
-  ){
-
-    currentId =
-      chats[0].id;
-
-  }
-
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  renderChat();
-
-}
-
-
-function duplicateChat(chat){
-
-  if(!chat){
-    return;
-  }
-
-
-  const cloned =
-    JSON.parse(
-      JSON.stringify(chat)
-    );
-
-
-  cloned.id =
-    Date.now().toString()+
-    Math.random()
-      .toString(36)
-      .slice(2);
-
-  cloned.name =
-    chat.name+" Copy";
-
-  cloned.created =
-    Date.now();
-
-
-  chats.unshift(cloned);
-
-  currentId =
-    cloned.id;
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  renderChat();
-
-  toastMsg(
-    "Chat duplicated."
-  );
-
-}
-
-
-/* =========================================================
-   RENAME
-========================================================= */
-
-function renameChat(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Rename Chat</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <input
-        id="renameValue">
-
-    </div>
-
-    <button
-      class="save"
-      id="saveRename">
-      Save
-    </button>
-
-  `);
-
-
-  $("renameValue").value =
-    chat.name;
-
-
-  $("saveRename").onclick=()=>{
-
-    const value =
-      $("renameValue")
-        .value
-        .trim();
-
-
-    if(value){
-
-      chat.name=value;
-
-    }
-
-
-    saveChatsOnly();
-
-    closeModal();
-
-    renderHistory();
-
-    renderChat();
-
-  };
-
-}
-
-
-/* =========================================================
-   FOLDERS
-========================================================= */
-
-function moveFolder(chat){
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Move Chat</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div id="folderChoices" class="menu"></div>
-
-    <br>
-
-    <button
-      class="save"
-      id="newFolderButton">
-      ＋ Create Folder
-    </button>
-
-  `);
-
-
-  const box =
-    $("folderChoices");
-
-
-  const none =
-    document.createElement("button");
-
-  none.textContent=
-    "No Folder";
-
-  none.onclick=()=>{
-
-    chat.folder="";
-
-    saveChatsOnly();
-
-    closeModal();
-
-  };
-
-  box.appendChild(none);
-
-
-  settings.folders.forEach(
-    folder=>{
-
-      const button =
-        document.createElement("button");
-
-      button.textContent=
-        "📁 "+folder;
-
-      button.onclick=()=>{
-
-        chat.folder=folder;
-
-        saveChatsOnly();
-
-        closeModal();
-
-      };
-
-      box.appendChild(button);
-
-    }
-  );
-
-
-  $("newFolderButton").onclick=()=>{
-
-    const name =
-      prompt("Folder name:");
-
-    if(!name){
-      return;
-    }
-
-    settings.folders.push(
-      name.trim()
-    );
-
-    save();
-
-    closeModal();
-
-  };
-
-}
-
-
-/* =========================================================
-   PROMPT LIBRARY
-========================================================= */
-
-$("promptLibrary").onclick=()=>{
-
-  const prompts=[
-
-    ["Explain",
-     "Explain this clearly for a beginner:\n"],
-
-    ["Ideas",
-     "Give me 10 creative ideas about:\n"],
-
-    ["Professional",
-     "Rewrite this professionally:\n"],
-
-    ["Summary",
-     "Summarize this:\n"],
-
-    ["Plan",
-     "Create a detailed step-by-step plan for:\n"],
-
-    ["Code",
-     "Write complete working code for:\n"],
-
-    ["Compare",
-     "Compare these objectively:\n"],
-
-    ["Teach",
-     "Teach me this step by step:\n"],
-
-    ["Translate",
-     "Translate this into English:\n"],
-
-    ["Business",
-     "Create a practical business plan for:\n"]
-
-  ];
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Prompt Library</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div
-      class="menu"
-      id="promptChoices">
-    </div>
-
-  `);
-
-
-  const box =
-    $("promptChoices");
-
-
-  prompts.forEach(
-    ([name,text])=>{
-
-      const button =
-        document.createElement("button");
-
-      button.textContent=name;
-
-      button.onclick=()=>{
-
-        input.value=text;
-
-        resizeInput();
-
-        updateCounter();
-
-        closeModal();
-
-        input.focus();
-
-      };
-
-      box.appendChild(button);
-
-    }
-  );
-
-};
-
-
-/* =========================================================
-   COMPARE / VARIATIONS
-========================================================= */
-
-$("compareBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Compare Responses</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <textarea
-        id="comparePrompt"
-        placeholder="Enter a prompt..."></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      id="compareRun">
-      Generate Comparison
-    </button>
-
-    <div id="compareResult"></div>
-
-  `);
-
-
-  $("compareRun").onclick=
-    async()=>{
-
-      const prompt =
-        $("comparePrompt")
-          .value
-          .trim();
-
-
-      if(!prompt){
-        return;
-      }
-
-
-      $("compareResult")
-        .textContent=
-        "Generating...";
-
-
-      try{
-
-        const results =
-          await Promise.all([
-
-            directAI(
-              prompt+
-              "\nGive one answer."
-            ),
-
-            directAI(
-              prompt+
-              "\nGive a substantially different answer."
-            )
-
-          ]);
-
-
-        $("compareResult").innerHTML =
-          results.map(
-            (x,i)=>`
-
-              <div class="result-card">
-
-                <strong>
-                  Response ${i+1}
-                </strong>
-
-                <div class="markdown">
-                  ${markdown(x)}
-                </div>
-
-              </div>
-
-            `
-          ).join("");
-
-      }catch(error){
-
-        $("compareResult")
-          .textContent=
-          error.message;
-
-      }
-
-    };
-
-};
-
-
-$("variationsBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Response Variations</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <textarea
-        id="variationPrompt"
-        placeholder="Enter a prompt..."></textarea>
-
-    </div>
-
-    <button
-      class="save"
-      id="variationRun">
-      Generate 3 Variations
-    </button>
-
-    <div id="variationResult"></div>
-
-  `);
-
-
-  $("variationRun").onclick=
-    async()=>{
-
-      const prompt =
-        $("variationPrompt")
-          .value
-          .trim();
-
-
-      if(!prompt){
-        return;
-      }
-
-
-      $("variationResult")
-        .textContent=
-        "Generating...";
-
-
-      try{
-
-        const answers =
-          await Promise.all([
-
-            directAI(prompt),
-
-            directAI(
-              prompt+
-              "\nUse a different approach."
-            ),
-
-            directAI(
-              prompt+
-              "\nCreate another distinct version."
-            )
-
-          ]);
-
-
-        $("variationResult").innerHTML =
-          answers.map(
-            (x,i)=>`
-
-              <div class="result-card">
-
-                <strong>
-                  Variation ${i+1}
-                </strong>
-
-                <div class="markdown">
-                  ${markdown(x)}
-                </div>
-
-              </div>
-
-            `
-          ).join("");
-
-      }catch(error){
-
-        $("variationResult")
-          .textContent=
-          error.message;
-
-      }
-
-    };
-
-};
-
-
-/* =========================================================
-   SUMMARY
-========================================================= */
-
-$("summaryBtn").onclick =
-  summarizeChat;
-
-
-async function summarizeChat(){
-
-  const chat=current();
-
-  if(
-    !chat ||
-    !chat.messages.length
-  ){
-
-    toastMsg(
-      "There is no conversation to summarize."
-    );
-
-    return;
-
-  }
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>AI Chat Summary</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div id="summaryResult">
-      Creating summary...
-    </div>
-
-  `);
-
-
-  const transcript =
-    chat.messages
-      .map(
-        m =>
-          (
-            m.role==="user"
-              ?"User"
-              :"Assistant"
-          )+
-          ":\n"+
-          m.content
-      )
-      .join("\n\n");
-
-
-  try{
-
-    const summary =
-      await directAI(
-        "Summarize this entire conversation. Include the main topic, important points and useful next steps:\n\n"+
-        transcript,
-        {
-          maxTokens:1200
-        }
-      );
-
-
-    $("summaryResult").innerHTML =
-      markdown(summary);
-
-  }catch(error){
-
-    $("summaryResult").textContent =
-      error.message;
-
-  }
-
-}
-
-
-/* =========================================================
-   REWRITE
-========================================================= */
-
-$("rewriteBtn").onclick=()=>{
-
-  const text =
-    getSelectedText() ||
-    input.value.trim();
-
-
-  if(!text){
-
-    toastMsg(
-      "Select text or type something first."
-    );
-
-    return;
-
-  }
-
-
-  input.value =
-    "Rewrite this naturally while preserving the meaning:\n\n"+
-    text;
-
-  resizeInput();
-
-  updateCounter();
-
-  input.focus();
-
-};
-
-
-/* =========================================================
-   TONE
-========================================================= */
-
-$("toneBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Tone Control</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="menu">
-
-      <button onclick="setTone('Natural')">
-        Natural
-      </button>
-
-      <button onclick="setTone('Professional')">
-        Professional
-      </button>
-
-      <button onclick="setTone('Friendly')">
-        Friendly
-      </button>
-
-      <button onclick="setTone('Formal')">
-        Formal
-      </button>
-
-      <button onclick="setTone('Simple')">
-        Simple
-      </button>
-
-      <button onclick="setTone('Creative')">
-        Creative
-      </button>
-
-    </div>
-
-  `);
-
-};
-
-
-window.setTone=tone=>{
-
-  settings.tone=tone;
-
-  save();
-
-  closeModal();
-
-  toastMsg(
-    tone+" tone selected"
-  );
-
-};
-
-
-/* =========================================================
-   LANGUAGE
-========================================================= */
-
-$("languageBtn").onclick=()=>{
-
-  const languages=[
-    "Auto",
-    "English",
-    "Urdu",
-    "Arabic",
-    "Chinese",
-    "Spanish",
-    "French",
-    "German",
-    "Hindi",
-    "Turkish"
-  ];
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Chat Language</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div
-      class="menu"
-      id="languageChoices">
-    </div>
-
-  `);
-
-
-  const box =
-    $("languageChoices");
-
-
-  languages.forEach(
-    language=>{
-
-      const button =
-        document.createElement("button");
-
-      button.textContent=language;
-
-      button.onclick=()=>{
-
-        settings.language=
-          language;
-
-        save();
-
-        closeModal();
-
-        toastMsg(
-          "Language: "+language
-        );
-
-      };
-
-      box.appendChild(button);
-
-    }
-  );
-
-};
-
-
-/* =========================================================
-   SAFE CALCULATOR
-========================================================= */
-
-$("calculatorBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Calculator / Math Mode</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Expression
-      </label>
-
-      <input
-        id="calcInput"
-        placeholder="Example: (25 * 4) + 10">
-
-    </div>
-
-    <button
-      class="save"
-      id="calculateButton">
-      Calculate
-    </button>
-
-    <div
-      id="calcResult"
-      class="result-card">
-    </div>
-
-  `);
-
-
-  $("calculateButton").onclick=()=>{
-
-    try{
-
-      const result =
-        safeCalculate(
-          $("calcInput").value
-        );
-
-
-      $("calcResult").textContent =
-        "Result: "+result;
-
-    }catch{
-
-      $("calcResult").textContent =
-        "Invalid mathematical expression.";
-
-    }
-
-  };
-
-};
-
-
-function safeCalculate(expression){
-
-  let s =
-    String(expression)
-      .replace(/×/g,"*")
-      .replace(/÷/g,"/")
-      .replace(/−/g,"-")
-      .replace(/\s+/g,"");
-
-
-  if(!s){
-
-    throw new Error(
-      "Empty"
-    );
-
-  }
-
-
-  if(
-    !/^[0-9+\-*/().%^]+$/.test(s)
-  ){
-
-    throw new Error(
-      "Invalid"
-    );
-
-  }
-
-
-  if(
-    s.includes("%")
-  ){
-
-    s =
-      s.replace(
-        /(\d+(?:\.\d+)?)%/g,
-        "($1/100)"
-      );
-
-  }
-
-
-  const tokens =
-    tokenize(s);
-
-
-  const rpn =
-    toRPN(tokens);
-
-
-  return evaluateRPN(rpn);
-
-}
-
-
-function tokenize(s){
-
-  const result=[];
-
-  let number="";
-
-
-  const flush=()=>{
-
-    if(number){
-
-      result.push(
-        Number(number)
-      );
-
-      number="";
-
-    }
-
-  };
-
-
-  for(
-    let i=0;
-    i<s.length;
-    i++
-  ){
-
-    const ch=s[i];
-
-
-    if(
-      /[0-9.]/.test(ch)
-    ){
-
-      number+=ch;
-
-      continue;
-
-    }
-
-
-    flush();
-
-
-    if(
-      "+-*/^()".includes(ch)
-    ){
-
-      result.push(ch);
-
-    }else{
-
-      throw new Error(
-        "Invalid"
-      );
-
-    }
-
-  }
-
-
-  flush();
-
-  return result;
-
-}
-
-
-function toRPN(tokens){
-
-  const output=[];
-
-  const ops=[];
-
-  const precedence={
-    "+":1,
-    "-":1,
-    "*":2,
-    "/":2,
-    "^":3
-  };
-
-
-  tokens.forEach(token=>{
-
-    if(typeof token==="number"){
-
-      output.push(token);
-
-      return;
-
-    }
-
-
-    if(token==="("){
-
-      ops.push(token);
-
-      return;
-
-    }
-
-
-    if(token===")"){
-
-      while(
-        ops.length &&
-        ops[ops.length-1]!=="("
-      ){
-
-        output.push(
-          ops.pop()
-        );
-
-      }
-
-
-      if(
-        ops.pop()!=="("
-      ){
-
-        throw new Error(
-          "Invalid"
-        );
-
-      }
-
-      return;
-
-    }
-
-
-    while(
-      ops.length &&
-      ops[ops.length-1]!=="(" &&
-      precedence[
-        ops[ops.length-1]
-      ]>=precedence[token]
-    ){
-
-      output.push(
-        ops.pop()
-      );
-
-    }
-
-
-    ops.push(token);
-
-  });
-
-
-  while(ops.length){
-
-    const op=ops.pop();
-
-    if(op==="("){
-
-      throw new Error(
-        "Invalid"
-      );
-
-    }
-
-    output.push(op);
-
-  }
-
-
-  return output;
-
-}
-
-
-function evaluateRPN(tokens){
-
-  const stack=[];
-
-
-  tokens.forEach(token=>{
-
-    if(typeof token==="number"){
-
-      stack.push(token);
-
-      return;
-
-    }
-
-
-    const b=stack.pop();
-
-    const a=stack.pop();
-
-
-    if(
-      a===undefined ||
-      b===undefined
-    ){
-
-      throw new Error(
-        "Invalid"
-      );
-
-    }
-
-
-    let result;
-
-
-    if(token==="+"){
-      result=a+b;
-    }else if(token==="-"){
-      result=a-b;
-    }else if(token==="*"){
-      result=a*b;
-    }else if(token==="/"){
-      if(b===0){
-        throw new Error(
-          "Division by zero"
-        );
-      }
-      result=a/b;
-    }else if(token==="^"){
-      result=Math.pow(a,b);
-    }
-
-
-    if(!Number.isFinite(result)){
-
-      throw new Error(
-        "Invalid"
-      );
-
-    }
-
-
-    stack.push(result);
-
-  });
-
-
-  if(stack.length!==1){
-
-    throw new Error(
-      "Invalid"
-    );
-
-  }
-
-
-  return stack[0];
-
-}
-
-
-/* =========================================================
-   EXPLAIN SELECTION
-========================================================= */
-
-$("explainSelectionBtn").onclick=()=>{
-
-  const selected =
-    getSelectedText();
-
-
-  if(!selected){
-
-    toastMsg(
-      "Select text on the page first."
-    );
-
-    return;
-
-  }
-
-
-  input.value =
-    "Explain this selected text clearly:\n\n"+
-    selected;
-
-  resizeInput();
-
-  updateCounter();
-
-  input.focus();
-
-};
-
-
-function getSelectedText(){
-
-  const selection =
-    window.getSelection();
-
-  return selection
-    ?selection.toString().trim()
-    :"";
-
-}
-
 
 /* =========================================================
    FILES
 ========================================================= */
 
-$("attachBtn").onclick =
-  () => $("fileInput").click();
-
-
-$("filesBtn").onclick =
-  openFiles;
-
-
-$("fileInput").onchange=e=>{
-
-  handleFiles(
-    e.target.files
-  );
-
-  e.target.value="";
-
+$("fileBtn").onclick=()=>{
+  $("fileInput").click();
 };
 
+$("fileInput").addEventListener("change",async event=>{
 
-function handleFiles(list){
+  const file=event.target.files[0];
 
-  [
-    ...list
-  ].forEach(file=>{
+  if(!file) return;
 
-    const lower =
-      file.name.toLowerCase();
+  const text=await file.text();
 
+  selectedFile={
+    name:file.name,
+    content:text.slice(0,120000)
+  };
 
-    if(
-      !lower.endsWith(".txt") &&
-      !lower.endsWith(".md") &&
-      !lower.endsWith(".csv")
-    ){
+  $("attachmentLabel").textContent=
+    "📎 "+file.name;
 
-      toastMsg(
-        "Unsupported file: "+
-        file.name
-      );
+  files.unshift({
+    id:uid("file"),
+    name:file.name,
+    size:file.size,
+    content:text.slice(0,120000),
+    createdAt:Date.now()
+  });
 
-      return;
+  files=files.slice(0,30);
 
-    }
+  saveJSON(KEYS.files,files);
 
+  toast("File attached.");
+});
 
-    const reader =
-      new FileReader();
+$("imageBtn").onclick=()=>{
+  $("imageInput").click();
+};
 
+$("imageInput").addEventListener("change",event=>{
 
-    reader.onload=()=>{
+  const file=event.target.files[0];
 
-      const item={
+  if(!file) return;
 
-        name:file.name,
+  if(!file.type.startsWith("image/")){
+    toast("Please choose an image.");
+    return;
+  }
 
-        size:file.size,
+  const reader=new FileReader();
 
-        type:file.type,
+  reader.onload=event=>{
 
-        content:
-          String(
-            reader.result || ""
-          )
+    const image=new Image();
 
-      };
+    image.onload=()=>{
 
+      const max=1400;
 
-      const existing =
-        files.find(
-          f => f.name===file.name
+      let width=image.width;
+      let height=image.height;
+
+      if(width>max || height>max){
+
+        const scale=Math.min(
+          max/width,
+          max/height
         );
 
-
-      if(existing){
-
-        Object.assign(
-          existing,
-          item
-        );
-
-      }else{
-
-        files.push(item);
+        width=Math.round(width*scale);
+        height=Math.round(height*scale);
 
       }
 
+      const canvas=document.createElement("canvas");
 
-      save();
+      canvas.width=width;
+      canvas.height=height;
 
-      toastMsg(
-        file.name+" added"
+      const ctx=canvas.getContext("2d");
+
+      ctx.drawImage(
+        image,
+        0,
+        0,
+        width,
+        height
       );
 
+      selectedImage=
+        canvas.toDataURL(
+          "image/jpeg",
+          .82
+        );
+
+      selectedImageName=file.name;
+
+      $("attachmentLabel").textContent=
+        "🖼️ "+file.name;
+
+      toast("Image attached.");
     };
 
+    image.src=event.target.result;
+  };
 
-    reader.readAsText(file);
+  reader.readAsDataURL(file);
+});
+
+/* =========================================================
+   VOICE
+========================================================= */
+
+$("voiceBtn").onclick=()=>{
+
+  if(!("webkitSpeechRecognition" in window) &&
+     !("SpeechRecognition" in window)){
+
+    toast("Voice input is not supported by this browser.");
+    return;
+  }
+
+  if(listening){
+    recognition?.stop();
+    return;
+  }
+
+  const SpeechRecognition=
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+  recognition=new SpeechRecognition();
+
+  recognition.lang=
+    settings.language==="Urdu"
+      ? "ur-PK"
+      : "en-US";
+
+  recognition.continuous=false;
+  recognition.interimResults=false;
+
+  recognition.onstart=()=>{
+    listening=true;
+    $("voiceBtn").textContent="⏹️ Stop";
+  };
+
+  recognition.onresult=event=>{
+    const text=event.results[0][0].transcript;
+    input.value +=
+      (input.value ? " ":"")+text;
+    updateCounter();
+  };
+
+  recognition.onerror=()=>{
+    toast("Voice input error.");
+  };
+
+  recognition.onend=()=>{
+    listening=false;
+    $("voiceBtn").textContent="🎤 Voice";
+  };
+
+  recognition.start();
+};
+
+/* =========================================================
+   COUNTER
+========================================================= */
+
+function updateCounter(){
+
+  const text=input.value;
+
+  const words=
+    text.trim()
+      ? text.trim().split(/\s+/).length
+      : 0;
+
+  $("counter").textContent=
+    `${text.length} characters • ${words} words`;
+}
+
+/* =========================================================
+   PERSONAS / MODES
+========================================================= */
+
+document.querySelectorAll("[data-persona]")
+  .forEach(button=>{
+
+    button.onclick=()=>{
+
+      settings.persona=
+        button.dataset.persona;
+
+      document
+        .querySelectorAll("[data-persona]")
+        .forEach(b=>b.classList.remove("active"));
+
+      button.classList.add("active");
+
+      $("personaBadge").textContent=
+        settings.persona;
+
+      saveJSON(KEYS.settings,settings);
+      toast("Persona: "+settings.persona);
+    };
 
   });
 
-}
+document.querySelectorAll("[data-mode]")
+  .forEach(button=>{
 
+    button.onclick=()=>{
 
-function getSelectedFile(){
+      settings.mode=
+        button.dataset.mode;
 
-  if(!settings.selectedFile){
-    return null;
-  }
+      document
+        .querySelectorAll("[data-mode]")
+        .forEach(b=>b.classList.remove("active"));
 
+      button.classList.add("active");
 
-  return files.find(
-    f =>
-      f.name===settings.selectedFile
-  ) || null;
+      saveJSON(KEYS.settings,settings);
 
-}
+      toast("Mode: "+settings.mode);
+    };
 
+  });
 
-function openFiles(){
+/* =========================================================
+   TOOLS
+========================================================= */
 
-  openModal(`
+document.querySelectorAll("[data-tool]")
+  .forEach(button=>{
 
-    <div class="modal-head">
+    button.onclick=()=>{
 
-      <h2>File Library</h2>
+      const tool=button.dataset.tool;
 
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div
-      class="dropzone"
-      id="dropzone">
-
-      <strong>
-        Drop TXT, MD or CSV files here
-      </strong>
-
-      <br><br>
-
-      <button
-        class="pbtn"
-        id="chooseFiles">
-        Choose Files
-      </button>
-
-    </div>
-
-    <div id="fileList"></div>
-
-  `);
-
-
-  $("chooseFiles").onclick =
-    () => $("fileInput").click();
-
-
-  renderFiles();
-
-
-  const dz =
-    $("dropzone");
-
-
-  dz.ondragover=e=>{
-
-    e.preventDefault();
-
-    dz.classList.add("drag");
-
-  };
-
-
-  dz.ondragleave=()=>{
-
-    dz.classList.remove("drag");
-
-  };
-
-
-  dz.ondrop=e=>{
-
-    e.preventDefault();
-
-    dz.classList.remove("drag");
-
-    handleFiles(
-      e.dataTransfer.files
-    );
-
-    setTimeout(
-      renderFiles,
-      500
-    );
-
-  };
-
-}
-
-
-function renderFiles(){
-
-  const el =
-    $("fileList");
-
-  if(!el){
-    return;
-  }
-
-
-  el.innerHTML="";
-
-
-  if(!files.length){
-
-    el.innerHTML=
-      '<p style="font-size:11px;color:var(--muted)">No files yet.</p>';
-
-    return;
-
-  }
-
-
-  files.forEach(
-    (file,index)=>{
-
-      const row =
-        document.createElement("div");
-
-      row.className=
-        "file-item";
-
-
-      const name =
-        document.createElement("span");
-
-      name.textContent=
-        "📄 "+file.name;
-
-
-      const use =
-        document.createElement("button");
-
-      use.className=
-        "file-use";
-
-      use.textContent =
-        settings.selectedFile===file.name
-          ?"Selected"
-          :"Use";
-
-
-      use.onclick=()=>{
-
-        settings.selectedFile =
-          file.name;
-
-        save();
-
-        renderFiles();
-
+      const actions={
+        bold:()=>wrapSelection("**","**"),
+        italic:()=>wrapSelection("*","*"),
+        heading:()=>insertText("# "),
+        list:()=>insertText("- "),
+        code:()=>wrapSelection("`","`"),
+        quote:()=>insertText("> "),
+        summarize:()=>toolPrompt("Summarize this text clearly."),
+        translate:()=>toolPrompt("Translate this text to English."),
+        grammar:()=>toolPrompt("Correct the grammar and explain the important corrections."),
+        rewrite:()=>toolPrompt("Rewrite this naturally and professionally."),
+        tone:()=>toolPrompt("Improve the tone while preserving the meaning."),
+        language:()=>openLanguageModal(),
+        calculator:()=>openCalculator(),
+        explain:()=>toolPrompt("Explain this in simple words.")
       };
 
+      actions[tool]?.();
 
-      const remove =
-        document.createElement("button");
+    };
 
-      remove.className=
-        "file-use";
+  });
 
-      remove.textContent=
-        "Delete";
+function wrapSelection(before,after){
 
-      remove.style.color=
-        "var(--danger)";
+  const start=input.selectionStart;
+  const end=input.selectionEnd;
 
+  const selected=input.value.slice(start,end);
 
-      remove.onclick=()=>{
+  input.setRangeText(
+    before+selected+after,
+    start,
+    end,
+    "end"
+  );
 
-        files.splice(
-          index,
-          1
-        );
+  input.focus();
+  updateCounter();
+}
 
+function insertText(text){
+  const start=input.selectionStart;
+
+  input.setRangeText(
+    text,
+    start,
+    start,
+    "end"
+  );
+
+  input.focus();
+  updateCounter();
+}
+
+function toolPrompt(prompt){
+
+  const selected=
+    input.value.trim();
+
+  if(selected){
+    input.value=
+      prompt+"\n\n"+selected;
+  }else{
+    input.value=prompt+"\n\n";
+  }
+
+  input.focus();
+  updateCounter();
+}
+
+/* =========================================================
+   SAFE CALCULATOR
+========================================================= */
+
+function tokenizeMath(expression){
+
+  const tokens=[];
+  let i=0;
+
+  while(i<expression.length){
+
+    const char=expression[i];
+
+    if(/\s/.test(char)){
+      i++;
+      continue;
+    }
+
+    if(/[0-9.]/.test(char)){
+
+      let number="";
+
+      while(
+        i<expression.length &&
+        /[0-9.eE+-]/.test(expression[i])
+      ){
 
         if(
-          settings.selectedFile===
-          file.name
+          (expression[i]==="+" ||
+           expression[i]==="-") &&
+          number &&
+          !/[eE]$/.test(number)
         ){
-
-          settings.selectedFile="";
-
+          break;
         }
 
+        number+=expression[i++];
+      }
 
-        save();
+      if(!Number.isFinite(Number(number))){
+        throw new Error("Invalid number.");
+      }
 
-        renderFiles();
+      tokens.push({
+        type:"number",
+        value:Number(number)
+      });
 
-      };
+      continue;
+    }
 
+    if(/[a-zA-Z]/.test(char)){
 
-      row.append(
-        name,
-        use,
-        remove
-      );
+      let name="";
 
-      el.appendChild(row);
+      while(
+        i<expression.length &&
+        /[a-zA-Z]/.test(expression[i])
+      ){
+        name+=expression[i++];
+      }
 
+      tokens.push({
+        type:"name",
+        value:name.toLowerCase()
+      });
+
+      continue;
+    }
+
+    if("+-*/%^() ,".includes(char)){
+
+      tokens.push({
+        type:"operator",
+        value:char
+      });
+
+      i++;
+      continue;
+    }
+
+    throw new Error("Unsupported calculator character.");
+  }
+
+  return tokens;
+}
+
+function safeCalculate(expression){
+
+  const tokens=tokenizeMath(expression);
+  let position=0;
+
+  const constants={
+    pi:Math.PI,
+    e:Math.E
+  };
+
+  const functions={
+    sqrt:x=>Math.sqrt(x),
+    abs:x=>Math.abs(x),
+    round:x=>Math.round(x),
+    floor:x=>Math.floor(x),
+    ceil:x=>Math.ceil(x),
+    sin:x=>Math.sin(x),
+    cos:x=>Math.cos(x),
+    tan:x=>Math.tan(x),
+    log:x=>Math.log10(x),
+    ln:x=>Math.log(x)
+  };
+
+  function peek(){
+    return tokens[position];
+  }
+
+  function consume(){
+    return tokens[position++];
+  }
+
+  function primary(){
+
+    const token=peek();
+
+    if(!token){
+      throw new Error("Unexpected end.");
+    }
+
+    if(token.value==="("){
+
+      consume();
+
+      const value=additive();
+
+      if(!peek() || consume().value!==")"){
+        throw new Error("Missing closing parenthesis.");
+      }
+
+      return value;
+    }
+
+    if(token.value==="+"){
+      consume();
+      return primary();
+    }
+
+    if(token.value==="-"){
+      consume();
+      return -primary();
+    }
+
+    if(token.type==="number"){
+      consume();
+      return token.value;
+    }
+
+    if(token.type==="name"){
+
+      const name=consume().value;
+
+      if(constants[name]!==undefined){
+        return constants[name];
+      }
+
+      if(functions[name]){
+
+        if(!peek() || consume().value!=="("){
+          throw new Error("Function requires parentheses.");
+        }
+
+        const value=additive();
+
+        if(!peek() || consume().value!==")"){
+          throw new Error("Missing function parenthesis.");
+        }
+
+        return functions[name](value);
+      }
+
+      throw new Error("Unknown name: "+name);
+    }
+
+    throw new Error("Invalid expression.");
+  }
+
+  function power(){
+
+    let left=primary();
+
+    while(peek()?.value==="^"){
+      consume();
+      left=Math.pow(left,power());
+    }
+
+    return left;
+  }
+
+  function multiplicative(){
+
+    let left=power();
+
+    while(
+      peek() &&
+      ["*","/","%"].includes(peek().value)
+    ){
+
+      const op=consume().value;
+      const right=power();
+
+      if(op==="*") left*=right;
+      if(op==="/") left/=right;
+      if(op==="%") left%=right;
+    }
+
+    return left;
+  }
+
+  function additive(){
+
+    let left=multiplicative();
+
+    while(
+      peek() &&
+      ["+","+","-"].includes(peek().value)
+    ){
+
+      const op=consume().value;
+      const right=multiplicative();
+
+      if(op==="+") left+=right;
+      if(op==="-") left-=right;
+    }
+
+    return left;
+  }
+
+  const result=additive();
+
+  if(position!==tokens.length){
+    throw new Error("Unexpected calculator input.");
+  }
+
+  if(!Number.isFinite(result)){
+    throw new Error("Result is not finite.");
+  }
+
+  return result;
+}
+
+function openCalculator(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🧮 Safe Calculator</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <input id="calcInput"
+        placeholder="Example: (25 * 4) + sqrt(81)">
+
+      <button class="primary-btn" onclick="runCalculator()">
+        Calculate
+      </button>
+
+      <div id="calcResult" class="item">
+        Result will appear here.
+      </div>
+
+      <div class="small">
+        Supports + − × ÷ %, parentheses, ^, sqrt, abs,
+        round, floor, ceil, sin, cos, tan, log, ln, pi and e.
+      </div>
+
+    </div>
+  `);
+}
+
+function runCalculator(){
+
+  const expression=
+    $("calcInput").value.trim();
+
+  try{
+
+    const result=safeCalculate(expression);
+
+    $("calcResult").textContent=
+      String(result);
+
+  }catch(error){
+
+    $("calcResult").textContent=
+      "Error: "+error.message;
+
+  }
+}
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function openLanguageModal(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🌐 Language & Tone</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <select id="languageSelect">
+        <option>English</option>
+        <option>Urdu</option>
+        <option>Arabic</option>
+        <option>Chinese</option>
+        <option>Spanish</option>
+        <option>French</option>
+        <option>German</option>
+        <option>Hindi</option>
+      </select>
+
+      <select id="toneSelect">
+        <option>Natural</option>
+        <option>Professional</option>
+        <option>Friendly</option>
+        <option>Formal</option>
+        <option>Simple</option>
+        <option>Creative</option>
+      </select>
+
+      <button class="primary-btn" onclick="
+        settings.language=document.getElementById('languageSelect').value;
+        settings.tone=document.getElementById('toneSelect').value;
+        saveJSON(KEYS.settings,settings);
+        closeModal();
+        toast('Language and tone updated.');
+      ">
+        Save
+      </button>
+
+    </div>
+  `);
+
+  $("languageSelect").value=settings.language;
+  $("toneSelect").value=settings.tone;
+}
+
+/* =========================================================
+   COMMAND CENTER
+========================================================= */
+
+function commandCenter(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🚀 Command Center</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="grid-buttons">
+
+        <button class="control-btn" onclick="closeModal();showCalendar()">📅 Calendar</button>
+        <button class="control-btn" onclick="closeModal();showTasks()">☑️ Tasks</button>
+        <button class="control-btn" onclick="closeModal();showSaved()">🔖 Saved</button>
+        <button class="control-btn" onclick="closeModal();showMemory()">🧠 Memory</button>
+        <button class="control-btn" onclick="closeModal();showPrompts()">🧩 Prompts</button>
+        <button class="control-btn" onclick="closeModal();showStatistics()">📈 Statistics</button>
+        <button class="control-btn" onclick="closeModal();showFiles()">📁 Files</button>
+        <button class="control-btn" onclick="closeModal();dailyBrief()">📰 Daily Brief</button>
+        <button class="control-btn" onclick="closeModal();studyCards()">🃏 Study Cards</button>
+        <button class="control-btn" onclick="closeModal();quizMaker()">❓ Quiz</button>
+        <button class="control-btn" onclick="closeModal();keyPoints()">📌 Key Points</button>
+        <button class="control-btn" onclick="closeModal();emailWriter()">✉️ Email</button>
+        <button class="control-btn" onclick="closeModal();documentOutline()">📑 Outline</button>
+        <button class="control-btn" onclick="closeModal();meetingNotes()">📝 Meeting Notes</button>
+        <button class="control-btn" onclick="closeModal();decisionTable()">📊 Decision Table</button>
+        <button class="control-btn" onclick="closeModal();readingMode()">📖 Reading Mode</button>
+
+      </div>
+
+    </div>
+  `);
+}
+
+/* =========================================================
+   CALENDAR
+========================================================= */
+
+function showCalendar(){
+
+  const date=new Date();
+
+  const year=date.getFullYear();
+  const month=date.getMonth();
+
+  const first=new Date(year,month,1);
+  const last=new Date(year,month+1,0);
+
+  let html="";
+
+  for(let i=0;i<first.getDay();i++){
+    html+="<div></div>";
+  }
+
+  for(let day=1;day<=last.getDate();day++){
+
+    const count=chats.filter(chat=>{
+      const d=new Date(chat.createdAt);
+
+      return d.getFullYear()===year &&
+             d.getMonth()===month &&
+             d.getDate()===day;
+    }).length;
+
+    html+=`
+      <div>
+        <strong>${day}</strong>
+        ${count ? `<div class="small">${count} chat${count>1?"s":""}</div>`:""}
+      </div>
+    `;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📅 Chat Calendar — ${date.toLocaleString([],{
+        month:"long",
+        year:"numeric"
+      })}</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="calendar">
+        <div><strong>Sun</strong></div>
+        <div><strong>Mon</strong></div>
+        <div><strong>Tue</strong></div>
+        <div><strong>Wed</strong></div>
+        <div><strong>Thu</strong></div>
+        <div><strong>Fri</strong></div>
+        <div><strong>Sat</strong></div>
+        ${html}
+      </div>
+
+    </div>
+  `);
+}
+
+/* =========================================================
+   DAILY BRIEF
+========================================================= */
+
+async function dailyBrief(){
+
+  const chat=currentChat();
+
+  const context=
+    chat?.messages
+      .slice(-15)
+      .map(m=>m.role+": "+m.content)
+      .join("\n") ||
+    "No current conversation.";
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📰 Daily AI Brief</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div id="briefResult" class="item">
+        Generating your brief...
+      </div>
+
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Create a short useful daily brief from this information. Include key points and useful next actions:\n\n"+context
+    );
+
+    $("briefResult").innerHTML=markdown(result);
+
+    workspace.dailyBrief=result;
+    saveJSON(KEYS.workspace,workspace);
+
+  }catch(error){
+
+    $("briefResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   DIRECT AI
+========================================================= */
+
+async function directAI(message){
+
+  const response=await fetch(
+    "/.netlify/functions/chat",
+    {
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json"
+      },
+      body:JSON.stringify({
+        message,
+        history:[],
+        systemPrompt:getSystemPrompt(),
+        temperature:Number(settings.temperature)||1,
+        maxTokens:Number(settings.maxTokens)||2000
+      })
     }
   );
 
+  const data=await response.json();
+
+  if(!response.ok){
+    throw new Error(
+      data.error ||
+      "AI request failed."
+    );
+  }
+
+  return data.reply || "";
 }
 
-
 /* =========================================================
-   IMAGE
+   TASKS
 ========================================================= */
 
-$("imageBtn").onclick =
-  () => $("imageInput").click();
+function showTasks(){
 
+  const render=()=>{
 
-$("imageInput").onchange=e=>{
+    const list=tasks.map(task=>`
 
-  const file =
-    e.target.files[0];
+      <div class="item">
 
+        <div class="item-row">
 
-  if(!file){
-    return;
-  }
+          <label>
+            <input type="checkbox"
+              ${task.done?"checked":""}
+              onchange="toggleTask('${task.id}')">
+            ${escapeHTML(task.title)}
+          </label>
 
+          <button class="control-btn"
+            onclick="deleteTask('${task.id}')">
+            ×
+          </button>
 
-  if(
-    !file.type.startsWith("image/")
-  ){
+        </div>
 
-    toastMsg(
-      "Please select an image."
-    );
+        ${task.due
+          ? `<div class="small">Due: ${escapeHTML(task.due)}</div>`
+          : ""}
 
-    return;
+      </div>
+    `).join("");
 
-  }
+    modal.innerHTML=`
 
+      <div class="modal-head">
+        <strong>☑️ Smart To-Do List</strong>
+        <button class="modal-close" onclick="closeModal()">×</button>
+      </div>
 
-  const reader =
-    new FileReader();
+      <div class="modal-body">
 
+        <div class="form">
 
-  reader.onload=()=>{
+          <input id="taskInput"
+            placeholder="Add a task...">
 
-    selectedImage =
-      reader.result;
+          <button class="primary-btn"
+            onclick="addTask()">
+            Add Task
+          </button>
 
-    selectedImageName =
-      file.name;
+        </div>
 
+        <div style="margin-top:15px">
+          ${list || '<div class="small">No tasks yet.</div>'}
+        </div>
 
-    toastMsg(
-      "Image attached."
-    );
-
+      </div>
+    `;
   };
 
-
-  reader.readAsDataURL(file);
-
-  e.target.value="";
-
-};
-
-
-function clearAttachment(){
-
-  selectedImage=null;
-
-  selectedImageName="";
-
+  openModal("");
+  render();
 }
 
+function addTask(){
+
+  const value=$("taskInput").value.trim();
+
+  if(!value) return;
+
+  tasks.unshift({
+    id:uid("task"),
+    title:value,
+    done:false,
+    createdAt:Date.now()
+  });
+
+  saveJSON(KEYS.tasks,tasks);
+
+  showTasks();
+}
+
+function toggleTask(id){
+
+  const task=tasks.find(t=>t.id===id);
+
+  if(!task) return;
+
+  task.done=!task.done;
+
+  saveJSON(KEYS.tasks,tasks);
+
+  showTasks();
+}
+
+function deleteTask(id){
+
+  tasks=tasks.filter(t=>t.id!==id);
+
+  saveJSON(KEYS.tasks,tasks);
+
+  showTasks();
+}
 
 /* =========================================================
-   EXPORT
+   SAVED ANSWERS
 ========================================================= */
 
-function exportMarkdown(){
+function showSaved(){
 
-  const chat=current();
+  const html=savedAnswers.map(item=>`
 
-  if(!chat){
-    return;
-  }
+    <div class="item">
 
+      <div>${markdown(item.content)}</div>
 
-  const text =
-    "# "+chat.name+
-    "\n\n"+
-    chat.messages
-      .map(
-        m =>
-          "## "+
-          (
-            m.role==="user"
-              ?"You"
-              :"AI"
-          )+
-          "\n\n"+
-          m.content
-      )
-      .join("\n\n");
+      <div class="message-actions">
+        <button onclick="copySaved('${item.id}')">Copy</button>
+        <button onclick="deleteSaved('${item.id}')">Delete</button>
+      </div>
 
+    </div>
 
-  download(
-    chat.name+".md",
-    text,
-    "text/markdown"
-  );
-
-
-  toastMsg(
-    "Markdown exported."
-  );
-
-}
-
-
-function exportHTML(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const html=`
-
-<!DOCTYPE html>
-<html>
-<head>
-<meta charset="UTF-8">
-<title>${escapeHTML(chat.name)}</title>
-
-<style>
-body{
-font-family:Arial;
-max-width:850px;
-margin:40px auto;
-line-height:1.6;
-padding:20px;
-}
-</style>
-
-</head>
-
-<body>
-
-<h1>
-${escapeHTML(chat.name)}
-</h1>
-
-${chat.messages.map(
-  m=>`
-
-<section>
-
-<h2>
-${m.role==="user"?"You":"AI"}
-</h2>
-
-<div>
-${
-  m.role==="assistant"
-    ?markdown(m.content)
-    :escapeHTML(m.content)
-      .replace(/\n/g,"<br>")
-}
-</div>
-
-</section>
-
-`
-).join("")}
-
-</body>
-</html>
-`;
-
-
-  download(
-    chat.name+".html",
-    html,
-    "text/html"
-  );
-
-}
-
-
-function download(
-  name,
-  text,
-  type
-){
-
-  const blob =
-    new Blob(
-      [text],
-      {type:type}
-    );
-
-
-  const url =
-    URL.createObjectURL(blob);
-
-
-  const a =
-    document.createElement("a");
-
-  a.href=url;
-
-  a.download =
-    name.replace(
-      /[<>:"/\\|?*]/g,
-      "_"
-    );
-
-
-  document.body.appendChild(a);
-
-  a.click();
-
-  a.remove();
-
-
-  setTimeout(
-    () =>
-      URL.revokeObjectURL(url),
-    1000
-  );
-
-}
-
-
-function printChat(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const win =
-    window.open(
-      "",
-      "_blank"
-    );
-
-
-  if(!win){
-
-    toastMsg(
-      "Allow popups to print."
-    );
-
-    return;
-
-  }
-
-
-  win.document.write(`
-
-<!DOCTYPE html>
-
-<html>
-
-<head>
-
-<title>
-${escapeHTML(chat.name)}
-</title>
-
-<style>
-
-body{
-font-family:Arial;
-max-width:850px;
-margin:30px auto;
-line-height:1.6;
-}
-
-</style>
-
-</head>
-
-<body>
-
-<h1>
-${escapeHTML(chat.name)}
-</h1>
-
-${chat.messages.map(
-  m=>`
-
-<h3>
-${m.role==="user"?"You":"AI"}
-</h3>
-
-<div>
-${
-  m.role==="assistant"
-    ?markdown(m.content)
-    :escapeHTML(m.content)
-      .replace(/\n/g,"<br>")
-}
-</div>
-
-<hr>
-
-`
-).join("")}
-
-</body>
-
-</html>
-
-`);
-
-
-  win.document.close();
-
-  win.print();
-
-}
-
-
-/* =========================================================
-   BACKGROUND
-========================================================= */
-
-$("backgroundBtn").onclick=()=>{
+  `).join("");
 
   openModal(`
-
     <div class="modal-head">
-
-      <h2>Background</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
+      <strong>🔖 Saved Answers</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
     </div>
 
-    <div class="grid2">
-
-      <button
-        class="pbtn"
-        onclick="setBackground('default')">
-        Default
-      </button>
-
-      <button
-        class="pbtn"
-        onclick="setBackground('blue')">
-        Blue
-      </button>
-
-      <button
-        class="pbtn"
-        onclick="setBackground('purple')">
-        Purple
-      </button>
-
-      <button
-        class="pbtn"
-        onclick="setBackground('dark')">
-        Dark
-      </button>
-
+    <div class="modal-body">
+      ${html || '<div class="small">No saved answers yet.</div>'}
     </div>
-
   `);
+}
 
-};
+function copySaved(id){
 
+  const item=savedAnswers.find(x=>x.id===id);
 
-window.setBackground=value=>{
+  if(item){
+    navigator.clipboard.writeText(item.content);
+    toast("Saved answer copied.");
+  }
+}
 
-  settings.background=value;
+function deleteSaved(id){
 
-  applySettings();
+  savedAnswers=savedAnswers.filter(x=>x.id!==id);
 
-  save();
+  saveJSON(KEYS.saved,savedAnswers);
+
+  showSaved();
+}
+
+/* =========================================================
+   MEMORY
+========================================================= */
+
+function showMemory(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🧠 Long-Term Memory</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="form">
+
+        <input id="memoryInput"
+          placeholder="Add something AI should remember...">
+
+        <button class="primary-btn" onclick="addMemory()">
+          Save Memory
+        </button>
+
+      </div>
+
+      <div style="margin-top:15px">
+
+        ${
+          memories.map((memory,index)=>`
+            <div class="item">
+              <div class="item-row">
+                <span>${escapeHTML(memory)}</span>
+                <button class="control-btn"
+                  onclick="deleteMemory(${index})">
+                  ×
+                </button>
+              </div>
+            </div>
+          `).join("")
+          ||
+          '<div class="small">No memories stored.</div>'
+        }
+
+      </div>
+
+    </div>
+  `);
+}
+
+function addMemory(){
+
+  const value=$("memoryInput").value.trim();
+
+  if(!value) return;
+
+  memories.unshift(value);
+  memories=memories.slice(0,50);
+
+  saveJSON(KEYS.memory,memories);
+
+  showMemory();
+}
+
+function deleteMemory(index){
+
+  memories.splice(index,1);
+
+  saveJSON(KEYS.memory,memories);
+
+  showMemory();
+}
+
+/* =========================================================
+   PROMPTS
+========================================================= */
+
+function showPrompts(){
+
+  const defaults=[
+    "Explain this simply:",
+    "Give me a step-by-step plan for:",
+    "Rewrite this professionally:",
+    "Find the key points in:",
+    "Create a detailed checklist for:"
+  ];
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🧩 Prompt Library</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      ${defaults.map(p=>`
+        <div class="item">
+          <div class="item-row">
+            <span>${escapeHTML(p)}</span>
+            <button class="control-btn"
+              onclick="usePrompt(${JSON.stringify(p)})">
+              Use
+            </button>
+          </div>
+        </div>
+      `).join("")}
+
+    </div>
+  `);
+}
+
+function usePrompt(prompt){
 
   closeModal();
 
-};
+  input.value=prompt+" ";
+  input.focus();
 
-
-/* =========================================================
-   APPEARANCE
-========================================================= */
-
-$("appearanceBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Appearance</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Accent Color
-      </label>
-
-      <input
-        id="accentColor"
-        type="color">
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Chat Density
-      </label>
-
-      <select id="density">
-
-        <option value="comfortable">
-          Comfortable
-        </option>
-
-        <option value="compact">
-          Compact
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        AI Avatar
-      </label>
-
-      <input
-        id="avatarValue"
-        maxlength="4">
-
-    </div>
-
-    <button
-      class="save"
-      id="saveAppearance">
-      Save Appearance
-    </button>
-
-  `);
-
-
-  $("accentColor").value =
-    settings.accent;
-
-  $("density").value =
-    settings.density;
-
-  $("avatarValue").value =
-    settings.avatar;
-
-
-  $("saveAppearance").onclick=()=>{
-
-    settings.accent =
-      $("accentColor").value;
-
-    settings.density =
-      $("density").value;
-
-    settings.avatar =
-      $("avatarValue").value ||
-      "AI";
-
-
-    applySettings();
-
-    save();
-
-    closeModal();
-
-    renderChat();
-
-  };
-
-};
-
+  updateCounter();
+}
 
 /* =========================================================
-   AI SETTINGS
+   STUDY CARDS
 ========================================================= */
 
-$("conversationSettings").onclick=()=>{
+async function studyCards(){
+
+  const chat=currentChat();
+
+  if(!chat || !chat.messages.length){
+    toast("Start a conversation first.");
+    return;
+  }
 
   openModal(`
-
     <div class="modal-head">
-
-      <h2>AI Settings</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
+      <strong>🃏 AI Study Cards</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
     </div>
 
-    <div class="field">
-
-      <label>
-        System Prompt
-      </label>
-
-      <textarea id="systemValue"></textarea>
-
+    <div class="modal-body" id="cardsResult">
+      Creating cards...
     </div>
-
-    <div class="field">
-
-      <label>
-        Temperature:
-        <span id="tempText"></span>
-      </label>
-
-      <input
-        id="tempValue"
-        type="range"
-        min="0"
-        max="2"
-        step=".1">
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Maximum Tokens
-      </label>
-
-      <input
-        id="tokenValueInput"
-        type="number"
-        min="100"
-        max="8000">
-
-    </div>
-
-    <div class="field">
-
-      <label>
-        Answer Length
-      </label>
-
-      <select id="lengthValue">
-
-        <option value="Short">
-          Short
-        </option>
-
-        <option value="Balanced">
-          Balanced
-        </option>
-
-        <option value="Long">
-          Long
-        </option>
-
-        <option value="Detailed">
-          Detailed
-        </option>
-
-      </select>
-
-    </div>
-
-    <button
-      class="save"
-      id="saveAISettings">
-      Save Settings
-    </button>
-
   `);
 
+  const context=chat.messages
+    .map(m=>m.content)
+    .join("\n");
 
-  $("systemValue").value =
-    settings.systemPrompt;
+  try{
 
-  $("tempValue").value =
-    settings.temperature;
-
-  $("tempText").textContent =
-    settings.temperature;
-
-  $("tokenValueInput").value =
-    settings.maxTokens;
-
-  $("lengthValue").value =
-    settings.answerLength;
-
-
-  $("tempValue").oninput=()=>{
-
-    $("tempText").textContent =
-      $("tempValue").value;
-
-  };
-
-
-  $("saveAISettings").onclick=()=>{
-
-    settings.systemPrompt =
-      $("systemValue").value;
-
-    settings.temperature =
-      Math.max(
-        0,
-        Math.min(
-          2,
-          Number(
-            $("tempValue").value
-          )
-        )
-      );
-
-    settings.maxTokens =
-      Math.max(
-        100,
-        Math.min(
-          8000,
-          Number(
-            $("tokenValueInput").value
-          ) || 2000
-        )
-      );
-
-    settings.answerLength =
-      $("lengthValue").value;
-
-
-    save();
-
-    closeModal();
-
-    toastMsg(
-      "AI settings saved."
+    const result=await directAI(
+      "Create 8 study flashcards from this conversation. Format each as Question: ... Answer: ...\n\n"+context
     );
 
-  };
+    $("cardsResult").innerHTML=
+      markdown(result);
 
-};
+  }catch(error){
 
+    $("cardsResult").textContent=error.message;
+
+  }
+}
 
 /* =========================================================
-   GENERAL SETTINGS
+   QUIZ
 ========================================================= */
 
-$("settingsBtn").onclick=()=>{
+async function quizMaker(){
+
+  const chat=currentChat();
+
+  if(!chat || !chat.messages.length){
+    toast("Start a conversation first.");
+    return;
+  }
 
   openModal(`
-
     <div class="modal-head">
+      <strong>❓ AI Quiz Maker</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
 
-      <h2>Settings</h2>
+    <div class="modal-body" id="quizResult">
+      Creating quiz...
+    </div>
+  `);
 
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
+  try{
+
+    const result=await directAI(
+      "Create a 5-question quiz from this conversation. Give each question four options and clearly identify the correct answer after the options.\n\n"+
+      chat.messages.map(m=>m.content).join("\n")
+    );
+
+    $("quizResult").innerHTML=markdown(result);
+
+  }catch(error){
+
+    $("quizResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   KEY POINTS
+========================================================= */
+
+async function keyPoints(){
+
+  const chat=currentChat();
+
+  if(!chat || !chat.messages.length){
+    toast("No conversation to analyze.");
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📌 Key Points Extractor</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="keyPointsResult">
+      Extracting key points...
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Extract the most important key points from this conversation. Use a clear numbered list.\n\n"+
+      chat.messages.map(m=>m.content).join("\n")
+    );
+
+    $("keyPointsResult").innerHTML=markdown(result);
+
+  }catch(error){
+
+    $("keyPointsResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   DECISION TABLE
+========================================================= */
+
+async function decisionTable(){
+
+  const chat=currentChat();
+
+  if(!chat){
+    toast("Start a conversation first.");
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📊 Decision Table</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="decisionResult">
+      Creating table...
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Turn the useful comparisons in this conversation into a clear markdown decision table. Do not choose a winner.\n\n"+
+      chat.messages.map(m=>m.content).join("\n")
+    );
+
+    $("decisionResult").innerHTML=markdown(result);
+
+  }catch(error){
+
+    $("decisionResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   MEETING NOTES
+========================================================= */
+
+async function meetingNotes(){
+
+  const chat=currentChat();
+
+  if(!chat){
+    toast("Start a conversation first.");
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📝 Meeting Notes Mode</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="meetingResult">
+      Organizing notes...
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Organize this conversation as meeting notes with sections: Topics, Important Points, Decisions, Action Items, Open Questions.\n\n"+
+      chat.messages.map(m=>m.content).join("\n")
+    );
+
+    $("meetingResult").innerHTML=markdown(result);
+
+  }catch(error){
+
+    $("meetingResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   EMAIL WRITER
+========================================================= */
+
+function emailWriter(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>✉️ Email Writer</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <textarea id="emailInput" rows="7"
+        placeholder="Write your rough email or explain what you want to say..."></textarea>
+
+      <button class="primary-btn" onclick="generateEmail()">
+        Create Email
+      </button>
+
+      <div id="emailResult"></div>
+
+    </div>
+  `);
+}
+
+async function generateEmail(){
+
+  const text=$("emailInput").value.trim();
+
+  if(!text) return;
+
+  $("emailResult").textContent="Writing...";
+
+  try{
+
+    const result=await directAI(
+      "Turn this rough request into a polished natural email. Include an appropriate subject line.\n\n"+text
+    );
+
+    $("emailResult").innerHTML=
+      `<div class="item">${markdown(result)}</div>`;
+
+  }catch(error){
+
+    $("emailResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   DOCUMENT OUTLINE
+========================================================= */
+
+async function documentOutline(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📑 Document Outline</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <textarea id="outlineInput" rows="8"
+        placeholder="Paste your document or describe the topic..."></textarea>
+
+      <button class="primary-btn" onclick="generateOutline()">
+        Generate Outline
+      </button>
+
+      <div id="outlineResult"></div>
+
+    </div>
+  `);
+}
+
+async function generateOutline(){
+
+  const text=$("outlineInput").value.trim();
+
+  if(!text) return;
+
+  $("outlineResult").textContent="Creating outline...";
+
+  try{
+
+    const result=await directAI(
+      "Create a logical document outline with headings and subheadings for:\n\n"+text
+    );
+
+    $("outlineResult").innerHTML=
+      `<div class="item">${markdown(result)}</div>`;
+
+  }catch(error){
+
+    $("outlineResult").textContent=error.message;
+
+  }
+}
+
+/* =========================================================
+   TEXT CLEANER
+========================================================= */
+
+function cleanText(){
+
+  const text=input.value;
+
+  if(!text){
+    toast("Write or paste text first.");
+    return;
+  }
+
+  let cleaned=text
+    .replace(/[ \t]+/g," ")
+    .replace(/\n{3,}/g,"\n\n")
+    .replace(/([!?.,])\1+/g,"$1")
+    .trim();
+
+  input.value=cleaned;
+
+  updateCounter();
+
+  toast("Text cleaned.");
+}
+
+/* =========================================================
+   READING MODE
+========================================================= */
+
+function readingMode(){
+
+  const chat=currentChat();
+
+  if(!chat){
+    toast("No response to read.");
+    return;
+  }
+
+  const lastAI=
+    [...chat.messages]
+      .reverse()
+      .find(m=>m.role==="assistant");
+
+  if(!lastAI){
+    toast("No AI response found.");
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📖 Reading Mode</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <article class="reading md">
+        ${markdown(lastAI.content)}
+      </article>
+
+    </div>
+  `);
+}
+
+/* =========================================================
+   STATISTICS
+========================================================= */
+
+function showStatistics(){
+
+  const allMessages=
+    chats.flatMap(c=>c.messages);
+
+  const totalWords=
+    allMessages.reduce(
+      (sum,m)=>
+        sum+
+        (m.content.trim()
+          ? m.content.trim().split(/\s+/).length
+          : 0),
+      0
+    );
+
+  const userMessages=
+    allMessages.filter(m=>m.role==="user").length;
+
+  const aiMessages=
+    allMessages.filter(m=>m.role==="assistant").length;
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📈 Chat Statistics</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="stat-grid">
+
+        <div class="stat">
+          <strong>${chats.length}</strong>
+          <span>Total Chats</span>
+        </div>
+
+        <div class="stat">
+          <strong>${allMessages.length}</strong>
+          <span>Total Messages</span>
+        </div>
+
+        <div class="stat">
+          <strong>${userMessages}</strong>
+          <span>User Messages</span>
+        </div>
+
+        <div class="stat">
+          <strong>${aiMessages}</strong>
+          <span>AI Replies</span>
+        </div>
+
+        <div class="stat">
+          <strong>${totalWords}</strong>
+          <span>Total Words</span>
+        </div>
+
+        <div class="stat">
+          <strong>${savedAnswers.length}</strong>
+          <span>Saved Answers</span>
+        </div>
+
+      </div>
+
+    </div>
+  `);
+}
+
+/* =========================================================
+   FILE LIBRARY
+========================================================= */
+
+function showFiles(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>📁 File Library</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      ${
+        files.map(file=>`
+          <div class="item">
+            <div class="item-row">
+              <strong>${escapeHTML(file.name)}</strong>
+              <button class="control-btn"
+                onclick="useLibraryFile('${file.id}')">
+                Use
+              </button>
+            </div>
+            <div class="small">
+              ${(file.size/1024).toFixed(1)} KB
+            </div>
+          </div>
+        `).join("")
+        ||
+        '<div class="small">No files stored.</div>'
+      }
+
+    </div>
+  `);
+}
+
+function useLibraryFile(id){
+
+  const file=files.find(f=>f.id===id);
+
+  if(!file) return;
+
+  selectedFile=file;
+
+  $("attachmentLabel").textContent=
+    "📎 "+file.name;
+
+  closeModal();
+
+  toast("File selected.");
+}
+
+/* =========================================================
+   CHAT MANAGEMENT
+========================================================= */
+
+function renameChat(id=currentId){
+
+  const chat=chats.find(c=>c.id===id);
+
+  if(!chat) return;
+
+  const name=prompt(
+    "Enter new chat name:",
+    chat.title
+  );
+
+  if(name && name.trim()){
+
+    chat.title=name.trim();
+    chat.updatedAt=Date.now();
+
+    saveAll();
+    renderEverything();
+  }
+}
+
+function toggleFavorite(id=currentId){
+
+  const chat=chats.find(c=>c.id===id);
+
+  if(!chat) return;
+
+  chat.favorite=!chat.favorite;
+
+  saveAll();
+  renderEverything();
+}
+
+function archiveChat(id){
+
+  const chat=chats.find(c=>c.id===id);
+
+  if(!chat) return;
+
+  chat.archived=true;
+
+  if(currentId===id){
+    currentId=null;
+  }
+
+  saveAll();
+  renderEverything();
+}
+
+function duplicateChat(id){
+
+  const source=chats.find(c=>c.id===id);
+
+  if(!source) return;
+
+  const copy=JSON.parse(JSON.stringify(source));
+
+  copy.id=uid("chat");
+  copy.title=source.title+" Copy";
+  copy.createdAt=Date.now();
+  copy.updatedAt=Date.now();
+
+  copy.messages.forEach(m=>{
+    m.id=uid("msg");
+  });
+
+  chats.unshift(copy);
+  currentId=copy.id;
+
+  workspace.openTabs.push(copy.id);
+
+  saveAll();
+  renderEverything();
+}
+
+function branchChat(id){
+
+  const source=chats.find(c=>c.id===id);
+
+  if(!source) return;
+
+  const copy=JSON.parse(JSON.stringify(source));
+
+  copy.id=uid("chat");
+  copy.title=source.title+" Branch";
+  copy.createdAt=Date.now();
+  copy.updatedAt=Date.now();
+
+  copy.messages.forEach(m=>{
+    m.id=uid("msg");
+  });
+
+  chats.unshift(copy);
+  currentId=copy.id;
+
+  workspace.openTabs.push(copy.id);
+
+  saveAll();
+  renderEverything();
+
+  toast("Conversation branch created.");
+}
+
+function deleteChat(id){
+
+  if(!confirm("Delete this chat?")) return;
+
+  chats=chats.filter(c=>c.id!==id);
+
+  workspace.openTabs=
+    workspace.openTabs.filter(x=>x!==id);
+
+  if(currentId===id){
+    currentId=chats[0]?.id || null;
+  }
+
+  saveAll();
+  renderEverything();
+}
+
+/* =========================================================
+   SNAPSHOT
+========================================================= */
+
+function createSnapshot(){
+
+  const chat=currentChat();
+
+  if(!chat) return;
+
+  snapshots.unshift({
+    id:uid("snapshot"),
+    chatId:chat.id,
+    title:chat.title,
+    messages:JSON.parse(
+      JSON.stringify(chat.messages)
+    ),
+    createdAt:Date.now()
+  });
+
+  snapshots=snapshots.slice(0,30);
+
+  saveJSON(KEYS.snapshots,snapshots);
+
+  toast("Conversation snapshot saved.");
+}
+
+/* =========================================================
+   GOAL
+========================================================= */
+
+$("goalInput").addEventListener("change",()=>{
+
+  const chat=currentChat();
+
+  if(!chat) return;
+
+  chat.goal=$("goalInput").value.trim();
+
+  saveAll();
+});
+
+$("progressInput").addEventListener("input",()=>{
+
+  const chat=currentChat();
+
+  if(!chat) return;
+
+  chat.progress=
+    Number($("progressInput").value);
+
+  saveAll();
+  updateGoalUI();
+});
+
+function updateGoalUI(){
+
+  const chat=currentChat();
+
+  if(!chat){
+    $("goalInput").value="";
+    $("progressInput").value=0;
+    $("progressText").textContent="0% complete";
+    return;
+  }
+
+  $("goalInput").value=chat.goal || "";
+  $("progressInput").value=chat.progress || 0;
+  $("progressText").textContent=
+    `${chat.progress || 0}% complete`;
+}
+
+/* =========================================================
+   SETTINGS
+========================================================= */
+
+function showSettings(){
+
+  openModal(`
+    <div class="modal-head">
+      <strong>⚙️ Settings</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body form">
+
+      <label>
+        Maximum response tokens
+        <input id="maxTokensInput" type="number"
+          min="100" max="8000"
+          value="${settings.maxTokens}">
+      </label>
+
+      <label>
+        Temperature
+        <input id="temperatureInput" type="number"
+          min="0" max="2" step=".1"
+          value="${settings.temperature}">
+      </label>
+
+      <label>
+        Custom instructions
+        <textarea id="customInstructionsInput" rows="5"
+          placeholder="Tell the AI how you prefer responses...">${escapeHTML(settings.customInstructions)}</textarea>
+      </label>
+
+      <label>
+        <input id="memoryToggle" type="checkbox"
+          ${settings.memoryEnabled?"checked":""}>
+        Enable long-term memory
+      </label>
+
+      <label>
+        <input id="temporaryToggle" type="checkbox"
+          ${settings.temporary?"checked":""}>
+        Temporary chat mode
+      </label>
+
+      <button class="primary-btn" onclick="saveSettings()">
+        Save Settings
       </button>
 
     </div>
-
-    <div class="field">
-
-      <label>Theme</label>
-
-      <select id="themeSetting">
-
-        <option value="light">
-          Light
-        </option>
-
-        <option value="dark">
-          Dark
-        </option>
-
-      </select>
-
-    </div>
-
-    <div class="field">
-
-      <label>Animations</label>
-
-      <select id="animationSetting">
-
-        <option value="on">
-          On
-        </option>
-
-        <option value="off">
-          Off
-        </option>
-
-      </select>
-
-    </div>
-
-    <button
-      class="save"
-      id="saveGeneralSettings">
-      Save Settings
-    </button>
-
   `);
+}
 
+function saveSettings(){
 
-  $("themeSetting").value =
-    settings.theme;
+  settings.maxTokens=
+    Math.min(
+      8000,
+      Math.max(
+        100,
+        Number($("maxTokensInput").value)||2000
+      )
+    );
 
-  $("animationSetting").value =
-    settings.animations
-      ?"on"
-      :"off";
+  settings.temperature=
+    Math.min(
+      2,
+      Math.max(
+        0,
+        Number($("temperatureInput").value)||1
+      )
+    );
 
+  settings.customInstructions=
+    $("customInstructionsInput").value.trim();
 
-  $("saveGeneralSettings").onclick=()=>{
+  settings.memoryEnabled=
+    $("memoryToggle").checked;
 
-    settings.theme =
-      $("themeSetting").value;
+  settings.temporary=
+    $("temporaryToggle").checked;
 
-    settings.animations =
-      $("animationSetting").value==="on";
+  saveJSON(KEYS.settings,settings);
 
+  closeModal();
 
-    applySettings();
-
-    save();
-
-    closeModal();
-
-  };
-
-};
-
+  toast("Settings saved.");
+}
 
 /* =========================================================
-   APPLY SETTINGS
+   THEME
 ========================================================= */
 
-function applySettings(){
+function applyTheme(){
 
   document.body.classList.toggle(
     "dark",
     settings.theme==="dark"
   );
 
-
-  document.body.classList.toggle(
-    "compact",
-    settings.density==="compact"
-  );
-
-
-  document.body.classList.toggle(
-    "noanimations",
-    !settings.animations
-  );
-
-
-  document.documentElement
-    .style
-    .setProperty(
-      "--accent",
-      settings.accent
-    );
-
-
-  if(
-    settings.background==="blue"
-  ){
-
-    document.body.style.background =
-      "linear-gradient(135deg,#edf4ff,#f6f2ff)";
-
-  }else if(
-    settings.background==="purple"
-  ){
-
-    document.body.style.background =
-      "linear-gradient(135deg,#f5efff,#eef0ff)";
-
-  }else if(
-    settings.background==="dark"
-  ){
-
-    document.body.style.background =
-      "#090d17";
-
-  }else{
-
-    document.body.style.background =
-      "var(--bg)";
-
-  }
-
-
-  $("appLogo").textContent =
-    settings.avatar;
-
-  $("personaBadge").textContent =
-    settings.persona;
-
-  updatePersonaButtons();
-
+  document.documentElement.style
+    .setProperty("--accent",settings.accent);
 }
 
+function toggleTheme(){
+
+  settings.theme=
+    settings.theme==="dark"
+      ? "light"
+      : "dark";
+
+  applyTheme();
+  saveJSON(KEYS.settings,settings);
+}
 
 /* =========================================================
-   BRANCH
+   MOBILE / FOCUS
 ========================================================= */
 
-function branchChat(chat){
-
-  if(!chat){
-    return;
-  }
-
-
-  const branch =
-    JSON.parse(
-      JSON.stringify(chat)
-    );
-
-
-  branch.id =
-    Date.now().toString()+
-    Math.random()
-      .toString(36)
-      .slice(2);
-
-  branch.name =
-    chat.name+" — Branch";
-
-  branch.created =
-    Date.now();
-
-
-  chats.unshift(branch);
-
-  currentId =
-    branch.id;
-
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  renderChat();
-
-}
-
-
-function branchFromMessage(index){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const branch =
-    JSON.parse(
-      JSON.stringify(chat)
-    );
-
-
-  branch.messages =
-    branch.messages.slice(
-      0,
-      index+1
-    );
-
-
-  branch.id =
-    Date.now().toString()+
-    Math.random()
-      .toString(36)
-      .slice(2);
-
-  branch.name =
-    chat.name+" — Branch";
-
-
-  chats.unshift(branch);
-
-  currentId =
-    branch.id;
-
-
-  saveChatsOnly();
-
-  renderHistory();
-
-  renderChat();
-
-  toastMsg(
-    "Conversation branched."
-  );
-
-}
-
-
-/* =========================================================
-   CLEAR
-========================================================= */
-
-function clearConversation(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  if(
-    !confirm(
-      "Clear this conversation?"
-    )
-  ){
-    return;
-  }
-
-
-  chat.messages=[];
-
-  saveChatsOnly();
-
-  renderChat();
-
-}
-
-
-/* =========================================================
-   TOP ACTIONS
-========================================================= */
-
-$("favoriteBtn").onclick =
-  toggleFavorite;
-
-
-$("renameBtn").onclick =
-  renameChat;
-
-
-$("archiveBtn").onclick =
-  archiveChat;
-
-
-$("fullscreenBtn").onclick=()=>{
-
-  document.body.classList.toggle(
-    "fullscreen"
-  );
-
+$("mobileBtn").onclick=()=>{
+  $("sidebar").classList.toggle("mobile-open");
 };
 
-
-$("moreBtn").onclick=()=>{
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Chat Tools</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="menu">
-
-      <button
-        onclick="copyAll();closeModal()">
-        📋 Copy Conversation
-      </button>
-
-      <button
-        onclick="exportMarkdown();closeModal()">
-        ⬇ Markdown Export
-      </button>
-
-      <button
-        onclick="exportHTML();closeModal()">
-        ⬇ HTML Export
-      </button>
-
-      <button
-        onclick="printChat();closeModal()">
-        🖨 Print
-      </button>
-
-      <button
-        onclick="duplicateChat(current());closeModal()">
-        ⑂ Duplicate
-      </button>
-
-      <button
-        onclick="branchChat(current());closeModal()">
-        🌿 Branch Chat
-      </button>
-
-      <button
-        onclick="clearConversation();closeModal()">
-        ⌫ Clear Chat
-      </button>
-
-      <button
-        onclick="summarizeChat()">
-        📝 AI Summary
-      </button>
-
-    </div>
-
-  `);
-
+$("focusBtn").onclick=()=>{
+  document.body.classList.toggle("focus-mode");
 };
-
-
-/* =========================================================
-   DASHBOARD
-========================================================= */
-
-$("dashboardBtn").onclick=()=>{
-
-  const total =
-    chats.length;
-
-  const favorites =
-    chats.filter(
-      c=>c.favorite
-    ).length;
-
-  const archived =
-    chats.filter(
-      c=>c.archived
-    ).length;
-
-  const allMessages =
-    chats.reduce(
-      (sum,c)=>
-        sum+c.messages.length,
-      0
-    );
-
-
-  openModal(`
-
-    <div class="modal-head">
-
-      <h2>Personal AI Dashboard</h2>
-
-      <button
-        class="close"
-        onclick="closeModal()">
-        ×
-      </button>
-
-    </div>
-
-    <div class="stats">
-
-      <div class="stat">
-        <small>Total Chats</small>
-        <strong>${total}</strong>
-      </div>
-
-      <div class="stat">
-        <small>Favorites</small>
-        <strong>${favorites}</strong>
-      </div>
-
-      <div class="stat">
-        <small>Archived</small>
-        <strong>${archived}</strong>
-      </div>
-
-      <div class="stat">
-        <small>Messages</small>
-        <strong>${allMessages}</strong>
-      </div>
-
-      <div class="stat">
-        <small>Files</small>
-        <strong>${files.length}</strong>
-      </div>
-
-      <div class="stat">
-        <small>Memories</small>
-        <strong>${settings.memory.length}</strong>
-      </div>
-
-    </div>
-
-  `);
-
-};
-
-
-/* =========================================================
-   SIDEBAR
-========================================================= */
 
 $("collapseBtn").onclick=()=>{
+  const sidebar=$("sidebar");
 
-  $("sidebar").classList.toggle(
-    "collapsed"
-  );
+  sidebar.style.display=
+    sidebar.style.display==="none"
+      ? ""
+      : "none";
 
-};
-
-
-$("mobileMenuBtn").onclick=()=>{
-
-  document.body.classList.toggle(
-    "mobile-sidebar"
-  );
-
-};
-
-
-$("themeBtn").onclick=()=>{
-
-  settings.theme =
-    settings.theme==="dark"
-      ?"light"
-      :"dark";
-
-  applySettings();
-
-  save();
-
-};
-
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-$("search").oninput =
-  renderHistory;
-
-
-/* =========================================================
-   NEW CHAT
-========================================================= */
-
-$("newChat").onclick=()=>{
-
-  if(generating){
-
-    stopGeneration();
-
+  if(window.innerWidth>1100){
+    document.querySelector(".app").style.gridTemplateColumns=
+      sidebar.style.display==="none"
+        ? "0 minmax(0,1fr) 315px"
+        : "";
   }
-
-  createChat();
-
 };
-
-
-/* =========================================================
-   QUICK PROMPTS
-========================================================= */
-
-document
-  .querySelectorAll(
-    ".quick button"
-  )
-  .forEach(button=>{
-
-    button.onclick=()=>{
-
-      input.value =
-        button.dataset.prompt;
-
-      resizeInput();
-
-      updateCounter();
-
-      input.focus();
-
-    };
-
-  });
-
-
-/* =========================================================
-   TOOLBAR
-========================================================= */
-
-document
-  .querySelectorAll(
-    ".tool[data-action]"
-  )
-  .forEach(button=>{
-
-    button.onclick=()=>{
-
-      const action =
-        button.dataset.action;
-
-
-      if(action==="bold"){
-
-        wrapSelection(
-          "**",
-          "**"
-        );
-
-      }
-
-
-      if(action==="italic"){
-
-        wrapSelection(
-          "*",
-          "*"
-        );
-
-      }
-
-
-      if(action==="heading"){
-
-        wrapSelection(
-          "# ",
-          ""
-        );
-
-      }
-
-
-      if(action==="bullet"){
-
-        wrapSelection(
-          "- ",
-          ""
-        );
-
-      }
-
-
-      if(action==="code"){
-
-        wrapSelection(
-          "`",
-          "`"
-        );
-
-      }
-
-
-      if(action==="quote"){
-
-        wrapSelection(
-          "> ",
-          ""
-        );
-
-      }
-
-
-      if(action==="summarize"){
-
-        input.value =
-          "Summarize this:\n\n"+
-          input.value;
-
-      }
-
-
-      if(action==="translate"){
-
-        input.value =
-          "Translate this into English:\n\n"+
-          input.value;
-
-      }
-
-
-      if(action==="grammar"){
-
-        input.value =
-          "Correct the grammar of this:\n\n"+
-          input.value;
-
-      }
-
-
-      resizeInput();
-
-      updateCounter();
-
-    };
-
-  });
-
-
-function wrapSelection(
-  before,
-  after
-){
-
-  const start =
-    input.selectionStart;
-
-  const end =
-    input.selectionEnd;
-
-  const selected =
-    input.value.slice(
-      start,
-      end
-    );
-
-
-  const value =
-    selected || "text";
-
-
-  input.value =
-    input.value.slice(0,start)+
-    before+
-    value+
-    after+
-    input.value.slice(end);
-
-
-  input.focus();
-
-
-  input.setSelectionRange(
-    start+before.length,
-    start+before.length+value.length
-  );
-
-}
-
-
-/* =========================================================
-   INPUT
-========================================================= */
-
-input.addEventListener(
-  "input",
-  ()=>{
-
-    resizeInput();
-
-    updateCounter();
-
-  }
-);
-
-
-input.addEventListener(
-  "keydown",
-  e=>{
-
-    if(
-      e.key==="Enter" &&
-      !e.shiftKey
-    ){
-
-      e.preventDefault();
-
-      sendMessage();
-
-    }
-
-  }
-);
-
-
-send.onclick =
-  sendMessage;
-
-
-function resizeInput(){
-
-  input.style.height="auto";
-
-  input.style.height =
-    Math.min(
-      input.scrollHeight,
-      150
-    )+
-    "px";
-
-}
-
-
-function updateCounter(){
-
-  const text =
-    input.value;
-
-  const words =
-    text.trim()
-      ?text.trim().split(/\s+/).length
-      :0;
-
-
-  $("counter").textContent =
-    text.length+
-    " characters · "+
-    words+
-    " words";
-
-}
-
-
-/* =========================================================
-   STATS
-========================================================= */
-
-function updateStats(){
-
-  const chat=current();
-
-  if(!chat){
-    return;
-  }
-
-
-  const ai =
-    chat.messages.filter(
-      m=>m.role==="assistant"
-    );
-
-
-  const pinned =
-    chat.messages.filter(
-      m=>m.pinned
-    );
-
-
-  const userText =
-    chat.messages
-      .filter(
-        m=>m.role==="user"
-      )
-      .map(
-        m=>m.content
-      )
-      .join(" ")
-      .trim();
-
-
-  const words =
-    userText
-      ?userText.split(/\s+/).length
-      :0;
-
-
-  $("statMessages").textContent =
-    chat.messages.length;
-
-  $("statWords").textContent =
-    words;
-
-  $("statAI").textContent =
-    ai.length;
-
-  $("statPinned").textContent =
-    pinned.length;
-
-}
-
 
 /* =========================================================
    MODAL
@@ -7357,225 +4116,584 @@ function updateStats(){
 
 function openModal(html){
 
-  modal.innerHTML =
-    html;
+  modal.innerHTML=html;
 
-  modalBg.classList.add(
-    "show"
-  );
+  modalBg.classList.add("show");
 
-  document.body.classList.add(
-    "modal-open"
-  );
-
+  document.body.classList.add("modal-open");
 }
-
 
 function closeModal(){
 
-  modalBg.classList.remove(
-    "show"
-  );
+  modalBg.classList.remove("show");
 
   modal.innerHTML="";
 
-  document.body.classList.remove(
-    "modal-open"
-  );
-
+  document.body.classList.remove("modal-open");
 }
 
+modalBg.addEventListener("click",event=>{
 
-modalBg.onclick=e=>{
-
-  if(
-    e.target===modalBg
-  ){
-
+  if(event.target===modalBg){
     closeModal();
+  }
+
+});
+
+window.closeModal=closeModal;
+
+/* =========================================================
+   KEYBOARD
+========================================================= */
+
+input.addEventListener("keydown",event=>{
+
+  if(event.key==="Enter" && !event.shiftKey){
+
+    event.preventDefault();
+
+    sendMessage();
 
   }
+
+});
+
+input.addEventListener("input",()=>{
+
+  input.style.height="auto";
+
+  input.style.height=
+    Math.min(input.scrollHeight,180)+"px";
+
+  updateCounter();
+
+  saveJSON(
+    KEYS.draft,
+    input.value
+  );
+});
+
+document.addEventListener("keydown",event=>{
+
+  if((event.ctrlKey || event.metaKey) &&
+     event.key.toLowerCase()==="k"){
+
+    event.preventDefault();
+
+    $("chatSearch").focus();
+  }
+
+  if(event.key==="Escape"){
+    closeModal();
+  }
+
+});
+
+/* =========================================================
+   QUICK PROMPTS
+========================================================= */
+
+document.querySelectorAll("[data-prompt]")
+  .forEach(button=>{
+
+    button.onclick=()=>{
+
+      input.value=
+        button.dataset.prompt;
+
+      input.focus();
+
+      updateCounter();
+
+    };
+
+  });
+
+/* =========================================================
+   SEARCH
+========================================================= */
+
+$("chatSearch").addEventListener(
+  "input",
+  renderHistory
+);
+
+/* =========================================================
+   TOP BUTTONS
+========================================================= */
+
+$("newChatBtn").onclick=()=>{
+  createChat();
+};
+
+sendBtn.onclick=()=>{
+  sendMessage();
+};
+
+$("themeBtn").onclick=()=>{
+  toggleTheme();
+};
+
+$("settingsBtn").onclick=()=>{
+  showSettings();
+};
+
+$("favoriteBtn").onclick=()=>{
+  toggleFavorite();
+};
+
+$("renameBtn").onclick=()=>{
+  renameChat();
+};
+
+$("moreBtn").onclick=()=>{
+
+  openModal(`
+    <div class="modal-head">
+      <strong>More Chat Actions</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body">
+
+      <div class="grid-buttons">
+
+        <button class="control-btn" onclick="copyAll();closeModal()">📋 Copy All</button>
+        <button class="control-btn" onclick="createSnapshot();closeModal()">📸 Snapshot</button>
+        <button class="control-btn" onclick="exportChat();closeModal()">📤 Export</button>
+        <button class="control-btn" onclick="clearCurrentChat();closeModal()">🧹 Clear</button>
+        <button class="control-btn" onclick="printChat();closeModal()">🖨️ Print</button>
+
+      </div>
+
+    </div>
+  `);
 
 };
 
-
-$("contextMenu").onclick =
-  e =>
-    e.stopPropagation();
-
-
-document.addEventListener(
-  "click",
-  e=>{
-
-    if(
-      !e.target.closest(
-        ".history-more"
-      )
-    ){
-
-      $("contextMenu")
-        .classList.remove(
-          "show"
-        );
-
-    }
-
-  }
-);
-
-
 /* =========================================================
-   TOAST
+   EXPORT
 ========================================================= */
 
-let toastTimer;
+function exportChat(){
 
+  const chat=currentChat();
 
-function toastMsg(text){
+  if(!chat) return;
 
-  toast.textContent =
-    text;
+  const text=
+    "# "+chat.title+"\n\n"+
+    chat.messages
+      .map(m=>
+        "## "+(m.role==="user"?"You":"Simple Chat AI")+
+        "\n\n"+
+        m.content
+      )
+      .join("\n\n");
 
-  toast.classList.add(
-    "show"
+  const blob=new Blob(
+    [text],
+    {type:"text/markdown"}
   );
 
+  const url=URL.createObjectURL(blob);
 
-  clearTimeout(
-    toastTimer
-  );
+  const a=document.createElement("a");
 
+  a.href=url;
+  a.download=
+    (chat.title || "chat")
+      .replace(/[^\w-]+/g,"_")+
+    ".md";
 
-  toastTimer =
-    setTimeout(
-      ()=>{
-        toast.classList.remove(
-          "show"
-        );
-      },
-      2200
-    );
+  a.click();
 
+  URL.revokeObjectURL(url);
 }
 
+function printChat(){
+
+  const chat=currentChat();
+
+  if(!chat) return;
+
+  const win=window.open("","_blank");
+
+  if(!win){
+    toast("Popup blocked.");
+    return;
+  }
+
+  win.document.write(`
+    <html>
+      <head>
+        <title>${escapeHTML(chat.title)}</title>
+      </head>
+      <body>
+        <h1>${escapeHTML(chat.title)}</h1>
+        ${chat.messages.map(m=>`
+          <h3>${m.role==="user"?"You":"Simple Chat AI"}</h3>
+          <div>${markdown(m.content)}</div>
+          <hr>
+        `).join("")}
+      </body>
+    </html>
+  `);
+
+  win.document.close();
+  win.print();
+}
+
+function clearCurrentChat(){
+
+  const chat=currentChat();
+
+  if(!chat) return;
+
+  if(!confirm("Clear this conversation?")) return;
+
+  chat.messages=[];
+
+  saveAll();
+  renderEverything();
+}
 
 /* =========================================================
-   KEYBOARD SHORTCUTS
+   COMMANDS
 ========================================================= */
 
-document.addEventListener(
-  "keydown",
-  e=>{
+document.querySelectorAll("[data-command]")
+  .forEach(button=>{
 
-    if(
-      (e.ctrlKey || e.metaKey) &&
-      e.key.toLowerCase()==="k"
-    ){
+    button.onclick=()=>{
 
-      e.preventDefault();
+      const command=button.dataset.command;
 
-      $("search").focus();
+      const actions={
+        dashboard:commandCenter,
+        calendar:showCalendar,
+        saved:showSaved,
+        tasks:showTasks,
+        files:showFiles,
+        memory:showMemory,
+        prompts:showPrompts,
+        quiz:quizMaker,
+        cards:studyCards,
+        keypoints:keyPoints,
+        decision:decisionTable,
+        meeting:meetingNotes,
+        email:emailWriter,
+        outline:documentOutline,
+        statistics:showStatistics,
+        snapshot:createSnapshot,
+        read:readingMode,
+        clean:cleanText,
+        brief:dailyBrief,
+        compare:compareResponses,
+        variations:responseVariations
+      };
 
+      actions[command]?.();
+
+    };
+
+  });
+
+/* =========================================================
+   COMPARE / VARIATIONS
+========================================================= */
+
+async function compareResponses(){
+
+  const text=input.value.trim();
+
+  if(!text){
+    toast("Enter a prompt first.");
+    input.focus();
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>⚖️ Compare Responses</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="compareResult">
+      Generating comparison...
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Give two clearly different approaches to answer this prompt. Label them Response A and Response B. Do not select a winner.\n\n"+text
+    );
+
+    $("compareResult").innerHTML=markdown(result);
+
+  }catch(error){
+
+    $("compareResult").textContent=error.message;
+
+  }
+}
+
+async function responseVariations(){
+
+  const text=input.value.trim();
+
+  if(!text){
+    toast("Enter a prompt first.");
+    return;
+  }
+
+  openModal(`
+    <div class="modal-head">
+      <strong>🔁 Response Variations</strong>
+      <button class="modal-close" onclick="closeModal()">×</button>
+    </div>
+
+    <div class="modal-body" id="variationResult">
+      Creating variations...
+    </div>
+  `);
+
+  try{
+
+    const result=await directAI(
+      "Create three different versions of an answer to this prompt: concise, detailed and creative. Clearly label each.\n\n"+text
+    );
+
+    $("variationResult").innerHTML=
+      markdown(result);
+
+  }catch(error){
+
+    $("variationResult").textContent=
+      error.message;
+
+  }
+}
+
+/* =========================================================
+   AUTO SAVE / REMINDERS
+========================================================= */
+
+setInterval(()=>{
+
+  if(!settings.temporary){
+    saveJSON(KEYS.draft,input.value);
+  }
+
+  const nowTime=Date.now();
+
+  reminders.forEach(reminder=>{
+
+    if(!reminder.done &&
+       reminder.time<=nowTime){
+
+      reminder.done=true;
+
+      toast(
+        "⏰ Reminder: "+reminder.title
+      );
     }
 
+  });
 
-    if(
-      (e.ctrlKey || e.metaKey) &&
-      e.key.toLowerCase()==="n"
-    ){
+  saveJSON(KEYS.reminders,reminders);
 
-      e.preventDefault();
+},60000);
 
-      createChat();
+/* =========================================================
+   RENDER TABS
+========================================================= */
 
+function renderTabs(){
+
+  const container=$("workspaceTabs");
+
+  container.innerHTML="";
+
+  workspace.openTabs
+    .map(id=>chats.find(c=>c.id===id))
+    .filter(Boolean)
+    .forEach(chat=>{
+
+      const button=document.createElement("button");
+
+      button.className=
+        "workspace-tab "+
+        (chat.id===currentId ? "active":"");
+
+      button.textContent=
+        chat.title;
+
+      button.onclick=()=>{
+        openChat(chat.id);
+      };
+
+      container.appendChild(button);
+    });
+}
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats(){
+
+  const chat=currentChat();
+
+  if(!chat){
+
+    $("statMessages").textContent="0";
+    $("statWords").textContent="0";
+    $("statAI").textContent="0";
+    $("statPinned").textContent="0";
+
+    return;
+  }
+
+  $("statMessages").textContent=
+    chat.messages.length;
+
+  $("statWords").textContent=
+    chat.messages.reduce(
+      (sum,m)=>
+        sum+
+        (m.content.trim()
+          ? m.content.trim().split(/\s+/).length
+          : 0),
+      0
+    );
+
+  $("statAI").textContent=
+    chat.messages.filter(
+      m=>m.role==="assistant"
+    ).length;
+
+  $("statPinned").textContent=
+    chat.messages.filter(
+      m=>m.pinned
+    ).length;
+}
+
+/* =========================================================
+   RENDER EVERYTHING
+========================================================= */
+
+function renderEverything(){
+
+  renderHistory();
+  renderChat();
+  renderTabs();
+  applyTheme();
+  updateCounter();
+
+  const chat=currentChat();
+
+  $("favoriteBtn").textContent=
+    chat?.favorite ? "★":"☆";
+}
+
+/* =========================================================
+   INITIAL LOAD
+========================================================= */
+
+function load(){
+
+  applyTheme();
+
+  if(chats.length===0){
+
+    createChat();
+
+  }else{
+
+    currentId=
+      chats[0]?.id || null;
+
+    if(!workspace.openTabs.includes(currentId)){
+      workspace.openTabs.push(currentId);
     }
 
+    renderEverything();
 
-    if(
-      (e.ctrlKey || e.metaKey) &&
-      e.key.toLowerCase()==="e"
-    ){
+  }
 
-      e.preventDefault();
+  const draft=
+    loadJSON(KEYS.draft,"");
 
-      exportMarkdown();
+  if(draft && !input.value){
+    input.value=draft;
+    updateCounter();
+  }
 
-    }
+  if(settings.persona){
 
-
-    if(e.key==="Escape"){
-
-      closeModal();
-
-      $("contextMenu")
-        .classList.remove(
-          "show"
+    document
+      .querySelectorAll("[data-persona]")
+      .forEach(button=>{
+        button.classList.toggle(
+          "active",
+          button.dataset.persona===settings.persona
         );
-
-    }
-
+      });
   }
-);
 
+  if(settings.mode){
+
+    document
+      .querySelectorAll("[data-mode]")
+      .forEach(button=>{
+        button.classList.toggle(
+          "active",
+          button.dataset.mode===settings.mode
+        );
+      });
+  }
+}
 
 /* =========================================================
-   DRAG AND DROP
+   GLOBAL FUNCTIONS FOR INLINE BUTTONS
 ========================================================= */
 
-document.addEventListener(
-  "dragover",
-  e=>{
-
-    if(
-      e.dataTransfer &&
-      e.dataTransfer.types.includes("Files")
-    ){
-
-      e.preventDefault();
-
-    }
-
-  }
-);
-
-
-document.addEventListener(
-  "drop",
-  e=>{
-
-    if(
-      e.dataTransfer &&
-      e.dataTransfer.files.length
-    ){
-
-      e.preventDefault();
-
-      handleFiles(
-        e.dataTransfer.files
-      );
-
-      toastMsg(
-        "Files added."
-      );
-
-    }
-
-  }
-);
-
+window.renameChat=renameChat;
+window.duplicateChat=duplicateChat;
+window.branchChat=branchChat;
+window.archiveChat=archiveChat;
+window.toggleFavorite=toggleFavorite;
+window.deleteChat=deleteChat;
+window.toggleTask=toggleTask;
+window.deleteTask=deleteTask;
+window.addTask=addTask;
+window.copySaved=copySaved;
+window.deleteSaved=deleteSaved;
+window.addMemory=addMemory;
+window.deleteMemory=deleteMemory;
+window.usePrompt=usePrompt;
+window.useLibraryFile=useLibraryFile;
+window.copyMessage=copyMessage;
+window.regenerate=regenerate;
+window.editMessage=editMessage;
+window.pinMessage=pinMessage;
+window.bookmarkMessage=bookmarkMessage;
+window.continueResponse=continueResponse;
+window.improveMessage=improveMessage;
+window.askResponse=askResponse;
+window.readAloud=readAloud;
+window.runCalculator=runCalculator;
+window.generateEmail=generateEmail;
+window.generateOutline=generateOutline;
 
 /* =========================================================
-   INITIALIZE
+   START
 ========================================================= */
-
-setupModes();
 
 load();
 
-updateCounter();
-
 </script>
-
 </body>
 </html>
