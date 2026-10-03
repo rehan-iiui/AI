@@ -2,247 +2,166 @@ const MODEL_URL =
   "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
 
 exports.handler = async function (event) {
-
   if (event.httpMethod !== "POST") {
-    return response(
-      405,
-      {
-        error: "Method not allowed."
-      }
-    );
+    return response(405, {
+      error: "Method not allowed."
+    });
   }
 
   const token =
     process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
-    return response(
-      500,
-      {
-        error:
-          "REPLICATE_API_TOKEN is missing from Netlify."
-      }
-    );
+    return response(500, {
+      error:
+        "REPLICATE_API_TOKEN is missing from Netlify."
+    });
   }
 
   let body;
 
   try {
-
-    body =
-      JSON.parse(
-        event.body || "{}"
-      );
-
-  } catch (error) {
-
-    return response(
-      400,
-      {
-        error:
-          "Invalid JSON."
-      }
+    body = JSON.parse(
+      event.body || "{}"
     );
-
+  } catch (error) {
+    return response(400, {
+      error: "Invalid JSON."
+    });
   }
 
   const message =
-    typeof body.message ===
-    "string"
+    typeof body.message === "string"
       ? body.message.trim()
       : "";
 
   if (!message) {
-
-    return response(
-      400,
-      {
-        error:
-          "Message is empty."
-      }
-    );
-
+    return response(400, {
+      error: "Message is empty."
+    });
   }
 
   const history =
-    Array.isArray(
-      body.history
-    )
+    Array.isArray(body.history)
       ? body.history
       : [];
 
   const systemPrompt =
-    typeof body.systemPrompt ===
-    "string"
+    typeof body.systemPrompt === "string"
       ? body.systemPrompt.trim()
       : "";
 
   let temperature =
-    Number(
-      body.temperature
-    );
+    Number(body.temperature);
 
   if (
-    !Number.isFinite(
-      temperature
-    ) ||
+    !Number.isFinite(temperature) ||
     temperature < 0 ||
     temperature > 2
   ) {
-
-    temperature=1;
-
+    temperature = 1;
   }
 
   let maxTokens =
-    Number(
-      body.maxTokens
-    );
+    Number(body.maxTokens);
 
   if (
-    !Number.isFinite(
-      maxTokens
-    ) ||
+    !Number.isFinite(maxTokens) ||
     maxTokens < 100
   ) {
-
-    maxTokens=2000;
-
+    maxTokens = 2000;
   }
 
-  if(
-    maxTokens > 8000
-  ){
-
-    maxTokens=8000;
-
+  if (maxTokens > 8000) {
+    maxTokens = 8000;
   }
 
-  const messages=[];
+  const messages = [];
 
-  for(
-    const item of history
-  ){
+  for (const item of history) {
+    if (!item) continue;
 
-    if(!item){
+    if (
+      item.role !== "user" &&
+      item.role !== "assistant"
+    ) {
       continue;
     }
 
-    if(
-      item.role !==
-        "user" &&
-      item.role !==
-        "assistant"
-    ){
-
+    if (
+      typeof item.content !== "string"
+    ) {
       continue;
-
     }
 
-    if(
-      typeof item.content !==
-      "string"
-    ){
-
-      continue;
-
-    }
-
-    const content =
-      item.content.trim();
-
-    if(!content){
+    if (!item.content.trim()) {
       continue;
     }
 
     messages.push({
-      role:
-        item.role,
-      content:
-        content
+      role: item.role,
+      content: item.content.trim()
     });
-
   }
 
   const imageData =
-    typeof body.imageData ===
-    "string"
+    typeof body.imageData === "string"
       ? body.imageData
       : "";
 
-  if(
-    imageData &&
-    imageData.length >
-    9000000
-  ){
+  let userContent = message;
 
-    return response(
-      413,
-      {
+  if (imageData) {
+
+    if (imageData.length > 9000000) {
+      return response(413, {
         error:
           "Image is too large. Please choose a smaller image."
-      }
-    );
+      });
+    }
 
-  }
-
-  let userContent =
-    message;
-
-  if(imageData){
-
-    userContent=[
+    userContent = [
       {
-        type:"text",
-        text:message
+        type: "text",
+        text: message
       },
       {
-        type:"image_url",
-        image_url:{
-          url:imageData
+        type: "image_url",
+        image_url: {
+          url: imageData
         }
       }
     ];
-
   }
 
   messages.push({
-    role:"user",
-    content:userContent
+    role: "user",
+    content: userContent
   });
 
-  const input={
-
-    messages:
-      messages,
-
-    temperature:
-      temperature,
-
+  const input = {
+    messages,
+    temperature,
     max_completion_tokens:
       maxTokens
-
   };
 
-  if(systemPrompt){
-
+  if (systemPrompt) {
     input.system_prompt =
       systemPrompt;
-
   }
 
-  try{
+  try {
 
     const apiResponse =
       await fetch(
         MODEL_URL,
         {
-          method:"POST",
+          method: "POST",
 
-          headers:{
+          headers: {
             "Authorization":
-              "Bearer " +
-              token,
+              "Bearer " + token,
 
             "Content-Type":
               "application/json",
@@ -251,10 +170,9 @@ exports.handler = async function (event) {
               "wait"
           },
 
-          body:
-            JSON.stringify({
-              input:input
-            })
+          body: JSON.stringify({
+            input
+          })
         }
       );
 
@@ -263,240 +181,182 @@ exports.handler = async function (event) {
 
     let data;
 
-    try{
-
+    try {
       data =
         text
           ? JSON.parse(text)
           : {};
-
-    }catch(error){
+    } catch (error) {
 
       console.error(
         "Invalid Replicate JSON:",
         text
       );
 
-      return response(
-        502,
-        {
-          error:
-            "Replicate returned invalid JSON."
-        }
-      );
-
+      return response(502, {
+        error:
+          "Replicate returned invalid JSON."
+      });
     }
 
-    if(
-      !apiResponse.ok
-    ){
+    if (!apiResponse.ok) {
 
       let errorMessage =
         "Replicate request failed.";
 
-      if(
+      if (
         data &&
-        typeof data.detail ===
-        "string"
-      ){
-
+        typeof data.detail === "string"
+      ) {
         errorMessage =
           data.detail;
+      }
 
-      }else if(
+      else if (
         data &&
-        typeof data.error ===
-        "string"
-      ){
-
+        typeof data.error === "string"
+      ) {
         errorMessage =
           data.error;
+      }
 
-      }else if(
+      else if (
         data &&
-        typeof data.title ===
-        "string"
-      ){
-
+        typeof data.title === "string"
+      ) {
         errorMessage =
           data.title;
-
       }
 
       return response(
         apiResponse.status,
         {
-          error:
-            errorMessage
+          error: errorMessage
         }
       );
-
     }
 
     const reply =
-      getReply(
-        data
-      );
+      getReply(data);
 
-    if(!reply){
+    if (!reply) {
 
       console.error(
         "Replicate returned no usable output:",
         JSON.stringify(data)
       );
 
-      return response(
-        502,
-        {
-          error:
-            "Replicate returned no AI text."
-        }
-      );
-
+      return response(502, {
+        error:
+          "Replicate returned no AI text."
+      });
     }
 
-    return response(
-      200,
-      {
-        reply:
-          reply.trim()
-      }
-    );
+    return response(200, {
+      reply: reply.trim()
+    });
 
-  }catch(error){
+  } catch (error) {
 
     console.error(
       "Chat function error:",
       error
     );
 
-    return response(
-      500,
-      {
-        error:
-          error &&
-          error.message
-            ? error.message
-            : "Could not connect to Replicate."
-      }
-    );
-
+    return response(500, {
+      error:
+        error &&
+        error.message
+          ? error.message
+          : "Could not connect to Replicate."
+    });
   }
-
 };
 
-function getReply(data){
 
-  if(!data){
+function getReply(data) {
+
+  if (!data) {
     return "";
   }
 
-  if(
-    Array.isArray(
-      data.output
-    )
-  ){
+  if (
+    Array.isArray(data.output)
+  ) {
 
     return data.output
-      .map(
-        item=>{
+      .map(function (item) {
 
-          if(
-            typeof item ===
-            "string"
-          ){
-
-            return item;
-
-          }
-
-          if(
-            item &&
-            typeof item.text ===
-            "string"
-          ){
-
-            return item.text;
-
-          }
-
-          if(
-            item &&
-            typeof item.content ===
-            "string"
-          ){
-
-            return item.content;
-
-          }
-
-          return "";
-
+        if (
+          typeof item === "string"
+        ) {
+          return item;
         }
-      )
+
+        if (
+          item &&
+          typeof item.text === "string"
+        ) {
+          return item.text;
+        }
+
+        if (
+          item &&
+          typeof item.content === "string"
+        ) {
+          return item.content;
+        }
+
+        return "";
+      })
       .join("");
-
   }
 
-  if(
-    typeof data.output ===
-    "string"
-  ){
-
+  if (
+    typeof data.output === "string"
+  ) {
     return data.output;
-
   }
 
-  if(
+  if (
     data.output &&
-    typeof data.output ===
-    "object"
-  ){
+    typeof data.output === "object"
+  ) {
 
-    if(
+    if (
       typeof data.output.text ===
       "string"
-    ){
-
+    ) {
       return data.output.text;
-
     }
 
-    if(
+    if (
       typeof data.output.content ===
       "string"
-    ){
-
+    ) {
       return data.output.content;
-
     }
-
   }
 
-  if(
-    typeof data.text ===
-    "string"
-  ){
-
+  if (
+    typeof data.text === "string"
+  ) {
     return data.text;
-
   }
 
   return "";
 }
 
+
 function response(
   statusCode,
   data
-){
+) {
 
   return {
+    statusCode,
 
-    statusCode:
-
-      statusCode,
-
-    headers:{
+    headers: {
       "Content-Type":
         "application/json",
 
@@ -505,10 +365,6 @@ function response(
     },
 
     body:
-      JSON.stringify(
-        data
-      )
-
+      JSON.stringify(data)
   };
-
 }
