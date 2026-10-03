@@ -2,31 +2,28 @@ const MODEL_URL =
   "https://api.replicate.com/v1/models/openai/gpt-4.1-nano/predictions";
 
 exports.handler = async function (event) {
-
   if (event.httpMethod !== "POST") {
     return response(405, {
       error: "Method not allowed."
     });
   }
 
-  const token =
-    process.env.REPLICATE_API_TOKEN;
+  const token = process.env.REPLICATE_API_TOKEN;
 
   if (!token) {
     return response(500, {
       error:
-        "REPLICATE_API_TOKEN is missing from Netlify."
+        "REPLICATE_API_TOKEN is missing from Netlify environment variables."
     });
   }
 
   let body;
 
   try {
-    body =
-      JSON.parse(event.body || "{}");
+    body = JSON.parse(event.body || "{}");
   } catch (error) {
     return response(400, {
-      error: "Invalid JSON."
+      error: "Invalid JSON sent to the chat function."
     });
   }
 
@@ -78,8 +75,10 @@ exports.handler = async function (event) {
 
   const messages = [];
 
+  /*
+   * Add previous conversation messages.
+   */
   for (const item of history) {
-
     if (!item) {
       continue;
     }
@@ -106,21 +105,25 @@ exports.handler = async function (event) {
 
     messages.push({
       role: item.role,
-      content
+      content: content
     });
   }
 
+  /*
+   * Optional image sent from the browser.
+   */
   const imageData =
     typeof body.imageData === "string"
-      ? body.imageData
+      ? body.imageData.trim()
       : "";
 
   let userContent = message;
 
   if (imageData) {
-
+    /*
+     * Prevent extremely large requests.
+     */
     if (imageData.length > 9000000) {
-
       return response(413, {
         error:
           "Image is too large. Please choose a smaller image."
@@ -146,93 +149,75 @@ exports.handler = async function (event) {
     content: userContent
   });
 
+  /*
+   * Build Replicate input.
+   */
   const input = {
-    messages,
-    temperature,
+    messages: messages,
+    temperature: temperature,
     max_completion_tokens: maxTokens
   };
 
   if (systemPrompt) {
-    input.system_prompt =
-      systemPrompt;
+    input.system_prompt = systemPrompt;
   }
 
   try {
+    const apiResponse = await fetch(
+      MODEL_URL,
+      {
+        method: "POST",
+        headers: {
+          "Authorization":
+            "Bearer " + token,
 
-    const apiResponse =
-      await fetch(
-        MODEL_URL,
-        {
-          method: "POST",
+          "Content-Type":
+            "application/json",
 
-          headers: {
-            "Authorization":
-              "Bearer " + token,
+          "Prefer":
+            "wait"
+        },
 
-            "Content-Type":
-              "application/json",
+        body: JSON.stringify({
+          input: input
+        })
+      }
+    );
 
-            "Prefer":
-              "wait"
-          },
-
-          body: JSON.stringify({
-            input
-          })
-        }
-      );
-
-    const text =
+    const rawText =
       await apiResponse.text();
 
-    let data;
+    let data = {};
 
     try {
-
       data =
-        text
-          ? JSON.parse(text)
+        rawText
+          ? JSON.parse(rawText)
           : {};
-
     } catch (error) {
-
       console.error(
-        "Invalid Replicate JSON:",
-        text
+        "Replicate returned invalid JSON:",
+        rawText
       );
 
       return response(502, {
         error:
-          "Replicate returned invalid JSON."
+          "Replicate returned an invalid response."
       });
     }
 
+    /*
+     * Replicate/API error.
+     */
     if (!apiResponse.ok) {
+      const errorMessage =
+        getReplicateError(data);
 
-      let errorMessage =
-        "Replicate request failed.";
-
-      if (
-        data &&
-        typeof data.detail === "string"
-      ) {
-        errorMessage =
-          data.detail;
-
-      } else if (
-        data &&
-        typeof data.error === "string"
-      ) {
-        errorMessage =
-          data.error;
-
-      } else if (
-        data &&
-        typeof data.title === "string"
-      ) {
-        errorMessage =
-          data.title;
-      }
+      console.error(
+        "Replicate API error:",
+        apiResponse.status,
+        errorMessage
+      );
 
       return response(
         apiResponse.status,
@@ -242,28 +227,28 @@ exports.handler = async function (event) {
       );
     }
 
+    /*
+     * Extract the AI response.
+     */
     const reply =
       getReply(data);
 
     if (!reply) {
-
       console.error(
-        "Replicate returned no usable output:",
+        "No usable AI output:",
         JSON.stringify(data)
       );
 
       return response(502, {
         error:
-          "Replicate returned no AI text."
+          "The AI returned no usable text."
       });
     }
 
     return response(200, {
       reply: reply.trim()
     });
-
   } catch (error) {
-
     console.error(
       "Chat function error:",
       error
@@ -272,25 +257,71 @@ exports.handler = async function (event) {
     return response(500, {
       error:
         error &&
-        error.message
+        typeof error.message === "string"
           ? error.message
-          : "Could not connect to Replicate."
+          : "Could not connect to the AI service."
     });
   }
 };
 
 
-function getReply(data) {
+/* =========================================
+   GET REPLICATE ERROR
+========================================= */
 
+function getReplicateError(data) {
+  if (!data) {
+    return "Replicate request failed.";
+  }
+
+  if (
+    typeof data.detail === "string" &&
+    data.detail.trim()
+  ) {
+    return data.detail.trim();
+  }
+
+  if (
+    typeof data.error === "string" &&
+    data.error.trim()
+  ) {
+    return data.error.trim();
+  }
+
+  if (
+    typeof data.title === "string" &&
+    data.title.trim()
+  ) {
+    return data.title.trim();
+  }
+
+  if (
+    data.error &&
+    typeof data.error.message === "string"
+  ) {
+    return data.error.message;
+  }
+
+  return "Replicate request failed.";
+}
+
+
+/* =========================================
+   EXTRACT AI RESPONSE
+========================================= */
+
+function getReply(data) {
   if (!data) {
     return "";
   }
 
+  /*
+   * Most common case:
+   * output is an array.
+   */
   if (Array.isArray(data.output)) {
-
     return data.output
       .map(function (item) {
-
         if (
           typeof item === "string"
         ) {
@@ -316,17 +347,22 @@ function getReply(data) {
       .join("");
   }
 
+  /*
+   * Output is directly a string.
+   */
   if (
     typeof data.output === "string"
   ) {
     return data.output;
   }
 
+  /*
+   * Output is an object.
+   */
   if (
     data.output &&
     typeof data.output === "object"
   ) {
-
     if (
       typeof data.output.text === "string"
     ) {
@@ -338,8 +374,48 @@ function getReply(data) {
     ) {
       return data.output.content;
     }
+
+    if (
+      Array.isArray(data.output.choices)
+    ) {
+      return getReply({
+        choices: data.output.choices
+      });
+    }
   }
 
+  /*
+   * Some responses may expose
+   * choices directly.
+   */
+  if (
+    Array.isArray(data.choices)
+  ) {
+    for (
+      const choice of data.choices
+    ) {
+      if (!choice) {
+        continue;
+      }
+
+      if (
+        choice.message &&
+        typeof choice.message.content === "string"
+      ) {
+        return choice.message.content;
+      }
+
+      if (
+        typeof choice.text === "string"
+      ) {
+        return choice.text;
+      }
+    }
+  }
+
+  /*
+   * Fallback text field.
+   */
   if (
     typeof data.text === "string"
   ) {
@@ -350,17 +426,29 @@ function getReply(data) {
 }
 
 
-function response(statusCode, data) {
+/* =========================================
+   STANDARD NETLIFY RESPONSE
+========================================= */
 
+function response(statusCode, data) {
   return {
-    statusCode,
+    statusCode: statusCode,
 
     headers: {
       "Content-Type":
         "application/json",
 
       "Cache-Control":
-        "no-store"
+        "no-store",
+
+      "Access-Control-Allow-Origin":
+        "*",
+
+      "Access-Control-Allow-Headers":
+        "Content-Type, Authorization",
+
+      "Access-Control-Allow-Methods":
+        "POST, OPTIONS"
     },
 
     body:
