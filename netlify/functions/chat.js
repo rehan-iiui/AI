@@ -49,13 +49,10 @@ exports.handler = async function (event) {
       ? body.systemPrompt.trim()
       : "";
 
-  /*
-   * These values come from the app's
-   * Conversation Settings.
-   *
-   * Safe defaults are used if they are
-   * missing or invalid.
-   */
+  const imageData =
+    typeof body.imageData === "string"
+      ? body.imageData.trim()
+      : "";
 
   let temperature =
     Number(body.temperature);
@@ -113,17 +110,52 @@ exports.handler = async function (event) {
     });
   }
 
-  messages.push({
-    role: "user",
-    content: message
-  });
+  /*
+   * Normal text message.
+   */
+
+  let currentContent = message;
 
   /*
-   * Keep the exact API structure that was
-   * already working, while allowing the
-   * UI settings to control temperature
-   * and maximum completion tokens.
+   * If an image was attached, use the
+   * OpenAI-style multimodal message format.
+   *
+   * The model receives both the user's
+   * question and the image.
    */
+
+  if (imageData) {
+
+    /*
+     * Avoid accidentally accepting an
+     * extremely large request.
+     */
+
+    if (imageData.length > 12000000) {
+      return response(413, {
+        error:
+          "Image is too large. Please use a smaller image."
+      });
+    }
+
+    currentContent = [
+      {
+        type: "text",
+        text: message
+      },
+      {
+        type: "image_url",
+        image_url: {
+          url: imageData
+        }
+      }
+    ];
+  }
+
+  messages.push({
+    role: "user",
+    content: currentContent
+  });
 
   const input = {
     messages: messages,
@@ -181,7 +213,6 @@ exports.handler = async function (event) {
         error:
           "Replicate returned invalid JSON."
       });
-
     }
 
     if (!apiResponse.ok) {
@@ -193,26 +224,19 @@ exports.handler = async function (event) {
         data &&
         typeof data.detail === "string"
       ) {
-
-        errorMessage =
-          data.detail;
+        errorMessage = data.detail;
 
       } else if (
         data &&
         typeof data.error === "string"
       ) {
-
-        errorMessage =
-          data.error;
+        errorMessage = data.error;
 
       } else if (
         data &&
         typeof data.title === "string"
       ) {
-
-        errorMessage =
-          data.title;
-
+        errorMessage = data.title;
       }
 
       return response(
@@ -237,7 +261,6 @@ exports.handler = async function (event) {
         error:
           "Replicate returned no AI text."
       });
-
     }
 
     return response(200, {
@@ -258,27 +281,15 @@ exports.handler = async function (event) {
           ? error.message
           : "Could not connect to Replicate."
     });
-
   }
 };
 
-
-/*
- * Extract AI text from the different
- * output formats that Replicate may return.
- */
 
 function getReply(data) {
 
   if (!data) {
     return "";
   }
-
-  /*
-   * Most common format:
-   *
-   * output: ["Hello", " there"]
-   */
 
   if (Array.isArray(data.output)) {
 
@@ -309,26 +320,13 @@ function getReply(data) {
 
       })
       .join("");
-
   }
-
-
-  /*
-   * Simple string output.
-   */
 
   if (
     typeof data.output === "string"
   ) {
-
     return data.output;
-
   }
-
-
-  /*
-   * Object output.
-   */
 
   if (
     data.output &&
@@ -338,42 +336,25 @@ function getReply(data) {
     if (
       typeof data.output.text === "string"
     ) {
-
       return data.output.text;
-
     }
 
     if (
       typeof data.output.content === "string"
     ) {
-
       return data.output.content;
-
     }
-
   }
-
-
-  /*
-   * Some responses may expose text
-   * directly on the response object.
-   */
 
   if (
     typeof data.text === "string"
   ) {
-
     return data.text;
-
   }
 
   return "";
 }
 
-
-/*
- * Standard Netlify response helper.
- */
 
 function response(
   statusCode,
@@ -381,23 +362,17 @@ function response(
 ) {
 
   return {
-
     statusCode: statusCode,
 
     headers: {
-
       "Content-Type":
         "application/json",
 
       "Cache-Control":
         "no-store"
-
     },
 
     body:
       JSON.stringify(data)
-
   };
-
 }
-
