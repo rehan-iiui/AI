@@ -14,7 +14,8 @@ exports.handler = async function (event) {
 
   if (!token) {
     return response(500, {
-      error: "REPLICATE_API_TOKEN is missing from Netlify."
+      error:
+        "REPLICATE_API_TOKEN is missing from Netlify."
     });
   }
 
@@ -39,6 +40,12 @@ exports.handler = async function (event) {
     });
   }
 
+  if (message.length > 30000) {
+    return response(413, {
+      error: "Message is too long."
+    });
+  }
+
   const history =
     Array.isArray(body.history)
       ? body.history
@@ -47,11 +54,6 @@ exports.handler = async function (event) {
   const systemPrompt =
     typeof body.systemPrompt === "string"
       ? body.systemPrompt.trim()
-      : "";
-
-  const imageData =
-    typeof body.imageData === "string"
-      ? body.imageData.trim()
       : "";
 
   let temperature =
@@ -100,45 +102,38 @@ exports.handler = async function (event) {
       continue;
     }
 
-    if (!item.content.trim()) {
+    const content =
+      item.content.trim();
+
+    if (!content) {
       continue;
     }
 
     messages.push({
       role: item.role,
-      content: item.content.trim()
+      content: content.slice(0, 30000)
     });
   }
 
-  /*
-   * Normal text message.
-   */
+  let userContent = message;
 
-  let currentContent = message;
-
-  /*
-   * If an image was attached, use the
-   * OpenAI-style multimodal message format.
-   *
-   * The model receives both the user's
-   * question and the image.
-   */
+  const imageData =
+    typeof body.imageData === "string"
+      ? body.imageData
+      : "";
 
   if (imageData) {
 
-    /*
-     * Avoid accidentally accepting an
-     * extremely large request.
-     */
-
-    if (imageData.length > 12000000) {
+    if (
+      imageData.length > 9000000
+    ) {
       return response(413, {
         error:
           "Image is too large. Please use a smaller image."
       });
     }
 
-    currentContent = [
+    userContent = [
       {
         type: "text",
         text: message
@@ -154,7 +149,7 @@ exports.handler = async function (event) {
 
   messages.push({
     role: "user",
-    content: currentContent
+    content: userContent
   });
 
   const input = {
@@ -164,32 +159,34 @@ exports.handler = async function (event) {
   };
 
   if (systemPrompt) {
-    input.system_prompt = systemPrompt;
+    input.system_prompt =
+      systemPrompt.slice(0, 30000);
   }
 
   try {
 
-    const apiResponse = await fetch(
-      MODEL_URL,
-      {
-        method: "POST",
+    const apiResponse =
+      await fetch(
+        MODEL_URL,
+        {
+          method: "POST",
 
-        headers: {
-          "Authorization":
-            "Bearer " + token,
+          headers: {
+            "Authorization":
+              "Bearer " + token,
 
-          "Content-Type":
-            "application/json",
+            "Content-Type":
+              "application/json",
 
-          "Prefer":
-            "wait"
-        },
+            "Prefer":
+              "wait"
+          },
 
-        body: JSON.stringify({
-          input: input
-        })
-      }
-    );
+          body: JSON.stringify({
+            input: input
+          })
+        }
+      );
 
     const text =
       await apiResponse.text();
@@ -198,9 +195,10 @@ exports.handler = async function (event) {
 
     try {
 
-      data = text
-        ? JSON.parse(text)
-        : {};
+      data =
+        text
+          ? JSON.parse(text)
+          : {};
 
     } catch (error) {
 
@@ -224,19 +222,22 @@ exports.handler = async function (event) {
         data &&
         typeof data.detail === "string"
       ) {
-        errorMessage = data.detail;
-
-      } else if (
+        errorMessage =
+          data.detail;
+      }
+      else if (
         data &&
         typeof data.error === "string"
       ) {
-        errorMessage = data.error;
-
-      } else if (
+        errorMessage =
+          data.error;
+      }
+      else if (
         data &&
         typeof data.title === "string"
       ) {
-        errorMessage = data.title;
+        errorMessage =
+          data.title;
       }
 
       return response(
@@ -283,7 +284,6 @@ exports.handler = async function (event) {
     });
   }
 };
-
 
 function getReply(data) {
 
@@ -354,7 +354,6 @@ function getReply(data) {
 
   return "";
 }
-
 
 function response(
   statusCode,
