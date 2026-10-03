@@ -1,260 +1,1059 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
+
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<meta name="viewport"
+      content="width=device-width,initial-scale=1.0">
+
 <title>Simple Chat AI</title>
 
 <style>
-*{box-sizing:border-box;margin:0;padding:0}
+
+*{
+  box-sizing:border-box;
+  margin:0;
+  padding:0;
+}
+
 :root{
---bg:#f4f6fb;--panel:#fff;--panel2:#f8f9fd;--text:#182033;
---muted:#70798c;--border:#e2e6ef;--accent:#5b5cf0;--accent2:#8b5cf6;
---danger:#ef4444;--success:#16a34a;--shadow:0 15px 45px rgba(30,40,70,.1);
---bubble:#f0f2f7;
+  --bg:#f4f6fb;
+  --panel:#ffffff;
+  --panel2:#f8f9fd;
+  --text:#182033;
+  --muted:#70798c;
+  --border:#e2e6ef;
+  --accent:#5b5cf0;
+  --accent2:#8b5cf6;
+  --danger:#ef4444;
+  --success:#16a34a;
+  --warning:#f59e0b;
+  --bubble:#f0f2f7;
+  --shadow:0 15px 45px rgba(30,40,70,.10);
 }
+
 body.dark{
---bg:#090d17;--panel:#111827;--panel2:#182132;--text:#f5f7fb;
---muted:#9aa5b7;--border:#293548;--bubble:#1b2535;
---shadow:0 15px 45px rgba(0,0,0,.3);
+  --bg:#090d17;
+  --panel:#111827;
+  --panel2:#182132;
+  --text:#f5f7fb;
+  --muted:#9aa5b7;
+  --border:#293548;
+  --bubble:#1b2535;
+  --shadow:0 15px 45px rgba(0,0,0,.35);
 }
+
 body{
-font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
-background:var(--bg);color:var(--text);height:100vh;overflow:hidden
+  font-family:
+    Inter,
+    system-ui,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    sans-serif;
+
+  background:var(--bg);
+  color:var(--text);
+  height:100vh;
+  overflow:hidden;
 }
-button,input,textarea,select{font:inherit}
-button{cursor:pointer}
-button:disabled{opacity:.45;cursor:not-allowed}
-.app{height:100vh;display:flex}
+
+button,
+input,
+textarea,
+select{
+  font:inherit;
+}
+
+button{
+  cursor:pointer;
+}
+
+button:disabled{
+  opacity:.45;
+  cursor:not-allowed;
+}
+
+.app{
+  height:100vh;
+  display:flex;
+}
+
+/* SIDEBAR */
+
 .sidebar{
-width:285px;background:var(--panel);border-right:1px solid var(--border);
-display:flex;flex-direction:column;padding:15px;flex-shrink:0;
-transition:width .25s
+  width:285px;
+  background:var(--panel);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  padding:15px;
+  flex-shrink:0;
+  transition:.25s;
 }
-.sidebar.collapsed{width:70px}
-.sidebar.collapsed .hide-collapse{display:none}
-.brand{display:flex;align-items:center;gap:10px;margin-bottom:15px}
+
+.sidebar.collapsed{
+  width:70px;
+}
+
+.sidebar.collapsed .hide-collapse{
+  display:none;
+}
+
+.brand{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  margin-bottom:15px;
+}
+
 .logo{
-width:42px;height:42px;border-radius:13px;display:grid;place-items:center;
-background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;font-weight:900
+  width:42px;
+  height:42px;
+  border-radius:13px;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent2)
+    );
+  color:#fff;
+  font-weight:900;
 }
-.brand h1{font-size:17px}.brand small{font-size:10px;color:var(--muted)}
+
+.brand h1{
+  font-size:17px;
+}
+
+.brand small{
+  font-size:10px;
+  color:var(--muted);
+}
+
 .newchat{
-width:100%;padding:11px;border:0;border-radius:11px;background:var(--accent);
-color:#fff;font-weight:700;margin-bottom:11px
+  width:100%;
+  padding:11px;
+  border:0;
+  border-radius:11px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+  margin-bottom:11px;
 }
-.search{position:relative;margin-bottom:10px}
+
+.search{
+  position:relative;
+  margin-bottom:10px;
+}
+
 .search input{
-width:100%;padding:10px 10px 10px 34px;border:1px solid var(--border);
-border-radius:10px;background:var(--panel2);color:var(--text);outline:0
+  width:100%;
+  padding:10px 10px 10px 34px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--panel2);
+  color:var(--text);
+  outline:0;
 }
-.search span{position:absolute;left:11px;top:8px;color:var(--muted)}
+
+.search span{
+  position:absolute;
+  left:11px;
+  top:8px;
+  color:var(--muted);
+}
+
 .history-label{
-font-size:10px;text-transform:uppercase;color:var(--muted);font-weight:800;
-margin:8px 4px
+  font-size:10px;
+  text-transform:uppercase;
+  color:var(--muted);
+  font-weight:800;
+  margin:8px 4px;
 }
-.history{flex:1;overflow:auto}
+
+.history{
+  flex:1;
+  overflow:auto;
+}
+
 .history-item{
-display:flex;align-items:center;gap:7px;padding:9px;border-radius:9px;
-margin-bottom:3px
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:9px;
+  border-radius:9px;
+  margin-bottom:3px;
 }
-.history-item:hover,.history-item.active{background:var(--panel2)}
-.history-name{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:12px}
-.star{color:#f59e0b}
-.history-more{border:0;background:none;color:var(--muted);font-size:18px}
-.side-bottom{border-top:1px solid var(--border);padding-top:9px}
+
+.history-item:hover,
+.history-item.active{
+  background:var(--panel2);
+}
+
+.history-name{
+  flex:1;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+  font-size:12px;
+}
+
+.star{
+  color:#f59e0b;
+}
+
+.history-more{
+  border:0;
+  background:none;
+  color:var(--muted);
+  font-size:18px;
+}
+
+.side-bottom{
+  border-top:1px solid var(--border);
+  padding-top:9px;
+}
+
 .side-btn{
-width:100%;padding:9px;border:0;background:none;color:var(--text);
-text-align:left;border-radius:9px;margin:2px 0
+  width:100%;
+  padding:9px;
+  border:0;
+  background:none;
+  color:var(--text);
+  text-align:left;
+  border-radius:9px;
+  margin:2px 0;
 }
-.side-btn:hover{background:var(--panel2)}
-.main{flex:1;display:flex;min-width:0}
-.chat{flex:1;display:flex;flex-direction:column;min-width:0}
+
+.side-btn:hover{
+  background:var(--panel2);
+}
+
+/* MAIN */
+
+.main{
+  flex:1;
+  display:flex;
+  min-width:0;
+}
+
+.chat{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  min-width:0;
+}
+
 .top{
-height:62px;border-bottom:1px solid var(--border);background:var(--panel);
-display:flex;align-items:center;justify-content:space-between;padding:0 16px
+  height:62px;
+  border-bottom:1px solid var(--border);
+  background:var(--panel);
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  padding:0 16px;
 }
-.title{display:flex;align-items:center;gap:8px;min-width:0}
-.title strong{font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+.title{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  min-width:0;
+}
+
+.title strong{
+  font-size:14px;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+
 .badge{
-padding:4px 8px;border-radius:20px;background:var(--panel2);
-border:1px solid var(--border);font-size:10px;color:var(--muted)
+  padding:4px 8px;
+  border-radius:20px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  font-size:10px;
+  color:var(--muted);
 }
-.top-actions{display:flex;gap:6px}
+
+.privacy-badge{
+  display:none;
+  padding:4px 8px;
+  border-radius:20px;
+  background:#fff3cd;
+  color:#92400e;
+  font-size:9px;
+  font-weight:800;
+}
+
+.privacy-badge.show{
+  display:inline-block;
+}
+
+.top-actions{
+  display:flex;
+  gap:6px;
+}
+
 .icon{
-width:35px;height:35px;border:1px solid var(--border);border-radius:9px;
-background:var(--panel);color:var(--text)
+  width:35px;
+  height:35px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--panel);
+  color:var(--text);
 }
-.icon:hover{background:var(--panel2)}
-.messages{flex:1;overflow:auto;padding:25px 6%}
-.welcome{max-width:720px;margin:7vh auto;text-align:center}
+
+.icon:hover{
+  background:var(--panel2);
+}
+
+/* MESSAGES */
+
+.messages{
+  flex:1;
+  overflow:auto;
+  padding:25px 6%;
+}
+
+.welcome{
+  max-width:720px;
+  margin:7vh auto;
+  text-align:center;
+}
+
 .welcome-logo{
-width:70px;height:70px;margin:auto;border-radius:22px;display:grid;place-items:center;
-background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;font-size:28px;font-weight:900
+  width:70px;
+  height:70px;
+  margin:auto;
+  border-radius:22px;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent2)
+    );
+  color:white;
+  font-size:28px;
+  font-weight:900;
 }
-.welcome h2{font-size:30px;margin-top:17px}.welcome p{color:var(--muted);margin-top:7px}
-.quick{display:grid;grid-template-columns:repeat(2,1fr);gap:9px;margin-top:23px}
+
+.welcome h2{
+  font-size:30px;
+  margin-top:17px;
+}
+
+.welcome p{
+  color:var(--muted);
+  margin-top:7px;
+}
+
+.quick{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:9px;
+  margin-top:23px;
+}
+
 .quick button{
-padding:13px;border:1px solid var(--border);background:var(--panel);
-color:var(--text);border-radius:11px;text-align:left
+  padding:13px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:11px;
+  text-align:left;
 }
-.quick button:hover{border-color:var(--accent)}
-.message{display:flex;gap:10px;max-width:900px;margin:0 auto 20px}
-.message.user{justify-content:flex-end}
+
+.quick button:hover{
+  border-color:var(--accent);
+}
+
+.message{
+  display:flex;
+  gap:10px;
+  max-width:900px;
+  margin:0 auto 20px;
+}
+
+.message.user{
+  justify-content:flex-end;
+}
+
 .avatar{
-width:34px;height:34px;border-radius:10px;display:grid;place-items:center;
-background:linear-gradient(135deg,var(--accent),var(--accent2));color:white;
-font-size:10px;font-weight:800;flex-shrink:0
+  width:34px;
+  height:34px;
+  border-radius:10px;
+  display:grid;
+  place-items:center;
+  background:
+    linear-gradient(
+      135deg,
+      var(--accent),
+      var(--accent2)
+    );
+  color:white;
+  font-size:10px;
+  font-weight:800;
+  flex-shrink:0;
 }
-.message.user .avatar{order:2}
-.msgbody{max-width:82%;min-width:0}
-.message.user .msgbody{order:1}
+
+.message.user .avatar{
+  order:2;
+}
+
+.msgbody{
+  max-width:82%;
+  min-width:0;
+}
+
+.message.user .msgbody{
+  order:1;
+}
+
 .bubble{
-padding:13px 15px;border-radius:15px;line-height:1.65;word-break:break-word
+  padding:13px 15px;
+  border-radius:15px;
+  line-height:1.65;
+  word-break:break-word;
 }
-.message.assistant .bubble{background:var(--bubble);border:1px solid var(--border)}
-.message.user .bubble{background:var(--accent);color:#fff;white-space:pre-wrap}
-.bubble h1,.bubble h2,.bubble h3,.bubble h4{line-height:1.25;margin:14px 0 7px}
-.bubble h1{font-size:25px}.bubble h2{font-size:21px}.bubble h3{font-size:18px}.bubble h4{font-size:16px}
-.bubble p{margin:7px 0}.bubble ul,.bubble ol{margin:7px 0 7px 25px}
-.bubble li{margin:3px 0}.bubble strong{font-weight:800}.bubble em{font-style:italic}
-.bubble blockquote{border-left:4px solid var(--accent);padding-left:12px;color:var(--muted);margin:10px 0}
+
+.message.assistant .bubble{
+  background:var(--bubble);
+  border:1px solid var(--border);
+}
+
+.message.user .bubble{
+  background:var(--accent);
+  color:#fff;
+  white-space:pre-wrap;
+}
+
+.bubble h1,
+.bubble h2,
+.bubble h3,
+.bubble h4{
+  line-height:1.25;
+  margin:14px 0 7px;
+}
+
+.bubble h1{
+  font-size:25px;
+}
+
+.bubble h2{
+  font-size:21px;
+}
+
+.bubble h3{
+  font-size:18px;
+}
+
+.bubble h4{
+  font-size:16px;
+}
+
+.bubble p{
+  margin:7px 0;
+}
+
+.bubble ul,
+.bubble ol{
+  margin:7px 0 7px 25px;
+}
+
+.bubble li{
+  margin:3px 0;
+}
+
+.bubble blockquote{
+  border-left:4px solid var(--accent);
+  padding-left:12px;
+  color:var(--muted);
+  margin:10px 0;
+}
+
 .bubble code{
-background:rgba(120,120,120,.16);padding:2px 5px;border-radius:5px;
-font-family:monospace
+  background:rgba(120,120,120,.16);
+  padding:2px 5px;
+  border-radius:5px;
+  font-family:monospace;
 }
+
 .bubble pre{
-background:#111827;color:#fff;padding:13px;border-radius:10px;overflow:auto;margin:10px 0
+  background:#111827;
+  color:#fff;
+  padding:13px;
+  border-radius:10px;
+  overflow:auto;
+  margin:10px 0;
 }
-.bubble pre code{background:none;padding:0}
-.bubble table{border-collapse:collapse;width:100%;margin:10px 0}
-.bubble th,.bubble td{border:1px solid var(--border);padding:7px;text-align:left}
-.bubble th{background:var(--panel2)}
-.bubble a{color:var(--accent);text-decoration:underline}
-.bubble hr{border:0;border-top:1px solid var(--border);margin:13px 0}
-.actions{display:flex;flex-wrap:wrap;gap:3px;margin-top:5px}
+
+.bubble pre code{
+  background:none;
+  padding:0;
+}
+
+.bubble table{
+  border-collapse:collapse;
+  width:100%;
+  margin:10px 0;
+}
+
+.bubble th,
+.bubble td{
+  border:1px solid var(--border);
+  padding:7px;
+  text-align:left;
+}
+
+.bubble th{
+  background:var(--panel2);
+}
+
+.bubble a{
+  color:var(--accent);
+  text-decoration:underline;
+}
+
+.bubble hr{
+  border:0;
+  border-top:1px solid var(--border);
+  margin:13px 0;
+}
+
+.bubble img{
+  max-width:100%;
+  border-radius:10px;
+}
+
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:3px;
+  margin-top:5px;
+}
+
 .actions button{
-border:0;background:none;color:var(--muted);font-size:10px;padding:4px 6px;border-radius:5px
+  border:0;
+  background:none;
+  color:var(--muted);
+  font-size:10px;
+  padding:4px 6px;
+  border-radius:5px;
 }
-.actions button:hover{background:var(--panel2);color:var(--text)}
-.reaction.active{color:var(--accent)}
-.typing{display:flex;gap:4px}.typing i{
-width:7px;height:7px;background:var(--muted);border-radius:50%;animation:bounce 1s infinite
+
+.actions button:hover{
+  background:var(--panel2);
+  color:var(--text);
 }
-.typing i:nth-child(2){animation-delay:.15s}.typing i:nth-child(3){animation-delay:.3s}
-@keyframes bounce{0%,80%,100%{transform:translateY(0)}40%{transform:translateY(-5px)}}
-.composer-wrap{background:var(--panel);border-top:1px solid var(--border);padding:9px 6% 14px}
-.toolbar{max-width:900px;margin:auto;display:flex;gap:5px;overflow:auto;padding-bottom:6px}
-.tool{
-border:1px solid var(--border);background:var(--panel2);color:var(--text);
-border-radius:7px;padding:5px 8px;font-size:10px;white-space:nowrap
-}
-.composer{
-max-width:900px;margin:auto;border:1px solid var(--border);border-radius:15px;
-background:var(--panel2);display:flex;align-items:flex-end;padding:7px;gap:7px
-}
-.composer textarea{
-flex:1;min-height:43px;max-height:150px;resize:none;border:0;outline:0;
-background:transparent;color:var(--text);padding:10px
-}
-.send{
-width:43px;height:43px;border:0;border-radius:11px;background:var(--accent);color:white
-}
-.send.stop{background:var(--danger)}
-.counter{max-width:900px;margin:auto;text-align:right;font-size:9px;color:var(--muted)}
-.right{
-width:320px;background:var(--panel);border-left:1px solid var(--border);
-padding:15px;overflow:auto
-}
-.right h2{font-size:15px;margin-bottom:12px}
-.card{
-background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:11px;margin-bottom:10px
-}
-.card h3{font-size:11px;margin-bottom:8px}
-.grid2{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.pbtn{
-padding:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);
-border-radius:8px;font-size:10px
-}
-.pbtn.active{border-color:var(--accent);color:var(--accent)}
-.stat{display:flex;justify-content:space-between;font-size:11px;padding:4px 0;color:var(--muted)}
-.stat b{color:var(--text)}
-.control{
-width:100%;padding:8px;border:1px solid var(--border);border-radius:8px;
-background:var(--panel);color:var(--text);margin-top:5px;text-align:left;font-size:11px
-}
-.modal-bg{
-position:fixed;inset:0;background:rgba(0,0,0,.5);display:none;align-items:center;
-justify-content:center;padding:18px;z-index:100
-}
-.modal-bg.show{display:flex}
-.modal{
-width:min(620px,100%);max-height:90vh;overflow:auto;background:var(--panel);
-border:1px solid var(--border);border-radius:17px;padding:18px;box-shadow:var(--shadow)
-}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:14px}
-.modal-head h2{font-size:18px}
-.close{border:0;background:none;color:var(--muted);font-size:22px}
-.field{margin-bottom:12px}.field label{display:block;font-size:11px;font-weight:800;margin-bottom:5px}
-.field input,.field textarea,.field select{
-width:100%;padding:9px;border:1px solid var(--border);border-radius:9px;
-background:var(--panel2);color:var(--text);outline:0
-}
-.field textarea{min-height:90px;resize:vertical}
-.save{
-width:100%;padding:10px;border:0;border-radius:9px;background:var(--accent);
-color:#fff;font-weight:700
-}
-.menu{
-display:grid;grid-template-columns:repeat(2,1fr);gap:6px
-}
-.menu button{
-padding:9px;border:1px solid var(--border);border-radius:8px;
-background:var(--panel2);color:var(--text);text-align:left;font-size:11px
-}
-.dropzone{
-border:2px dashed var(--border);padding:25px;text-align:center;border-radius:12px;
-color:var(--muted);margin-bottom:10px
-}
-.dropzone.drag{border-color:var(--accent);background:rgba(91,92,240,.08)}
-.file-item{
-display:flex;justify-content:space-between;padding:8px;border:1px solid var(--border);
-border-radius:8px;margin-bottom:5px;font-size:11px
-}
-.toast{
-position:fixed;left:50%;bottom:22px;transform:translate(-50%,20px);
-background:#111827;color:#fff;padding:9px 15px;border-radius:9px;font-size:11px;
-opacity:0;pointer-events:none;transition:.2s;z-index:200
-}
-.toast.show{opacity:1;transform:translate(-50%,0)}
-.overlay-menu{
-position:fixed;z-index:150;background:var(--panel);border:1px solid var(--border);
-box-shadow:var(--shadow);border-radius:10px;padding:5px;min-width:170px;display:none
-}
-.overlay-menu.show{display:block}
-.overlay-menu button{
-display:block;width:100%;border:0;background:none;color:var(--text);
-padding:8px;text-align:left;border-radius:6px;font-size:11px
-}
-.overlay-menu button:hover{background:var(--panel2)}
-.memory{
-padding:8px;border:1px solid var(--border);border-radius:8px;margin-bottom:5px;font-size:11px
-}
+
 .selected{
-outline:2px solid var(--accent);outline-offset:2px
+  outline:2px solid var(--accent);
+  outline-offset:2px;
 }
-body.compact .message{margin-bottom:9px}
-body.compact .bubble{padding:8px 11px}
-body.compact .messages{padding-top:15px}
-body.noanimations *{transition:none!important;animation:none!important}
-body.fullscreen .right{display:none}
-body.fullscreen .sidebar{display:none}
-@media(max-width:1050px){.right{display:none}}
+
+.attachment-preview{
+  margin-top:7px;
+  font-size:10px;
+  color:var(--muted);
+}
+
+.typing{
+  display:flex;
+  gap:4px;
+}
+
+.typing i{
+  width:7px;
+  height:7px;
+  background:var(--muted);
+  border-radius:50%;
+  animation:bounce 1s infinite;
+}
+
+.typing i:nth-child(2){
+  animation-delay:.15s;
+}
+
+.typing i:nth-child(3){
+  animation-delay:.3s;
+}
+
+@keyframes bounce{
+  0%,80%,100%{
+    transform:translateY(0);
+  }
+
+  40%{
+    transform:translateY(-5px);
+  }
+}
+
+/* COMPOSER */
+
+.composer-wrap{
+  background:var(--panel);
+  border-top:1px solid var(--border);
+  padding:9px 6% 14px;
+}
+
+.toolbar{
+  max-width:900px;
+  margin:auto;
+  display:flex;
+  gap:5px;
+  overflow:auto;
+  padding-bottom:6px;
+}
+
+.tool{
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  border-radius:7px;
+  padding:5px 8px;
+  font-size:10px;
+  white-space:nowrap;
+}
+
+.tool:hover{
+  border-color:var(--accent);
+}
+
+.composer{
+  max-width:900px;
+  margin:auto;
+  border:1px solid var(--border);
+  border-radius:15px;
+  background:var(--panel2);
+  display:flex;
+  align-items:flex-end;
+  padding:7px;
+  gap:7px;
+}
+
+.composer textarea{
+  flex:1;
+  min-height:43px;
+  max-height:150px;
+  resize:none;
+  border:0;
+  outline:0;
+  background:transparent;
+  color:var(--text);
+  padding:10px;
+}
+
+.send{
+  width:43px;
+  height:43px;
+  border:0;
+  border-radius:11px;
+  background:var(--accent);
+  color:white;
+}
+
+.send.stop{
+  background:var(--danger);
+}
+
+.counter{
+  max-width:900px;
+  margin:auto;
+  text-align:right;
+  font-size:9px;
+  color:var(--muted);
+}
+
+/* RIGHT PANEL */
+
+.right{
+  width:320px;
+  background:var(--panel);
+  border-left:1px solid var(--border);
+  padding:15px;
+  overflow:auto;
+}
+
+.right h2{
+  font-size:15px;
+  margin-bottom:12px;
+}
+
+.card{
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:11px;
+  margin-bottom:10px;
+}
+
+.card h3{
+  font-size:11px;
+  margin-bottom:8px;
+}
+
+.grid2{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:6px;
+}
+
+.pbtn{
+  padding:8px;
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:8px;
+  font-size:10px;
+}
+
+.pbtn.active{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+.stat{
+  display:flex;
+  justify-content:space-between;
+  font-size:11px;
+  padding:4px 0;
+  color:var(--muted);
+}
+
+.stat b{
+  color:var(--text);
+}
+
+.control{
+  width:100%;
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel);
+  color:var(--text);
+  margin-top:5px;
+  text-align:left;
+  font-size:11px;
+}
+
+.control:hover{
+  border-color:var(--accent);
+}
+
+/* MODALS */
+
+.modal-bg{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.5);
+  display:none;
+  align-items:center;
+  justify-content:center;
+  padding:18px;
+  z-index:100;
+}
+
+.modal-bg.show{
+  display:flex;
+}
+
+.modal{
+  width:min(700px,100%);
+  max-height:90vh;
+  overflow:auto;
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:18px;
+  box-shadow:var(--shadow);
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  margin-bottom:14px;
+}
+
+.modal-head h2{
+  font-size:18px;
+}
+
+.close{
+  border:0;
+  background:none;
+  color:var(--muted);
+  font-size:22px;
+}
+
+.field{
+  margin-bottom:12px;
+}
+
+.field label{
+  display:block;
+  font-size:11px;
+  font-weight:800;
+  margin-bottom:5px;
+}
+
+.field input,
+.field textarea,
+.field select{
+  width:100%;
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:9px;
+  background:var(--panel2);
+  color:var(--text);
+  outline:0;
+}
+
+.field textarea{
+  min-height:90px;
+  resize:vertical;
+}
+
+.save{
+  width:100%;
+  padding:10px;
+  border:0;
+  border-radius:9px;
+  background:var(--accent);
+  color:#fff;
+  font-weight:700;
+}
+
+.menu{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:6px;
+}
+
+.menu button{
+  padding:9px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  background:var(--panel2);
+  color:var(--text);
+  text-align:left;
+  font-size:11px;
+}
+
+.menu button:hover{
+  border-color:var(--accent);
+}
+
+.dropzone{
+  border:2px dashed var(--border);
+  padding:25px;
+  text-align:center;
+  border-radius:12px;
+  color:var(--muted);
+  margin-bottom:10px;
+}
+
+.dropzone.drag{
+  border-color:var(--accent);
+  background:rgba(91,92,240,.08);
+}
+
+.file-item{
+  display:flex;
+  justify-content:space-between;
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:5px;
+  font-size:11px;
+}
+
+.file-use{
+  border:0;
+  background:none;
+  color:var(--accent);
+  font-size:10px;
+}
+
+.memory{
+  padding:8px;
+  border:1px solid var(--border);
+  border-radius:8px;
+  margin-bottom:5px;
+  font-size:11px;
+}
+
+.result-card{
+  border:1px solid var(--border);
+  background:var(--panel2);
+  border-radius:10px;
+  padding:10px;
+  margin-top:8px;
+}
+
+.chip-row{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  margin-top:8px;
+}
+
+.chip{
+  border:1px solid var(--border);
+  background:var(--panel);
+  color:var(--text);
+  border-radius:20px;
+  padding:7px 10px;
+  font-size:10px;
+}
+
+.chip:hover{
+  border-color:var(--accent);
+  color:var(--accent);
+}
+
+/* CONTEXT MENU */
+
+.overlay-menu{
+  position:fixed;
+  z-index:150;
+  background:var(--panel);
+  border:1px solid var(--border);
+  box-shadow:var(--shadow);
+  border-radius:10px;
+  padding:5px;
+  min-width:170px;
+  display:none;
+}
+
+.overlay-menu.show{
+  display:block;
+}
+
+.overlay-menu button{
+  display:block;
+  width:100%;
+  border:0;
+  background:none;
+  color:var(--text);
+  padding:8px;
+  text-align:left;
+  border-radius:6px;
+  font-size:11px;
+}
+
+.overlay-menu button:hover{
+  background:var(--panel2);
+}
+
+/* TOAST */
+
+.toast{
+  position:fixed;
+  left:50%;
+  bottom:22px;
+  transform:translate(-50%,20px);
+  background:#111827;
+  color:#fff;
+  padding:9px 15px;
+  border-radius:9px;
+  font-size:11px;
+  opacity:0;
+  pointer-events:none;
+  transition:.2s;
+  z-index:200;
+}
+
+.toast.show{
+  opacity:1;
+  transform:translate(-50%,0);
+}
+
+/* SPECIAL MODES */
+
+body.compact .message{
+  margin-bottom:9px;
+}
+
+body.compact .bubble{
+  padding:8px 11px;
+}
+
+body.compact .messages{
+  padding-top:15px;
+}
+
+body.noanimations *{
+  transition:none!important;
+  animation:none!important;
+}
+
+body.fullscreen .right{
+  display:none;
+}
+
+body.fullscreen .sidebar{
+  display:none;
+}
+
+body.mobile-sidebar .sidebar{
+  display:flex;
+  position:fixed;
+  left:0;
+  top:0;
+  bottom:0;
+  z-index:120;
+  box-shadow:var(--shadow);
+}
+
+/* RESPONSIVE */
+
+@media(max-width:1050px){
+  .right{
+    display:none;
+  }
+}
+
 @media(max-width:700px){
-.sidebar{display:none}.messages,.composer-wrap{padding-left:10px;padding-right:10px}
-.quick{grid-template-columns:1fr}.msgbody{max-width:88%}
-.top{padding:0 9px}.welcome h2{font-size:24px}
+
+  .sidebar{
+    display:none;
+  }
+
+  .messages,
+  .composer-wrap{
+    padding-left:10px;
+    padding-right:10px;
+  }
+
+  .quick{
+    grid-template-columns:1fr;
+  }
+
+  .msgbody{
+    max-width:88%;
+  }
+
+  .top{
+    padding:0 9px;
+  }
+
+  .welcome h2{
+    font-size:24px;
+  }
+
+  .top-actions .icon:nth-child(3){
+    display:none;
+  }
+
 }
+
 </style>
 </head>
 
@@ -264,31 +1063,56 @@ body.fullscreen .sidebar{display:none}
 
 <aside class="sidebar" id="sidebar">
 
-<div class="brand">
-<div class="logo" id="appLogo">AI</div>
-<div class="hide-collapse">
-<h1>Simple Chat AI</h1>
-<small>AI Workspace</small>
-</div>
-</div>
+  <div class="brand">
 
-<button class="newchat" id="newChat">＋ New Chat</button>
+    <div class="logo" id="appLogo">
+      AI
+    </div>
 
-<div class="search">
-<span>⌕</span>
-<input id="search" placeholder="Search chats...">
-</div>
+    <div class="hide-collapse">
+      <h1>Simple Chat AI</h1>
+      <small>AI Workspace</small>
+    </div>
 
-<div class="history-label hide-collapse">Chats</div>
-<div class="history" id="history"></div>
+  </div>
 
-<div class="side-bottom">
-<button class="side-btn" id="collapseBtn">☰ <span class="hide-collapse">Collapse</span></button>
-<button class="side-btn" id="settingsBtn">⚙ <span class="hide-collapse">Settings</span></button>
-<button class="side-btn" id="themeBtn">◐ <span class="hide-collapse">Theme</span></button>
-</div>
+  <button class="newchat" id="newChat">
+    ＋ New Chat
+  </button>
+
+  <div class="search">
+    <span>⌕</span>
+    <input id="search" placeholder="Search chats...">
+  </div>
+
+  <div class="history-label hide-collapse">
+    Chats
+  </div>
+
+  <div class="history" id="history"></div>
+
+  <div class="side-bottom">
+
+    <button class="side-btn" id="collapseBtn">
+      ☰ <span class="hide-collapse">Collapse</span>
+    </button>
+
+    <button class="side-btn" id="settingsBtn">
+      ⚙ <span class="hide-collapse">Settings</span>
+    </button>
+
+    <button class="side-btn" id="themeBtn">
+      ◐ <span class="hide-collapse">Theme</span>
+    </button>
+
+    <button class="side-btn" id="mobileMenuBtn">
+      ☷ <span class="hide-collapse">Mobile Menu</span>
+    </button>
+
+  </div>
 
 </aside>
+
 
 <main class="main">
 
@@ -296,68 +1120,201 @@ body.fullscreen .sidebar{display:none}
 
 <header class="top">
 
-<div class="title">
-<strong id="chatTitle">New Chat</strong>
-<span class="badge" id="personaBadge">Assistant</span>
-</div>
+  <div class="title">
 
-<div class="top-actions">
-<button class="icon" id="favoriteBtn" title="Favorite">☆</button>
-<button class="icon" id="renameBtn" title="Rename">✎</button>
-<button class="icon" id="archiveBtn" title="Archive">▣</button>
-<button class="icon" id="fullscreenBtn" title="Fullscreen">⛶</button>
-<button class="icon" id="moreBtn" title="More">⋯</button>
-</div>
+    <strong id="chatTitle">
+      New Chat
+    </strong>
+
+    <span class="badge" id="personaBadge">
+      Assistant
+    </span>
+
+    <span class="privacy-badge" id="privacyBadge">
+      PRIVATE
+    </span>
+
+  </div>
+
+  <div class="top-actions">
+
+    <button
+      class="icon"
+      id="favoriteBtn"
+      title="Favorite">
+      ☆
+    </button>
+
+    <button
+      class="icon"
+      id="renameBtn"
+      title="Rename">
+      ✎
+    </button>
+
+    <button
+      class="icon"
+      id="archiveBtn"
+      title="Archive">
+      ▣
+    </button>
+
+    <button
+      class="icon"
+      id="fullscreenBtn"
+      title="Fullscreen">
+      ⛶
+    </button>
+
+    <button
+      class="icon"
+      id="moreBtn"
+      title="More">
+      ⋯
+    </button>
+
+  </div>
 
 </header>
 
+
 <div class="messages" id="messages">
 
-<div class="welcome" id="welcome">
+  <div class="welcome" id="welcome">
 
-<div class="welcome-logo">AI</div>
+    <div class="welcome-logo">
+      AI
+    </div>
 
-<h2>What can I help you with?</h2>
+    <h2>
+      What can I help you with?
+    </h2>
 
-<p>Your all-in-one AI workspace.</p>
+    <p>
+      Your all-in-one AI workspace.
+    </p>
 
-<div class="quick">
-<button data-prompt="Explain this topic clearly and simply.">💡 Explain something</button>
-<button data-prompt="Give me creative ideas for a new project.">✨ Generate ideas</button>
-<button data-prompt="Help me write something professional.">✍ Writing help</button>
-<button data-prompt="Teach me something interesting step by step.">📚 Teach me</button>
+    <div class="quick">
+
+      <button
+        data-prompt="Explain this topic clearly and simply.">
+        💡 Explain something
+      </button>
+
+      <button
+        data-prompt="Give me creative ideas for a new project.">
+        ✨ Generate ideas
+      </button>
+
+      <button
+        data-prompt="Help me write something professional.">
+        ✍ Writing help
+      </button>
+
+      <button
+        data-prompt="Teach me something interesting step by step.">
+        📚 Teach me
+      </button>
+
+    </div>
+
+  </div>
+
 </div>
 
-</div>
-
-</div>
 
 <div class="composer-wrap">
 
-<div class="toolbar">
+  <div class="toolbar">
 
-<button class="tool" data-action="bold">B</button>
-<button class="tool" data-action="italic">I</button>
-<button class="tool" data-action="heading">H</button>
-<button class="tool" data-action="bullet">• List</button>
-<button class="tool" data-action="code">Code</button>
-<button class="tool" data-action="quote">Quote</button>
-<button class="tool" data-action="summarize">Summarize</button>
-<button class="tool" data-action="translate">Translate</button>
-<button class="tool" data-action="grammar">Grammar</button>
-<button class="tool" id="attachBtn">📎 Files</button>
+    <button class="tool" data-action="bold">
+      B
+    </button>
 
-</div>
+    <button class="tool" data-action="italic">
+      I
+    </button>
 
-<div class="counter" id="counter">0 characters · 0 words</div>
+    <button class="tool" data-action="heading">
+      H
+    </button>
 
-<div class="composer">
+    <button class="tool" data-action="bullet">
+      • List
+    </button>
 
-<textarea id="input" placeholder="Message Simple Chat AI..." rows="1"></textarea>
+    <button class="tool" data-action="code">
+      Code
+    </button>
 
-<button class="send" id="send">➤</button>
+    <button class="tool" data-action="quote">
+      Quote
+    </button>
 
-</div>
+    <button class="tool" data-action="summarize">
+      Summarize
+    </button>
+
+    <button class="tool" data-action="translate">
+      Translate
+    </button>
+
+    <button class="tool" data-action="grammar">
+      Grammar
+    </button>
+
+    <button class="tool" id="rewriteBtn">
+      ✨ Rewrite
+    </button>
+
+    <button class="tool" id="toneBtn">
+      🎭 Tone
+    </button>
+
+    <button class="tool" id="languageBtn">
+      🌐 Language
+    </button>
+
+    <button class="tool" id="calculatorBtn">
+      🧮 Calculator
+    </button>
+
+    <button class="tool" id="explainSelectionBtn">
+      🔎 Explain Selection
+    </button>
+
+    <button class="tool" id="attachBtn">
+      📎 Files
+    </button>
+
+    <button class="tool" id="imageBtn">
+      🖼 Image
+    </button>
+
+    <button class="tool" id="voiceBtn">
+      🎤 Voice
+    </button>
+
+  </div>
+
+  <div class="counter" id="counter">
+    0 characters · 0 words
+  </div>
+
+  <div class="composer">
+
+    <textarea
+      id="input"
+      placeholder="Message Simple Chat AI..."
+      rows="1"></textarea>
+
+    <button
+      class="send"
+      id="send">
+      ➤
+    </button>
+
+  </div>
 
 </div>
 
@@ -366,115 +1323,357 @@ body.fullscreen .sidebar{display:none}
 
 <aside class="right">
 
-<h2>AI Control Center</h2>
+<h2>
+  AI Control Center
+</h2>
+
 
 <div class="card">
-<h3>AI Persona</h3>
-<div class="grid2" id="personas">
-<button class="pbtn active" data-persona="Assistant">🤖 Assistant</button>
-<button class="pbtn" data-persona="Teacher">📚 Teacher</button>
-<button class="pbtn" data-persona="Coder">💻 Coder</button>
-<button class="pbtn" data-persona="Writer">✍ Writer</button>
-<button class="pbtn" data-persona="Creative">🎨 Creative</button>
-<button class="pbtn" data-persona="Business">💼 Business</button>
-</div>
-<button class="control" id="customPersona">＋ Custom Persona</button>
+
+  <h3>
+    AI Persona
+  </h3>
+
+  <div
+    class="grid2"
+    id="personas">
+
+    <button
+      class="pbtn active"
+      data-persona="Assistant">
+      🤖 Assistant
+    </button>
+
+    <button
+      class="pbtn"
+      data-persona="Teacher">
+      📚 Teacher
+    </button>
+
+    <button
+      class="pbtn"
+      data-persona="Coder">
+      💻 Coder
+    </button>
+
+    <button
+      class="pbtn"
+      data-persona="Writer">
+      ✍ Writer
+    </button>
+
+    <button
+      class="pbtn"
+      data-persona="Creative">
+      🎨 Creative
+    </button>
+
+    <button
+      class="pbtn"
+      data-persona="Business">
+      💼 Business
+    </button>
+
+  </div>
+
+  <button
+    class="control"
+    id="customPersona">
+    ＋ Custom Persona
+  </button>
+
 </div>
 
-<div class="card">
-<h3>Conversation</h3>
-<div class="stat"><span>Messages</span><b id="statMessages">0</b></div>
-<div class="stat"><span>Words</span><b id="statWords">0</b></div>
-<div class="stat"><span>AI replies</span><b id="statAI">0</b></div>
-<div class="stat"><span>Pinned</span><b id="statPinned">0</b></div>
-</div>
 
 <div class="card">
-<h3>Response Mode</h3>
-<div class="grid2">
-<button class="pbtn active" data-mode="Balanced">Balanced</button>
-<button class="pbtn" data-mode="Concise">Concise</button>
-<button class="pbtn" data-mode="Detailed">Detailed</button>
-<button class="pbtn" data-mode="Creative">Creative</button>
-</div>
+
+  <h3>
+    Conversation
+  </h3>
+
+  <div class="stat">
+    <span>Messages</span>
+    <b id="statMessages">0</b>
+  </div>
+
+  <div class="stat">
+    <span>Words</span>
+    <b id="statWords">0</b>
+  </div>
+
+  <div class="stat">
+    <span>AI replies</span>
+    <b id="statAI">0</b>
+  </div>
+
+  <div class="stat">
+    <span>Pinned</span>
+    <b id="statPinned">0</b>
+  </div>
+
 </div>
 
-<div class="card">
-<h3>AI Tools</h3>
-<button class="control" id="promptLibrary">▤ Prompt Library</button>
-<button class="control" id="memoryBtn">🧠 Conversation Memory</button>
-<button class="control" id="compareBtn">⚖ Compare Responses</button>
-<button class="control" id="variationsBtn">⑂ Response Variations</button>
-<button class="control" id="conversationSettings">⚙ AI Settings</button>
-</div>
 
 <div class="card">
-<h3>Workspace</h3>
-<button class="control" id="foldersBtn">📁 Chat Folders</button>
-<button class="control" id="filesBtn">📄 File Library</button>
-<button class="control" id="backgroundBtn">🖼 Background</button>
-<button class="control" id="appearanceBtn">🎨 Appearance</button>
+
+  <h3>
+    Response Mode
+  </h3>
+
+  <div class="grid2">
+
+    <button
+      class="pbtn active"
+      data-mode="Balanced">
+      Balanced
+    </button>
+
+    <button
+      class="pbtn"
+      data-mode="Concise">
+      Concise
+    </button>
+
+    <button
+      class="pbtn"
+      data-mode="Detailed">
+      Detailed
+    </button>
+
+    <button
+      class="pbtn"
+      data-mode="Creative">
+      Creative
+    </button>
+
+  </div>
+
+</div>
+
+
+<div class="card">
+
+  <h3>
+    New AI Features
+  </h3>
+
+  <button class="control" id="memoryBtn">
+    🧠 Long-Term Memory
+  </button>
+
+  <button class="control" id="continueBtn">
+    ▶ Continue Response
+  </button>
+
+  <button class="control" id="followupBtn">
+    💬 Follow-up Suggestions
+  </button>
+
+  <button class="control" id="summaryBtn">
+    📝 Summarize Chat
+  </button>
+
+  <button class="control" id="customInstructionsBtn">
+    📋 Custom Instructions
+  </button>
+
+  <button class="control" id="privacyBtn">
+    🔒 Temporary / Privacy Chat
+  </button>
+
+</div>
+
+
+<div class="card">
+
+  <h3>
+    AI Tools
+  </h3>
+
+  <button
+    class="control"
+    id="promptLibrary">
+    ▤ Prompt Library
+  </button>
+
+  <button
+    class="control"
+    id="compareBtn">
+    ⚖ Compare Responses
+  </button>
+
+  <button
+    class="control"
+    id="variationsBtn">
+    ⑂ Response Variations
+  </button>
+
+  <button
+    class="control"
+    id="conversationSettings">
+    ⚙ AI Settings
+  </button>
+
+</div>
+
+
+<div class="card">
+
+  <h3>
+    Workspace
+  </h3>
+
+  <button
+    class="control"
+    id="foldersBtn">
+    📁 Chat Folders
+  </button>
+
+  <button
+    class="control"
+    id="filesBtn">
+    📄 File Library
+  </button>
+
+  <button
+    class="control"
+    id="backgroundBtn">
+    🖼 Background
+  </button>
+
+  <button
+    class="control"
+    id="appearanceBtn">
+    🎨 Appearance
+  </button>
+
 </div>
 
 </aside>
 
 </main>
+
 </div>
 
 
-<!-- FILE INPUT -->
+<input
+  type="file"
+  id="fileInput"
+  hidden
+  multiple
+  accept=".txt,.md,.csv">
 
-<input type="file" id="fileInput" hidden multiple accept=".txt,.md,.pdf">
+<input
+  type="file"
+  id="imageInput"
+  hidden
+  accept="image/*">
 
 
-<!-- GENERAL MODAL -->
+<div
+  class="modal-bg"
+  id="modalBg">
 
-<div class="modal-bg" id="modalBg">
-<div class="modal" id="modal"></div>
+  <div
+    class="modal"
+    id="modal">
+  </div>
+
 </div>
 
 
-<!-- CONTEXT MENU -->
+<div
+  class="overlay-menu"
+  id="contextMenu">
+</div>
 
-<div class="overlay-menu" id="contextMenu"></div>
 
-
-<div class="toast" id="toast"></div>
+<div
+  class="toast"
+  id="toast">
+</div>
 
 
 <script>
+
 "use strict";
+
 
 /* =========================================================
    STORAGE
 ========================================================= */
 
-const CHAT_KEY="simple_chat_ai_48_chats";
-const SETTING_KEY="simple_chat_ai_48_settings";
-const FILE_KEY="simple_chat_ai_48_files";
+const CHAT_KEY =
+  "simple_chat_ai_68_chats";
 
-let chats=[];
-let files=[];
-let currentId=null;
-let generating=false;
-let controller=null;
-let selectedMessage=null;
+const SETTING_KEY =
+  "simple_chat_ai_68_settings";
 
-let settings={
-theme:"light",
-accent:"#5b5cf0",
-persona:"Assistant",
-mode:"Balanced",
-temperature:1,
-maxTokens:2000,
-systemPrompt:"",
-density:"comfortable",
-background:"default",
-avatar:"AI",
-customPersonas:[],
-memory:[],
-folders:[],
-animations:true
+const FILE_KEY =
+  "simple_chat_ai_68_files";
+
+
+let chats = [];
+let files = [];
+let currentId = null;
+
+let generating = false;
+let controller = null;
+
+let temporaryMode = false;
+
+let selectedImage = null;
+let selectedImageName = "";
+
+let recognition = null;
+let listening = false;
+
+
+/* =========================================================
+   DEFAULT SETTINGS
+========================================================= */
+
+let settings = {
+
+  theme:"light",
+
+  accent:"#5b5cf0",
+
+  persona:"Assistant",
+
+  mode:"Balanced",
+
+  answerLength:"Balanced",
+
+  temperature:1,
+
+  maxTokens:2000,
+
+  systemPrompt:"",
+
+  customInstructions:"",
+
+  language:"English",
+
+  tone:"Natural",
+
+  density:"comfortable",
+
+  background:"default",
+
+  avatar:"AI",
+
+  animations:true,
+
+  memory:[],
+
+  folders:[],
+
+  customPersonas:[],
+
+  selectedFile:"",
+
+  privacy:false
 };
 
 
@@ -482,16 +1681,32 @@ animations:true
    DOM
 ========================================================= */
 
-const $=id=>document.getElementById(id);
+const $ =
+  id => document.getElementById(id);
 
-const messages=$("messages");
-const input=$("input");
-const send=$("send");
-const history=$("history");
-const welcome=$("welcome");
-const modalBg=$("modalBg");
-const modal=$("modal");
-const toast=$("toast");
+const messages =
+  $("messages");
+
+const input =
+  $("input");
+
+const send =
+  $("send");
+
+const history =
+  $("history");
+
+const welcome =
+  $("welcome");
+
+const modalBg =
+  $("modalBg");
+
+const modal =
+  $("modal");
+
+const toast =
+  $("toast");
 
 
 /* =========================================================
@@ -499,37 +1714,131 @@ const toast=$("toast");
 ========================================================= */
 
 function load(){
-try{
-chats=JSON.parse(localStorage.getItem(CHAT_KEY)||"[]");
-if(!Array.isArray(chats))chats=[];
-}catch{chats=[]}
 
-try{
-files=JSON.parse(localStorage.getItem(FILE_KEY)||"[]");
-if(!Array.isArray(files))files=[];
-}catch{files=[]}
+  try{
 
-try{
-const s=JSON.parse(localStorage.getItem(SETTING_KEY)||"{}");
-if(s&&typeof s==="object")settings={...settings,...s};
-}catch{}
+    chats =
+      JSON.parse(
+        localStorage.getItem(CHAT_KEY) || "[]"
+      );
 
-if(!chats.length)createChat(false);
-else currentId=chats[0].id;
+    if(!Array.isArray(chats)){
+      chats=[];
+    }
 
-applySettings();
-renderHistory();
-renderChat();
+  }catch{
+    chats=[];
+  }
+
+
+  try{
+
+    files =
+      JSON.parse(
+        localStorage.getItem(FILE_KEY) || "[]"
+      );
+
+    if(!Array.isArray(files)){
+      files=[];
+    }
+
+  }catch{
+    files=[];
+  }
+
+
+  try{
+
+    const stored =
+      JSON.parse(
+        localStorage.getItem(SETTING_KEY) || "{}"
+      );
+
+    if(
+      stored &&
+      typeof stored==="object"
+    ){
+
+      settings={
+        ...settings,
+        ...stored
+      };
+
+    }
+
+  }catch{}
+
+
+  /*
+   * Privacy mode is never restored.
+   * A temporary chat should not suddenly
+   * become persistent after a reload.
+   */
+
+  temporaryMode=false;
+  settings.privacy=false;
+
+
+  if(!chats.length){
+
+    createChat(false);
+
+  }else{
+
+    currentId =
+      chats[0].id;
+
+  }
+
+
+  applySettings();
+  renderHistory();
+  renderChat();
 }
+
 
 function save(){
-localStorage.setItem(CHAT_KEY,JSON.stringify(chats));
-localStorage.setItem(FILE_KEY,JSON.stringify(files));
-localStorage.setItem(SETTING_KEY,JSON.stringify(settings));
+
+  if(!temporaryMode){
+
+    localStorage.setItem(
+      CHAT_KEY,
+      JSON.stringify(chats)
+    );
+
+  }
+
+  localStorage.setItem(
+    FILE_KEY,
+    JSON.stringify(files)
+  );
+
+  localStorage.setItem(
+    SETTING_KEY,
+    JSON.stringify(settings)
+  );
 }
 
+
+function saveChatsOnly(){
+
+  if(temporaryMode){
+    return;
+  }
+
+  localStorage.setItem(
+    CHAT_KEY,
+    JSON.stringify(chats)
+  );
+}
+
+
 function current(){
-return chats.find(c=>c.id===currentId);
+
+  return chats.find(
+    c => c.id===currentId
+  );
+
 }
 
 
@@ -538,22 +1847,46 @@ return chats.find(c=>c.id===currentId);
 ========================================================= */
 
 function createChat(render=true){
-const chat={
-id:Date.now().toString()+Math.random().toString(36).slice(2),
-name:"New Chat",
-messages:[],
-favorite:false,
-archived:false,
-folder:"",
-created:Date.now()
-};
-chats.unshift(chat);
-currentId=chat.id;
-save();
-if(render){
-renderHistory();
-renderChat();
-}
+
+  const chat={
+
+    id:
+      Date.now().toString()+
+      Math.random().toString(36).slice(2),
+
+    name:"New Chat",
+
+    messages:[],
+
+    favorite:false,
+
+    archived:false,
+
+    folder:"",
+
+    created:Date.now(),
+
+    temporary:temporaryMode
+
+  };
+
+
+  chats.unshift(chat);
+
+  currentId=chat.id;
+
+  if(!temporaryMode){
+    saveChatsOnly();
+  }
+
+
+  if(render){
+
+    renderHistory();
+    renderChat();
+
+  }
+
 }
 
 
@@ -562,74 +1895,192 @@ renderChat();
 ========================================================= */
 
 function renderHistory(){
-const q=$("search").value.trim().toLowerCase();
-history.innerHTML="";
 
-chats
-.filter(c=>!c.archived)
-.filter(c=>!q||c.name.toLowerCase().includes(q))
-.forEach(chat=>{
-const row=document.createElement("div");
-row.className="history-item"+(chat.id===currentId?" active":"");
+  const q =
+    $("search").value
+      .trim()
+      .toLowerCase();
 
-if(chat.favorite){
-const star=document.createElement("span");
-star.className="star";
-star.textContent="★";
-row.appendChild(star);
+  history.innerHTML="";
+
+
+  chats
+    .filter(c=>!c.archived)
+    .filter(c=>
+      !q ||
+      c.name.toLowerCase().includes(q) ||
+      c.messages.some(
+        m=>
+          typeof m.content==="string" &&
+          m.content.toLowerCase().includes(q)
+      )
+    )
+    .forEach(chat=>{
+
+      const row =
+        document.createElement("div");
+
+      row.className =
+        "history-item"+
+        (chat.id===currentId
+          ?" active"
+          :"");
+
+
+      if(chat.favorite){
+
+        const star =
+          document.createElement("span");
+
+        star.className="star";
+
+        star.textContent="★";
+
+        row.appendChild(star);
+
+      }
+
+
+      const name =
+        document.createElement("div");
+
+      name.className="history-name";
+
+      name.textContent =
+        chat.name;
+
+
+      const more =
+        document.createElement("button");
+
+      more.className=
+        "history-more";
+
+      more.textContent="⋯";
+
+
+      more.onclick=e=>{
+
+        e.stopPropagation();
+
+        openChatMenu(
+          chat,
+          e.clientX,
+          e.clientY
+        );
+
+      };
+
+
+      row.append(
+        name,
+        more
+      );
+
+
+      row.onclick=()=>{
+
+        currentId=chat.id;
+
+        renderHistory();
+
+        renderChat();
+
+      };
+
+
+      history.appendChild(row);
+
+    });
+
 }
 
-const name=document.createElement("div");
-name.className="history-name";
-name.textContent=chat.name;
 
-const more=document.createElement("button");
-more.className="history-more";
-more.textContent="⋯";
+function openChatMenu(
+  chat,
+  x,
+  y
+){
 
-more.onclick=e=>{
-e.stopPropagation();
-openChatMenu(chat,e.clientX,e.clientY);
-};
+  const menu =
+    $("contextMenu");
 
-row.append(name,more);
+  menu.innerHTML="";
 
-row.onclick=()=>{
-currentId=chat.id;
-renderHistory();
-renderChat();
-};
 
-history.appendChild(row);
-});
-}
+  const options=[
 
-function openChatMenu(chat,x,y){
-const menu=$("contextMenu");
-menu.innerHTML="";
+    [
+      "Rename",
+      ()=>renameChat(chat)
+    ],
 
-const options=[
-["Rename",()=>renameChat(chat)],
-["Duplicate",()=>duplicateChat(chat)],
-["Favorite",()=>toggleFavorite(chat)],
-["Archive",()=>archiveChat(chat)],
-["Move to folder",()=>moveFolder(chat)],
-["Delete",()=>deleteChat(chat)]
-];
+    [
+      "Duplicate",
+      ()=>duplicateChat(chat)
+    ],
 
-options.forEach(([text,fn])=>{
-const b=document.createElement("button");
-b.textContent=text;
-b.onclick=()=>{
-menu.classList.remove("show");
-fn();
-};
-menu.appendChild(b);
-});
+    [
+      chat.favorite
+        ?"Unfavorite"
+        :"Favorite",
+      ()=>toggleFavorite(chat)
+    ],
 
-menu.style.left=Math.min(x,window.innerWidth-190)+"px";
-menu.style.top=Math.min(y,window.innerHeight-250)+"px";
-menu.classList.add("show");
+    [
+      "Archive",
+      ()=>archiveChat(chat)
+    ],
+
+    [
+      "Move to folder",
+      ()=>moveFolder(chat)
+    ],
+
+    [
+      "Delete",
+      ()=>deleteChat(chat)
+    ]
+
+  ];
+
+
+  options.forEach(
+    ([text,fn])=>{
+
+      const b =
+        document.createElement("button");
+
+      b.textContent=text;
+
+      b.onclick=()=>{
+
+        menu.classList.remove("show");
+
+        fn();
+
+      };
+
+      menu.appendChild(b);
+
+    }
+  );
+
+
+  menu.style.left =
+    Math.min(
+      x,
+      window.innerWidth-190
+    )+"px";
+
+  menu.style.top =
+    Math.min(
+      y,
+      window.innerHeight-250
+    )+"px";
+
+  menu.classList.add("show");
+
 }
 
 
@@ -638,219 +2089,676 @@ menu.classList.add("show");
 ========================================================= */
 
 function renderChat(){
-const chat=current();
-if(!chat)return;
 
-$("chatTitle").textContent=chat.name;
-$("personaBadge").textContent=settings.persona;
-$("favoriteBtn").textContent=chat.favorite?"★":"☆";
+  const chat=current();
 
-messages.innerHTML="";
+  if(!chat){
+    return;
+  }
 
-if(!chat.messages.length){
-messages.appendChild(welcome);
-welcome.style.display="block";
-}else{
-welcome.style.display="none";
-chat.messages.forEach((m,i)=>addMessage(m,i));
-}
 
-updateStats();
-messages.scrollTop=messages.scrollHeight;
-}
+  $("chatTitle").textContent =
+    chat.name;
 
-function addMessage(m,index){
-const row=document.createElement("div");
-row.className="message "+m.role;
+  $("personaBadge").textContent =
+    settings.persona;
 
-const avatar=document.createElement("div");
-avatar.className="avatar";
-avatar.textContent=m.role==="user"?"You":settings.avatar;
+  $("favoriteBtn").textContent =
+    chat.favorite
+      ?"★"
+      :"☆";
 
-const body=document.createElement("div");
-body.className="msgbody";
 
-const bubble=document.createElement("div");
-bubble.className="bubble";
+  $("privacyBadge")
+    .classList.toggle(
+      "show",
+      temporaryMode
+    );
 
-if(m.role==="assistant"){
-bubble.innerHTML=markdown(m.content);
-}else{
-bubble.textContent=m.content;
-}
 
-body.appendChild(bubble);
+  messages.innerHTML="";
 
-const actions=document.createElement("div");
-actions.className="actions";
 
-if(m.role==="assistant"){
-addAction(actions,"Copy",()=>copy(m.content));
-addAction(actions,"↻ Regenerate",()=>regenerate(index));
-addAction(actions,"✦ Improve",()=>improve(index));
-addAction(actions,"▣ Summarize",()=>runAction("Summarize",m.content));
-addAction(actions,"📌 "+(m.pinned?"Unpin":"Pin"),()=>pinMessage(index));
-addAction(actions,"👍",()=>reaction(m,"up"));
-addAction(actions,"👎",()=>reaction(m,"down"));
-}else{
-addAction(actions,"Edit",()=>editMessage(index));
-addAction(actions,"Copy",()=>copy(m.content));
-}
+  if(!chat.messages.length){
 
-if(m.reaction){
-const r=document.createElement("span");
-r.textContent=m.reaction==="up"?" 👍":" 👎";
-r.style.fontSize="10px";
-actions.appendChild(r);
-}
+    messages.appendChild(
+      welcome
+    );
 
-body.appendChild(actions);
-row.append(avatar,body);
+    welcome.style.display=
+      "block";
 
-if(m.pinned)row.classList.add("selected");
+  }else{
 
-messages.appendChild(row);
-}
+    welcome.style.display=
+      "none";
 
-function addAction(parent,text,fn){
-const b=document.createElement("button");
-b.textContent=text;
-b.onclick=fn;
-parent.appendChild(b);
+    chat.messages.forEach(
+      (m,i)=>
+        addMessage(m,i)
+    );
+
+  }
+
+
+  updateStats();
+
+  messages.scrollTop =
+    messages.scrollHeight;
 }
 
 
 /* =========================================================
-   SIMPLE MARKDOWN ENGINE
+   MESSAGE RENDER
 ========================================================= */
 
-function escape(s){
-const d=document.createElement("div");
-d.textContent=s;
-return d.innerHTML;
+function addMessage(
+  m,
+  index
+){
+
+  const row =
+    document.createElement("div");
+
+  row.className =
+    "message "+m.role;
+
+
+  const avatar =
+    document.createElement("div");
+
+  avatar.className="avatar";
+
+  avatar.textContent =
+    m.role==="user"
+      ?"You"
+      :settings.avatar;
+
+
+  const body =
+    document.createElement("div");
+
+  body.className="msgbody";
+
+
+  const bubble =
+    document.createElement("div");
+
+  bubble.className="bubble";
+
+
+  if(m.role==="assistant"){
+
+    bubble.innerHTML =
+      markdown(m.content);
+
+  }else{
+
+    bubble.textContent =
+      m.content;
+
+  }
+
+
+  body.appendChild(
+    bubble
+  );
+
+
+  if(m.fileName){
+
+    const file =
+      document.createElement("div");
+
+    file.className=
+      "attachment-preview";
+
+    file.textContent=
+      "📄 "+m.fileName;
+
+    body.appendChild(file);
+
+  }
+
+
+  if(m.imageName){
+
+    const img =
+      document.createElement("img");
+
+    img.src =
+      m.imagePreview || "";
+
+    img.alt =
+      m.imageName;
+
+    img.style.maxWidth=
+      "220px";
+
+    img.style.marginTop=
+      "8px";
+
+    img.style.borderRadius=
+      "10px";
+
+    if(img.src){
+      body.appendChild(img);
+    }
+
+  }
+
+
+  const actions =
+    document.createElement("div");
+
+  actions.className="actions";
+
+
+  if(m.role==="assistant"){
+
+    addAction(
+      actions,
+      "Copy",
+      ()=>copy(m.content)
+    );
+
+    addAction(
+      actions,
+      "↻ Regenerate",
+      ()=>regenerate(index)
+    );
+
+    addAction(
+      actions,
+      "▶ Continue",
+      ()=>continueResponse(index)
+    );
+
+    addAction(
+      actions,
+      "✦ Improve",
+      ()=>improve(index)
+    );
+
+    addAction(
+      actions,
+      "📝 Summarize",
+      ()=>summarizeResponse(m.content)
+    );
+
+    addAction(
+      actions,
+      "🔎 Ask",
+      ()=>askAboutResponse(m.content)
+    );
+
+    addAction(
+      actions,
+      "🔊 Read",
+      ()=>readAloud(m.content)
+    );
+
+    addAction(
+      actions,
+      "📌 "+(
+        m.pinned
+          ?"Unpin"
+          :"Pin"
+      ),
+      ()=>pinMessage(index)
+    );
+
+    addAction(
+      actions,
+      "👍",
+      ()=>reaction(m,"up")
+    );
+
+    addAction(
+      actions,
+      "👎",
+      ()=>reaction(m,"down")
+    );
+
+  }else{
+
+    addAction(
+      actions,
+      "Edit",
+      ()=>editMessage(index)
+    );
+
+    addAction(
+      actions,
+      "Copy",
+      ()=>copy(m.content)
+    );
+
+  }
+
+
+  body.appendChild(
+    actions
+  );
+
+
+  if(m.reaction){
+
+    const reaction =
+      document.createElement("span");
+
+    reaction.textContent =
+      m.reaction==="up"
+        ?" 👍"
+        :" 👎";
+
+    reaction.style.fontSize=
+      "10px";
+
+    actions.appendChild(
+      reaction
+    );
+
+  }
+
+
+  row.append(
+    avatar,
+    body
+  );
+
+
+  if(m.pinned){
+
+    row.classList.add(
+      "selected"
+    );
+
+  }
+
+
+  messages.appendChild(
+    row
+  );
+
 }
 
-function inlineMD(s){
-s=escape(s);
 
-s=s.replace(/`([^`]+)`/g,"<code>$1</code>");
-s=s.replace(/\*\*([\s\S]+?)\*\*/g,"<strong>$1</strong>");
-s=s.replace(/__([\s\S]+?)__/g,"<strong>$1</strong>");
-s=s.replace(/\*([^*]+)\*/g,"<em>$1</em>");
-s=s.replace(/_([^_]+)_/g,"<em>$1</em>");
-s=s.replace(/~~(.+?)~~/g,"<del>$1</del>");
-s=s.replace(/\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
-'<a href="$2" target="_blank" rel="noopener">$1</a>');
+/* =========================================================
+   ACTION BUTTON
+========================================================= */
 
-return s;
+function addAction(
+  parent,
+  text,
+  fn
+){
+
+  const b =
+    document.createElement("button");
+
+  b.textContent=text;
+
+  b.onclick=fn;
+
+  parent.appendChild(b);
+
 }
+
+
+/* =========================================================
+   MARKDOWN
+========================================================= */
+
+function escapeHTML(text){
+
+  const d =
+    document.createElement("div");
+
+  d.textContent =
+    text;
+
+  return d.innerHTML;
+
+}
+
+
+function inlineMD(text){
+
+  let s =
+    escapeHTML(text);
+
+
+  s=s.replace(
+    /`([^`]+)`/g,
+    "<code>$1</code>"
+  );
+
+
+  s=s.replace(
+    /\*\*([\s\S]+?)\*\*/g,
+    "<strong>$1</strong>"
+  );
+
+
+  s=s.replace(
+    /__([\s\S]+?)__/g,
+    "<strong>$1</strong>"
+  );
+
+
+  s=s.replace(
+    /\*([^*]+)\*/g,
+    "<em>$1</em>"
+  );
+
+
+  s=s.replace(
+    /_([^_]+)_/g,
+    "<em>$1</em>"
+  );
+
+
+  s=s.replace(
+    /~~(.+?)~~/g,
+    "<del>$1</del>"
+  );
+
+
+  s=s.replace(
+    /\[([^\]]+)\]\((https?:\/\/[^\s)]+)\)/g,
+    '<a href="$2" target="_blank" rel="noopener">$1</a>'
+  );
+
+
+  return s;
+}
+
 
 function markdown(text){
-const lines=text.replace(/\r/g,"").split("\n");
-let out="";
-let inCode=false;
-let code="";
-let listType="";
-let table=false;
 
-for(let i=0;i<lines.length;i++){
-let line=lines[i];
+  const lines =
+    text
+      .replace(/\r/g,"")
+      .split("\n");
 
-if(line.startsWith("```")){
-if(!inCode){
-inCode=true;
-code="";
-}else{
-out+="<pre><code>"+escape(code)+"</code></pre>";
-inCode=false;
-}
-continue;
-}
+  let out="";
 
-if(inCode){
-code+=line+"\n";
-continue;
-}
+  let inCode=false;
 
-if(/^---+$/.test(line.trim())){
-out+="<hr>";
-continue;
-}
+  let code="";
 
-if(/^\s*\|/.test(line)&&i+1<lines.length&&/^\s*\|?\s*:?-+:?/.test(lines[i+1])){
-let headers=line.split("|").slice(1,-1);
-let separator=lines[i+1];
-if(separator.includes("---")){
-out+="<table><thead><tr>";
-headers.forEach(h=>out+="<th>"+inlineMD(h.trim())+"</th>");
-out+="</tr></thead><tbody>";
-i++;
-table=true;
-continue;
-}
-}
+  let listType="";
 
-if(table&&/^\s*\|/.test(line)){
-let cells=line.split("|").slice(1,-1);
-out+="<tr>";
-cells.forEach(c=>out+="<td>"+inlineMD(c.trim())+"</td>");
-out+="</tr>";
-continue;
-}else if(table){
-out+="</tbody></table>";
-table=false;
-}
+  let table=false;
 
-let h=line.match(/^(#{1,6})\s+(.+)$/);
-if(h){
-out+="<h"+h[1].length+">"+inlineMD(h[2])+"</h"+h[1].length+">";
-continue;
-}
 
-let quote=line.match(/^>\s?(.*)$/);
-if(quote){
-out+="<blockquote>"+inlineMD(quote[1])+"</blockquote>";
-continue;
-}
+  for(
+    let i=0;
+    i<lines.length;
+    i++
+  ){
 
-let bullet=line.match(/^\s*[-*+]\s+(.+)$/);
-if(bullet){
-if(listType!=="ul"){
-if(listType)out+="</ol>";
-out+="<ul>";
-listType="ul";
-}
-out+="<li>"+inlineMD(bullet[1])+"</li>";
-continue;
-}
+    const line =
+      lines[i];
 
-let ordered=line.match(/^\s*\d+\.\s+(.+)$/);
-if(ordered){
-if(listType!=="ol"){
-if(listType)out+="</ul>";
-out+="<ol>";
-listType="ol";
-}
-out+="<li>"+inlineMD(ordered[1])+"</li>";
-continue;
-}
 
-if(listType){
-out+=listType==="ul"?"</ul>":"</ol>";
-listType="";
-}
+    if(
+      line.startsWith("```")
+    ){
 
-if(line.trim()===""){
-continue;
-}
+      if(!inCode){
 
-out+="<p>"+inlineMD(line)+"</p>";
-}
+        inCode=true;
 
-if(listType)out+=listType==="ul"?"</ul>":"</ol>";
-if(table)out+="</tbody></table>";
+        code="";
 
-return out;
+      }else{
+
+        out+=
+          "<pre><code>"+
+          escapeHTML(code)+
+          "</code></pre>";
+
+        inCode=false;
+
+      }
+
+      continue;
+    }
+
+
+    if(inCode){
+
+      code+=
+        line+"\n";
+
+      continue;
+
+    }
+
+
+    if(
+      /^---+$/.test(
+        line.trim()
+      )
+    ){
+
+      out+="<hr>";
+
+      continue;
+
+    }
+
+
+    if(
+      /^\s*\|/.test(line) &&
+      i+1<lines.length &&
+      lines[i+1].includes("---")
+    ){
+
+      const headers =
+        line
+          .split("|")
+          .slice(1,-1);
+
+      out+="<table><thead><tr>";
+
+      headers.forEach(
+        h=>{
+          out+=
+            "<th>"+
+            inlineMD(h.trim())+
+            "</th>";
+        }
+      );
+
+      out+=
+        "</tr></thead><tbody>";
+
+      i++;
+
+      table=true;
+
+      continue;
+    }
+
+
+    if(
+      table &&
+      /^\s*\|/.test(line)
+    ){
+
+      const cells =
+        line
+          .split("|")
+          .slice(1,-1);
+
+      out+="<tr>";
+
+      cells.forEach(
+        c=>{
+          out+=
+            "<td>"+
+            inlineMD(c.trim())+
+            "</td>";
+        }
+      );
+
+      out+="</tr>";
+
+      continue;
+
+    }else if(table){
+
+      out+=
+        "</tbody></table>";
+
+      table=false;
+
+    }
+
+
+    const heading =
+      line.match(
+        /^(#{1,6})\s+(.+)$/
+      );
+
+    if(heading){
+
+      const level =
+        heading[1].length;
+
+      out+=
+        "<h"+
+        level+
+        ">"+
+        inlineMD(heading[2])+
+        "</h"+
+        level+
+        ">";
+
+      continue;
+
+    }
+
+
+    const quote =
+      line.match(
+        /^>\s?(.*)$/
+      );
+
+    if(quote){
+
+      out+=
+        "<blockquote>"+
+        inlineMD(quote[1])+
+        "</blockquote>";
+
+      continue;
+
+    }
+
+
+    const bullet =
+      line.match(
+        /^\s*[-*+]\s+(.+)$/
+      );
+
+    if(bullet){
+
+      if(listType!=="ul"){
+
+        if(listType){
+          out+="</ol>";
+        }
+
+        out+="<ul>";
+
+        listType="ul";
+
+      }
+
+      out+=
+        "<li>"+
+        inlineMD(bullet[1])+
+        "</li>";
+
+      continue;
+
+    }
+
+
+    const ordered =
+      line.match(
+        /^\s*\d+\.\s+(.+)$/
+      );
+
+    if(ordered){
+
+      if(listType!=="ol"){
+
+        if(listType){
+          out+="</ul>";
+        }
+
+        out+="<ol>";
+
+        listType="ol";
+
+      }
+
+      out+=
+        "<li>"+
+        inlineMD(ordered[1])+
+        "</li>";
+
+      continue;
+
+    }
+
+
+    if(listType){
+
+      out+=
+        listType==="ul"
+          ?"</ul>"
+          :"</ol>";
+
+      listType="";
+
+    }
+
+
+    if(!line.trim()){
+      continue;
+    }
+
+
+    out+=
+      "<p>"+
+      inlineMD(line)+
+      "</p>";
+
+  }
+
+
+  if(listType){
+
+    out+=
+      listType==="ul"
+        ?"</ul>"
+        :"</ol>";
+
+  }
+
+
+  if(table){
+    out+="</tbody></table>";
+  }
+
+
+  return out;
 }
 
 
@@ -859,143 +2767,543 @@ return out;
 ========================================================= */
 
 async function sendMessage(){
-if(generating){
-stopGeneration();
-return;
+
+  if(generating){
+
+    stopGeneration();
+
+    return;
+
+  }
+
+
+  const text =
+    input.value.trim();
+
+  if(!text){
+    return;
+  }
+
+
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  const file =
+    getSelectedFile();
+
+
+  const messageObject={
+
+    role:"user",
+
+    content:text,
+
+    time:Date.now()
+
+  };
+
+
+  if(file){
+
+    messageObject.fileName =
+      file.name;
+
+  }
+
+
+  if(selectedImage){
+
+    messageObject.imageName =
+      selectedImageName;
+
+    messageObject.imagePreview =
+      selectedImage;
+
+  }
+
+
+  chat.messages.push(
+    messageObject
+  );
+
+
+  if(
+    chat.messages.filter(
+      m=>m.role==="user"
+    ).length===1
+  ){
+
+    chat.name =
+      text.length>40
+        ?text.slice(0,40)+"..."
+        :text;
+
+  }
+
+
+  input.value="";
+
+  resizeInput();
+
+  updateCounter();
+
+  clearAttachment();
+
+
+  if(!temporaryMode){
+
+    saveChatsOnly();
+
+  }
+
+
+  renderHistory();
+
+  renderChat();
+
+
+  await generate(
+    text,
+    file
+  );
+
 }
 
-const text=input.value.trim();
-if(!text)return;
 
-const chat=current();
-if(!chat)return;
+/* =========================================================
+   GENERATE
+========================================================= */
 
-chat.messages.push({
-role:"user",
-content:text,
-time:Date.now()
-});
+async function generate(
+  userText,
+  file=null,
+  extraPrompt=""
+){
 
-if(chat.messages.filter(m=>m.role==="user").length===1){
-chat.name=text.length>40?text.slice(0,40)+"...":text;
+  if(generating){
+    return;
+  }
+
+
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  generating=true;
+
+  controller =
+    new AbortController();
+
+
+  send.classList.add(
+    "stop"
+  );
+
+  send.textContent="■";
+
+
+  showTyping();
+
+
+  try{
+
+    const historyData =
+      chat.messages
+        .slice(0,-1)
+        .map(m=>({
+
+          role:m.role,
+
+          content:
+            m.content
+
+        }));
+
+
+    const persona =
+      getPersona();
+
+
+    let system =
+      persona.instructions;
+
+
+    if(settings.mode==="Concise"){
+
+      system+=
+        "\nKeep the answer concise and focused.";
+
+    }
+
+
+    if(settings.mode==="Detailed"){
+
+      system+=
+        "\nGive a detailed explanation with useful examples.";
+
+    }
+
+
+    if(settings.mode==="Creative"){
+
+      system+=
+        "\nUse creative and varied approaches.";
+
+    }
+
+
+    if(settings.answerLength==="Short"){
+
+      system+=
+        "\nKeep the response short.";
+
+    }
+
+
+    if(settings.answerLength==="Long"){
+
+      system+=
+        "\nGive a longer, more comprehensive response.";
+
+    }
+
+
+    if(settings.answerLength==="Detailed"){
+
+      system+=
+        "\nGive a highly detailed response.";
+
+    }
+
+
+    if(settings.language &&
+       settings.language!=="Auto"){
+
+      system+=
+        "\nRespond in "+
+        settings.language+
+        " unless the user explicitly requests another language.";
+
+    }
+
+
+    if(settings.tone){
+
+      system+=
+        "\nUse a "+
+        settings.tone+
+        " tone.";
+
+    }
+
+
+    if(settings.customInstructions){
+
+      system+=
+        "\nCustom user instructions:\n"+
+        settings.customInstructions;
+
+    }
+
+
+    if(settings.memory.length){
+
+      system+=
+        "\nUseful long-term memory about the user. Use it only when relevant:\n"+
+        settings.memory
+          .map(x=>"- "+x)
+          .join("\n");
+
+    }
+
+
+    if(file){
+
+      const fileText =
+        file.content || "";
+
+      const limited =
+        fileText.slice(
+          0,
+          50000
+        );
+
+      system+=
+        "\nThe user attached a text file named "+
+        file.name+
+        ". Use its contents when relevant. "+
+        "Do not claim you cannot access it.\n"+
+        "\nFILE CONTENT:\n"+
+        limited;
+
+    }
+
+
+    if(extraPrompt){
+
+      system+=
+        "\nAdditional task:\n"+
+        extraPrompt;
+
+    }
+
+
+    const body={
+
+      message:userText,
+
+      history:historyData,
+
+      systemPrompt:system,
+
+      temperature:
+        Number(settings.temperature),
+
+      maxTokens:
+        Number(settings.maxTokens)
+
+    };
+
+
+    if(selectedImage){
+
+      body.imageData =
+        selectedImage;
+
+    }
+
+
+    const response =
+      await fetch(
+        "/.netlify/functions/chat",
+        {
+
+          method:"POST",
+
+          headers:{
+            "Content-Type":
+              "application/json"
+          },
+
+          body:
+            JSON.stringify(body),
+
+          signal:
+            controller.signal
+
+        }
+      );
+
+
+    const data =
+      await response.json();
+
+
+    if(!response.ok){
+
+      throw new Error(
+        data.error ||
+        "The AI request failed."
+      );
+
+    }
+
+
+    if(!data.reply){
+
+      throw new Error(
+        "The AI returned no response."
+      );
+
+    }
+
+
+    removeTyping();
+
+
+    chat.messages.push({
+
+      role:"assistant",
+
+      content:data.reply,
+
+      time:Date.now(),
+
+      pinned:false,
+
+      reaction:""
+
+    });
+
+
+    if(!temporaryMode){
+
+      saveChatsOnly();
+
+    }
+
+
+    renderChat();
+
+
+    /*
+     * Automatically offer follow-ups.
+     */
+
+    showFollowupChips(
+      data.reply
+    );
+
+
+  }catch(err){
+
+    removeTyping();
+
+
+    if(
+      err.name!=="AbortError"
+    ){
+
+      chat.messages.push({
+
+        role:"assistant",
+
+        content:
+          "**Error:** "+
+          err.message
+
+      });
+
+
+      if(!temporaryMode){
+
+        saveChatsOnly();
+
+      }
+
+
+      renderChat();
+
+    }
+
+  }finally{
+
+    generating=false;
+
+    controller=null;
+
+    send.classList.remove(
+      "stop"
+    );
+
+    send.textContent="➤";
+
+  }
+
 }
 
-input.value="";
-resizeInput();
-save();
-renderHistory();
-renderChat();
 
-await generate(text);
+/* =========================================================
+   PERSONA
+========================================================= */
+
+function getPersona(){
+
+  const builtIn={
+
+    Assistant:{
+      instructions:
+        "You are a helpful general AI assistant. Be accurate, useful and clear."
+    },
+
+    Teacher:{
+      instructions:
+        "You are a patient teacher. Explain concepts step by step and use understandable examples."
+    },
+
+    Coder:{
+      instructions:
+        "You are an expert programming assistant. When code is requested, provide complete practical code and carefully check for syntax errors."
+    },
+
+    Writer:{
+      instructions:
+        "You are a skilled writer. Produce natural, polished and well-structured writing."
+    },
+
+    Creative:{
+      instructions:
+        "You are a creative assistant. Generate original, practical and varied ideas."
+    },
+
+    Business:{
+      instructions:
+        "You are a practical business assistant. Give clear, structured and realistic business guidance."
+    }
+
+  };
+
+
+  if(builtIn[settings.persona]){
+
+    return builtIn[
+      settings.persona
+    ];
+
+  }
+
+
+  const custom =
+    settings.customPersonas
+      .find(
+        p=>p.name===settings.persona
+      );
+
+
+  if(custom){
+
+    return {
+      instructions:
+        custom.instructions ||
+        "Be a helpful AI assistant."
+    };
+
+  }
+
+
+  return builtIn.Assistant;
 }
 
-async function generate(userText,extraPrompt=""){
-if(generating)return;
 
-const chat=current();
-if(!chat)return;
-
-generating=true;
-controller=new AbortController();
-
-send.classList.add("stop");
-send.textContent="■";
-
-showTyping();
-
-try{
-const historyData=chat.messages.slice(0,-1).map(m=>({
-role:m.role,
-content:m.content
-}));
-
-const personaPrompts={
-Assistant:"Be a helpful general AI assistant.",
-Teacher:"Teach clearly, step by step, using understandable examples.",
-Coder:"Act as an expert programming assistant. Provide complete, correct practical code when requested.",
-Writer:"Act as a skilled natural writer. Produce polished writing.",
-Creative:"Be creative and generate original useful ideas.",
-Business:"Act as a practical business assistant."
-};
-
-let system=
-personaPrompts[settings.persona]||
-personaPrompts.Assistant;
-
-if(settings.mode==="Concise")
-system+=" Keep responses concise.";
-if(settings.mode==="Detailed")
-system+=" Give detailed explanations.";
-if(settings.mode==="Creative")
-system+=" Prefer creative and varied approaches.";
-
-if(settings.systemPrompt)
-system+="\n"+settings.systemPrompt;
-
-if(extraPrompt)
-system+="\n"+extraPrompt;
-
-const response=await fetch("/.netlify/functions/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-message:userText,
-history:historyData,
-systemPrompt:system,
-temperature:Number(settings.temperature),
-maxTokens:Number(settings.maxTokens)
-}),
-signal:controller.signal
-});
-
-const data=await response.json();
-
-if(!response.ok){
-throw new Error(data.error||"The AI request failed.");
-}
-
-if(!data.reply){
-throw new Error("The AI returned no response.");
-}
-
-removeTyping();
-
-chat.messages.push({
-role:"assistant",
-content:data.reply,
-time:Date.now(),
-pinned:false,
-reaction:""
-});
-
-save();
-renderChat();
-
-}catch(err){
-removeTyping();
-
-if(err.name!=="AbortError"){
-chat.messages.push({
-role:"assistant",
-content:"**Error:** "+err.message
-});
-save();
-renderChat();
-}
-}finally{
-generating=false;
-controller=null;
-send.classList.remove("stop");
-send.textContent="➤";
-}
-}
+/* =========================================================
+   STOP
+========================================================= */
 
 function stopGeneration(){
-if(controller)controller.abort();
-removeTyping();
-generating=false;
-send.classList.remove("stop");
-send.textContent="➤";
+
+  if(controller){
+
+    controller.abort();
+
+  }
+
+  removeTyping();
+
+  generating=false;
+
+  send.classList.remove(
+    "stop"
+  );
+
+  send.textContent="➤";
+
 }
 
 
@@ -1004,27 +3312,58 @@ send.textContent="➤";
 ========================================================= */
 
 function showTyping(){
-removeTyping();
 
-const row=document.createElement("div");
-row.className="message assistant";
-row.id="typing";
+  removeTyping();
 
-row.innerHTML=`
-<div class="avatar">${escape(settings.avatar)}</div>
-<div class="msgbody">
-<div class="bubble">
-<div class="typing"><i></i><i></i><i></i></div>
-</div>
-</div>`;
 
-messages.appendChild(row);
-messages.scrollTop=messages.scrollHeight;
+  const row =
+    document.createElement("div");
+
+  row.className=
+    "message assistant";
+
+  row.id="typing";
+
+
+  row.innerHTML=`
+
+    <div class="avatar">
+      ${escapeHTML(settings.avatar)}
+    </div>
+
+    <div class="msgbody">
+
+      <div class="bubble">
+
+        <div class="typing">
+          <i></i>
+          <i></i>
+          <i></i>
+        </div>
+
+      </div>
+
+    </div>
+
+  `;
+
+
+  messages.appendChild(row);
+
+  messages.scrollTop =
+    messages.scrollHeight;
 }
 
+
 function removeTyping(){
-const t=$("typing");
-if(t)t.remove();
+
+  const t =
+    $("typing");
+
+  if(t){
+    t.remove();
+  }
+
 }
 
 
@@ -1033,37 +3372,94 @@ if(t)t.remove();
 ========================================================= */
 
 async function copy(text){
-try{
-await navigator.clipboard.writeText(text);
-toastMsg("Copied");
-}catch{
-toastMsg("Copy failed");
-}
+
+  try{
+
+    await navigator.clipboard
+      .writeText(text);
+
+    toastMsg(
+      "Copied"
+    );
+
+  }catch{
+
+    toastMsg(
+      "Copy failed"
+    );
+
+  }
+
 }
 
+
 function copyAll(){
-const chat=current();
-if(!chat)return;
-copy(chat.messages.map(m=>(m.role==="user"?"YOU":"AI")+":\n"+m.content).join("\n\n"));
+
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  copy(
+    chat.messages
+      .map(
+        m=>
+          (m.role==="user"
+            ?"YOU"
+            :"AI")+
+          ":\n"+
+          m.content
+      )
+      .join("\n\n")
+  );
+
 }
 
 
 /* =========================================================
-   REACTIONS / PIN
+   REACTIONS
 ========================================================= */
 
-function reaction(m,type){
-m.reaction=m.reaction===type?"":type;
-save();
-renderChat();
+function reaction(
+  message,
+  type
+){
+
+  message.reaction =
+    message.reaction===type
+      ?""
+      :type;
+
+  saveChatsOnly();
+
+  renderChat();
+
 }
 
+
+/* =========================================================
+   PIN
+========================================================= */
+
 function pinMessage(index){
-const chat=current();
-if(!chat)return;
-chat.messages[index].pinned=!chat.messages[index].pinned;
-save();
-renderChat();
+
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  chat.messages[index].pinned =
+    !chat.messages[index].pinned;
+
+
+  saveChatsOnly();
+
+  renderChat();
+
 }
 
 
@@ -1072,20 +3468,49 @@ renderChat();
 ========================================================= */
 
 async function regenerate(index){
-const chat=current();
-if(!chat||generating)return;
 
-const assistant=chat.messages[index];
-if(!assistant||assistant.role!=="assistant")return;
+  const chat=current();
 
-const user=chat.messages[index-1];
-if(!user||user.role!=="user")return;
+  if(
+    !chat ||
+    generating
+  ){
+    return;
+  }
 
-chat.messages.splice(index,1);
-save();
-renderChat();
 
-await generate(user.content);
+  const assistant =
+    chat.messages[index];
+
+  const user =
+    chat.messages[index-1];
+
+
+  if(
+    !assistant ||
+    assistant.role!=="assistant" ||
+    !user ||
+    user.role!=="user"
+  ){
+    return;
+  }
+
+
+  chat.messages.splice(
+    index,
+    1
+  );
+
+
+  saveChatsOnly();
+
+  renderChat();
+
+
+  await generate(
+    user.content
+  );
+
 }
 
 
@@ -1094,18 +3519,47 @@ await generate(user.content);
 ========================================================= */
 
 function editMessage(index){
-const chat=current();
-if(!chat)return;
 
-const m=chat.messages[index];
-if(!m||m.role!=="user")return;
+  const chat=current();
 
-input.value=m.content;
-chat.messages=chat.messages.slice(0,index);
-save();
-renderChat();
-resizeInput();
-input.focus();
+  if(!chat){
+    return;
+  }
+
+
+  const m =
+    chat.messages[index];
+
+
+  if(
+    !m ||
+    m.role!=="user"
+  ){
+    return;
+  }
+
+
+  input.value =
+    m.content;
+
+
+  chat.messages =
+    chat.messages.slice(
+      0,
+      index
+    );
+
+
+  saveChatsOnly();
+
+  renderChat();
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
 }
 
 
@@ -1114,106 +3568,1021 @@ input.focus();
 ========================================================= */
 
 function improve(index){
-const chat=current();
-if(!chat)return;
 
-const m=chat.messages[index];
-if(!m)return;
+  const chat=current();
 
-runAction("Improve this response",m.content);
+  if(!chat){
+    return;
+  }
+
+
+  const m =
+    chat.messages[index];
+
+  if(!m){
+    return;
+  }
+
+
+  input.value =
+    "Improve and enhance this response while preserving its meaning:\n\n"+
+    m.content;
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
 }
 
 
 /* =========================================================
-   AI ACTIONS
+   CONTINUE RESPONSE
 ========================================================= */
 
-async function runAction(action,text){
-input.value=action+":\n\n"+text;
-resizeInput();
-input.focus();
-toastMsg(action+" prepared — press Send");
+async function continueResponse(index){
+
+  const chat=current();
+
+  if(
+    !chat ||
+    generating
+  ){
+    return;
+  }
+
+
+  const m =
+    chat.messages[index];
+
+
+  if(
+    !m ||
+    m.role!=="assistant"
+  ){
+    return;
+  }
+
+
+  await generate(
+    "Continue the previous response naturally from where it ended.",
+    null,
+    "Continue the previous assistant response. Do not repeat its existing ending."
+  );
+
 }
 
 
 /* =========================================================
-   TOOLBAR
+   ASK ABOUT RESPONSE
 ========================================================= */
 
-document.querySelectorAll(".tool[data-action]").forEach(btn=>{
-btn.onclick=()=>{
-const action=btn.dataset.action;
+function askAboutResponse(text){
 
-if(action==="bold")wrapSelection("**","**");
-if(action==="italic")wrapSelection("*","*");
-if(action==="heading")wrapSelection("# ","");
-if(action==="bullet")wrapSelection("- ","");
-if(action==="code")wrapSelection("`","`");
-if(action==="quote")wrapSelection("> ","");
-if(action==="summarize")runAction("Summarize this",input.value);
-if(action==="translate")runAction("Translate this into English",input.value);
-if(action==="grammar")runAction("Correct the grammar of this",input.value);
+  input.value =
+    "Ask a question about this AI response:\n\n"+
+    text+
+    "\n\nQuestion: ";
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
+}
+
+
+/* =========================================================
+   SUMMARIZE RESPONSE
+========================================================= */
+
+function summarizeResponse(text){
+
+  input.value =
+    "Summarize this response clearly:\n\n"+
+    text;
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
+}
+
+
+/* =========================================================
+   READ ALOUD
+========================================================= */
+
+function readAloud(text){
+
+  if(
+    !("speechSynthesis" in window)
+  ){
+
+    toastMsg(
+      "Read aloud is not supported in this browser."
+    );
+
+    return;
+
+  }
+
+
+  speechSynthesis.cancel();
+
+
+  const utterance =
+    new SpeechSynthesisUtterance(
+      text
+    );
+
+
+  utterance.rate=.95;
+
+  utterance.pitch=1;
+
+
+  speechSynthesis.speak(
+    utterance
+  );
+
+
+  toastMsg(
+    "Reading response aloud"
+  );
+
+}
+
+
+/* =========================================================
+   VOICE INPUT
+========================================================= */
+
+function startVoice(){
+
+  const SpeechRecognition =
+    window.SpeechRecognition ||
+    window.webkitSpeechRecognition;
+
+
+  if(!SpeechRecognition){
+
+    toastMsg(
+      "Voice input is not supported in this browser."
+    );
+
+    return;
+
+  }
+
+
+  if(listening){
+
+    if(recognition){
+      recognition.stop();
+    }
+
+    return;
+
+  }
+
+
+  recognition =
+    new SpeechRecognition();
+
+
+  recognition.lang =
+    languageCode(
+      settings.language
+    );
+
+  recognition.interimResults=
+    true;
+
+  recognition.continuous=
+    false;
+
+
+  recognition.onstart=()=>{
+
+    listening=true;
+
+    $("voiceBtn").textContent=
+      "⏹ Stop Voice";
+
+    toastMsg(
+      "Listening..."
+    );
+
+  };
+
+
+  recognition.onresult=e=>{
+
+    let finalText="";
+
+    for(
+      let i=e.resultIndex;
+      i<e.results.length;
+      i++
+    ){
+
+      finalText+=
+        e.results[i][0].transcript;
+
+    }
+
+
+    input.value =
+      finalText;
+
+    resizeInput();
+
+    updateCounter();
+
+  };
+
+
+  recognition.onerror=()=>{
+
+    listening=false;
+
+    $("voiceBtn").textContent=
+      "🎤 Voice";
+
+    toastMsg(
+      "Voice input error"
+    );
+
+  };
+
+
+  recognition.onend=()=>{
+
+    listening=false;
+
+    $("voiceBtn").textContent=
+      "🎤 Voice";
+
+  };
+
+
+  recognition.start();
+
+}
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+function languageCode(
+  language
+){
+
+  const map={
+
+    English:"en-US",
+    Urdu:"ur-PK",
+    Arabic:"ar-SA",
+    Chinese:"zh-CN",
+    Spanish:"es-ES",
+    French:"fr-FR",
+    German:"de-DE",
+    Hindi:"hi-IN",
+    Turkish:"tr-TR"
+
+  };
+
+
+  return map[language] ||
+    "en-US";
+}
+
+
+/* =========================================================
+   FOLLOW-UP SUGGESTIONS
+========================================================= */
+
+async function showFollowupChips(
+  responseText
+){
+
+  /*
+   * Generate suggestions only after
+   * a normal response. This is kept
+   * optional so the user can ignore it.
+   */
+
+  try{
+
+    const suggestions =
+      await directAI(
+        "Based on this AI response, generate exactly 3 short useful follow-up questions. Return ONLY the 3 questions, one per line, with no numbering.\n\n"+
+        responseText.slice(0,7000)
+      );
+
+
+    const lines =
+      suggestions
+        .split("\n")
+        .map(x=>x.trim())
+        .filter(Boolean)
+        .slice(0,3);
+
+
+    if(!lines.length){
+      return;
+    }
+
+
+    const old =
+      $("followupChips");
+
+    if(old){
+      old.remove();
+    }
+
+
+    const box =
+      document.createElement("div");
+
+    box.id=
+      "followupChips";
+
+    box.style.maxWidth=
+      "900px";
+
+    box.style.margin=
+      "0 auto 12px";
+
+    box.innerHTML=
+      "<div style='font-size:10px;color:var(--muted);margin-bottom:5px'>Suggested follow-ups</div>";
+
+
+    const row =
+      document.createElement("div");
+
+    row.className=
+      "chip-row";
+
+
+    lines.forEach(
+      question=>{
+
+        const button =
+          document.createElement("button");
+
+        button.className=
+          "chip";
+
+        button.textContent=
+          question;
+
+        button.onclick=()=>{
+
+          input.value=
+            question;
+
+          resizeInput();
+
+          updateCounter();
+
+          input.focus();
+
+        };
+
+
+        row.appendChild(
+          button
+        );
+
+      }
+    );
+
+
+    box.appendChild(row);
+
+    messages.appendChild(box);
+
+    messages.scrollTop=
+      messages.scrollHeight;
+
+
+  }catch{
+
+    /*
+     * Follow-ups are optional.
+     * Never make the main answer fail
+     * because suggestions failed.
+     */
+
+  }
+
+}
+
+
+/* =========================================================
+   DIRECT AI
+========================================================= */
+
+async function directAI(
+  prompt,
+  options={}
+){
+
+  const chat=current();
+
+
+  const response =
+    await fetch(
+      "/.netlify/functions/chat",
+      {
+
+        method:"POST",
+
+        headers:{
+          "Content-Type":
+            "application/json"
+        },
+
+        body:
+          JSON.stringify({
+
+            message:prompt,
+
+            history:
+              chat
+                ?chat.messages.slice(-10)
+                :[],
+
+            systemPrompt:
+              options.system ||
+              getSystem(),
+
+            temperature:
+              options.temperature ??
+              Number(settings.temperature),
+
+            maxTokens:
+              options.maxTokens ??
+              Number(settings.maxTokens)
+
+          })
+
+      }
+    );
+
+
+  const data =
+    await response.json();
+
+
+  if(!response.ok){
+
+    throw new Error(
+      data.error ||
+      "AI request failed"
+    );
+
+  }
+
+
+  return data.reply || "";
+
+}
+
+
+function getSystem(){
+
+  return getPersona()
+    .instructions;
+
+}
+
+
+/* =========================================================
+   MEMORY
+========================================================= */
+
+$("memoryBtn").onclick=()=>{
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Long-Term Memory</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <p style="font-size:11px;color:var(--muted);margin-bottom:10px">
+      These memories are stored locally in your browser and are
+      included in future AI prompts when relevant.
+    </p>
+
+    <div id="memoryList"></div>
+
+    <div class="field">
+      <label>New memory</label>
+      <input
+        id="memoryInput"
+        placeholder="Example: I prefer simple explanations.">
+    </div>
+
+    <button
+      class="save"
+      onclick="addMemory()">
+      Add Memory
+    </button>
+
+  `);
+
+
+  renderMemory();
+
 };
-});
 
-function wrapSelection(before,after){
-const start=input.selectionStart;
-const end=input.selectionEnd;
-const selected=input.value.slice(start,end);
 
-input.value=
-input.value.slice(0,start)+
-before+
-(selected||"text")+
-after+
-input.value.slice(end);
+window.addMemory=()=>{
 
-input.focus();
-input.setSelectionRange(start+before.length,start+before.length+(selected||"text").length);
+  const value =
+    $("memoryInput")
+      .value
+      .trim();
+
+  if(!value){
+    return;
+  }
+
+
+  settings.memory.push(
+    value
+  );
+
+
+  save();
+
+  renderMemory();
+
+  $("memoryInput").value="";
+
+};
+
+
+window.removeMemory=i=>{
+
+  settings.memory.splice(
+    i,
+    1
+  );
+
+  save();
+
+  renderMemory();
+
+};
+
+
+function renderMemory(){
+
+  const el =
+    $("memoryList");
+
+  if(!el){
+    return;
+  }
+
+
+  el.innerHTML="";
+
+
+  if(!settings.memory.length){
+
+    el.innerHTML=
+      '<p style="font-size:11px;color:var(--muted)">No memories yet.</p>';
+
+    return;
+
+  }
+
+
+  settings.memory.forEach(
+    (m,i)=>{
+
+      const row =
+        document.createElement("div");
+
+      row.className=
+        "memory";
+
+
+      const text =
+        document.createElement("span");
+
+      text.textContent=m;
+
+
+      const button =
+        document.createElement("button");
+
+      button.textContent="×";
+
+      button.style.float=
+        "right";
+
+      button.style.border=
+        "0";
+
+      button.style.background=
+        "none";
+
+      button.style.color=
+        "var(--danger)";
+
+      button.onclick=()=>{
+
+        removeMemory(i);
+
+      };
+
+
+      row.append(
+        text,
+        button
+      );
+
+
+      el.appendChild(row);
+
+    }
+  );
+
 }
 
 
 /* =========================================================
-   PERSONAS
+   CUSTOM INSTRUCTIONS
 ========================================================= */
 
-document.querySelectorAll("[data-persona]").forEach(btn=>{
-btn.onclick=()=>{
-settings.persona=btn.dataset.persona;
-document.querySelectorAll("[data-persona]").forEach(x=>x.classList.remove("active"));
-btn.classList.add("active");
-$("personaBadge").textContent=settings.persona;
-save();
-toastMsg(settings.persona+" selected");
+$("customInstructionsBtn").onclick=()=>{
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Custom Instructions</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Instructions for every conversation
+      </label>
+
+      <textarea
+        id="customInstructionsInput"
+        placeholder="Example: Always explain technical topics step by step.">${escapeHTML(settings.customInstructions)}</textarea>
+
+    </div>
+
+    <button
+      class="save"
+      onclick="saveCustomInstructions()">
+      Save Instructions
+    </button>
+
+  `);
+
 };
-});
+
+
+window.saveCustomInstructions=()=>{
+
+  settings.customInstructions =
+    $("customInstructionsInput")
+      .value
+      .trim();
+
+  save();
+
+  closeModal();
+
+  toastMsg(
+    "Custom instructions saved"
+  );
+
+};
+
+
+/* =========================================================
+   PRIVACY / TEMPORARY CHAT
+========================================================= */
+
+$("privacyBtn").onclick=()=>{
+
+  temporaryMode =
+    !temporaryMode;
+
+  settings.privacy=
+    temporaryMode;
+
+
+  if(temporaryMode){
+
+    createChat();
+
+    toastMsg(
+      "Temporary chat enabled"
+    );
+
+  }else{
+
+    toastMsg(
+      "Temporary chat disabled"
+    );
+
+  }
+
+
+  renderHistory();
+
+  renderChat();
+
+};
+
+
+/* =========================================================
+   CUSTOM PERSONA
+========================================================= */
+
+$("customPersona").onclick=()=>{
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Create Custom Persona</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+      <label>Name</label>
+      <input id="personaName"
+        placeholder="Example: Science Tutor">
+    </div>
+
+    <div class="field">
+      <label>Instructions</label>
+      <textarea
+        id="personaInstructions"
+        placeholder="Describe how this persona should behave."></textarea>
+    </div>
+
+    <button
+      class="save"
+      onclick="savePersona()">
+      Create Persona
+    </button>
+
+  `);
+
+};
+
+
+window.savePersona=()=>{
+
+  const name =
+    $("personaName")
+      .value
+      .trim();
+
+  const instructions =
+    $("personaInstructions")
+      .value
+      .trim();
+
+
+  if(!name){
+
+    toastMsg(
+      "Enter a persona name"
+    );
+
+    return;
+
+  }
+
+
+  settings.customPersonas.push({
+
+    name:name,
+
+    instructions:
+      instructions ||
+      "Be a helpful AI assistant."
+
+  });
+
+
+  settings.persona=name;
+
+
+  save();
+
+  closeModal();
+
+  updatePersonaButtons();
+
+  applySettings();
+
+  toastMsg(
+    name+" selected"
+  );
+
+};
+
+
+function updatePersonaButtons(){
+
+  const container =
+    $("personas");
+
+
+  container.innerHTML="";
+
+
+  const builtIn=[
+
+    ["Assistant","🤖"],
+    ["Teacher","📚"],
+    ["Coder","💻"],
+    ["Writer","✍"],
+    ["Creative","🎨"],
+    ["Business","💼"]
+
+  ];
+
+
+  builtIn.forEach(
+    ([name,icon])=>{
+
+      const button =
+        document.createElement("button");
+
+      button.className=
+        "pbtn"+
+        (
+          settings.persona===name
+            ?" active"
+            :""
+        );
+
+      button.dataset.persona=
+        name;
+
+      button.textContent=
+        icon+" "+name;
+
+      button.onclick=
+        ()=>selectPersona(name);
+
+      container.appendChild(
+        button
+      );
+
+    }
+  );
+
+
+  settings.customPersonas
+    .forEach(
+      persona=>{
+
+        const button =
+          document.createElement("button");
+
+        button.className=
+          "pbtn"+
+          (
+            settings.persona===
+            persona.name
+              ?" active"
+              :""
+          );
+
+        button.dataset.persona=
+          persona.name;
+
+        button.textContent=
+          "🧠 "+persona.name;
+
+        button.onclick=
+          ()=>selectPersona(
+            persona.name
+          );
+
+        container.appendChild(
+          button
+        );
+
+      }
+    );
+
+}
+
+
+function selectPersona(name){
+
+  settings.persona=
+    name;
+
+  save();
+
+  updatePersonaButtons();
+
+  applySettings();
+
+  toastMsg(
+    name+" selected"
+  );
+
+}
 
 
 /* =========================================================
    RESPONSE MODES
 ========================================================= */
 
-document.querySelectorAll("[data-mode]").forEach(btn=>{
-btn.onclick=()=>{
-settings.mode=btn.dataset.mode;
-document.querySelectorAll("[data-mode]").forEach(x=>x.classList.remove("active"));
-btn.classList.add("active");
-save();
-toastMsg(settings.mode+" mode selected");
-};
-});
+function setupModes(){
+
+  document
+    .querySelectorAll(
+      "[data-mode]"
+    )
+    .forEach(button=>{
+
+      button.onclick=()=>{
+
+        settings.mode=
+          button.dataset.mode;
+
+        document
+          .querySelectorAll(
+            "[data-mode]"
+          )
+          .forEach(
+            x=>
+              x.classList.remove(
+                "active"
+              )
+          );
+
+        button.classList.add(
+          "active"
+        );
+
+        save();
+
+        toastMsg(
+          settings.mode+
+          " mode selected"
+        );
+
+      };
+
+    });
+
+}
 
 
 /* =========================================================
    FAVORITE
 ========================================================= */
 
-function toggleFavorite(chat=current()){
-if(!chat)return;
-chat.favorite=!chat.favorite;
-save();
-renderHistory();
-renderChat();
+function toggleFavorite(
+  chat=current()
+){
+
+  if(!chat){
+    return;
+  }
+
+
+  chat.favorite=
+    !chat.favorite;
+
+
+  saveChatsOnly();
+
+  renderHistory();
+
+  renderChat();
+
 }
 
 
@@ -1221,21 +4590,52 @@ renderChat();
    ARCHIVE
 ========================================================= */
 
-function archiveChat(chat=current()){
-if(!chat)return;
+function archiveChat(
+  chat=current()
+){
 
-chat.archived=true;
+  if(!chat){
+    return;
+  }
 
-if(chat.id===currentId){
-const next=chats.find(c=>!c.archived&&c.id!==chat.id);
-if(next)currentId=next.id;
-else createChat(false);
-}
 
-save();
-renderHistory();
-renderChat();
-toastMsg("Chat archived");
+  chat.archived=true;
+
+
+  if(chat.id===currentId){
+
+    const next =
+      chats.find(
+        c=>
+          !c.archived &&
+          c.id!==chat.id
+      );
+
+
+    if(next){
+
+      currentId=
+        next.id;
+
+    }else{
+
+      createChat(false);
+
+    }
+
+  }
+
+
+  saveChatsOnly();
+
+  renderHistory();
+
+  renderChat();
+
+  toastMsg(
+    "Chat archived"
+  );
+
 }
 
 
@@ -1244,20 +4644,46 @@ toastMsg("Chat archived");
 ========================================================= */
 
 function deleteChat(chat){
-if(!confirm("Delete this chat permanently?"))return;
 
-chats=chats.filter(c=>c.id!==chat.id);
+  if(
+    !confirm(
+      "Delete this chat permanently?"
+    )
+  ){
+    return;
+  }
 
-if(!chats.length){
-createChat(false);
-}else if(currentId===chat.id){
-currentId=chats[0].id;
-}
 
-save();
-renderHistory();
-renderChat();
-toastMsg("Chat deleted");
+  chats =
+    chats.filter(
+      c=>c.id!==chat.id
+    );
+
+
+  if(!chats.length){
+
+    createChat(false);
+
+  }else if(
+    currentId===chat.id
+  ){
+
+    currentId=
+      chats[0].id;
+
+  }
+
+
+  saveChatsOnly();
+
+  renderHistory();
+
+  renderChat();
+
+  toastMsg(
+    "Chat deleted"
+  );
+
 }
 
 
@@ -1266,19 +4692,47 @@ toastMsg("Chat deleted");
 ========================================================= */
 
 function duplicateChat(chat){
-const copyChat=JSON.parse(JSON.stringify(chat));
 
-copyChat.id=Date.now().toString()+Math.random();
-copyChat.name=chat.name+" Copy";
-copyChat.created=Date.now();
+  const cloned =
+    JSON.parse(
+      JSON.stringify(chat)
+    );
 
-chats.unshift(copyChat);
-currentId=copyChat.id;
 
-save();
-renderHistory();
-renderChat();
-toastMsg("Chat duplicated");
+  cloned.id =
+    Date.now().toString()+
+    Math.random()
+      .toString(36)
+      .slice(2);
+
+
+  cloned.name =
+    chat.name+" Copy";
+
+
+  cloned.created=
+    Date.now();
+
+
+  chats.unshift(
+    cloned
+  );
+
+
+  currentId=
+    cloned.id;
+
+
+  saveChatsOnly();
+
+  renderHistory();
+
+  renderChat();
+
+  toastMsg(
+    "Chat duplicated"
+  );
+
 }
 
 
@@ -1286,26 +4740,73 @@ toastMsg("Chat duplicated");
    RENAME
 ========================================================= */
 
-function renameChat(chat=current()){
-if(!chat)return;
+function renameChat(
+  chat=current()
+){
 
-openModal(`
-<div class="modal-head"><h2>Rename Chat</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="field">
-<label>Chat name</label>
-<input id="renameValue" value="${escape(chat.name)}">
-</div>
-<button class="save" onclick="saveRename()">Save</button>
-`);
+  if(!chat){
+    return;
+  }
 
-window.saveRename=()=>{
-const value=$("renameValue").value.trim();
-if(value)chat.name=value;
-save();
-closeModal();
-renderHistory();
-renderChat();
-};
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Rename Chat</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Chat name
+      </label>
+
+      <input
+        id="renameValue"
+        placeholder="Chat name">
+
+    </div>
+
+    <button
+      class="save"
+      onclick="saveRename()">
+      Save
+    </button>
+
+  `);
+
+
+  $("renameValue").value=
+    chat.name;
+
+
+  window.saveRename=()=>{
+
+    const value =
+      $("renameValue")
+        .value
+        .trim();
+
+
+    if(value){
+
+      chat.name=value;
+
+    }
+
+
+    saveChatsOnly();
+
+    closeModal();
+
+    renderHistory();
+
+    renderChat();
+
+  };
+
 }
 
 
@@ -1313,64 +4814,123 @@ renderChat();
    FOLDERS
 ========================================================= */
 
-function moveFolder(chat=current()){
-const folders=settings.folders||[];
+function moveFolder(chat){
 
-openModal(`
-<div class="modal-head"><h2>Move Chat</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="menu">
-<button onclick="setFolder('')">No Folder</button>
-${folders.map(f=>`<button onclick="setFolder('${escape(f)}')">📁 ${escape(f)}</button>`).join("")}
-</div>
-<br>
-<button class="save" onclick="createFolder()">＋ Create Folder</button>
-`);
+  const folders =
+    settings.folders || [];
 
-window.setFolder=f=>{
-chat.folder=f;
-save();
-closeModal();
-toastMsg("Folder updated");
-};
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Move Chat</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div id="folderChoices"
+      class="menu">
+    </div>
+
+    <br>
+
+    <button
+      class="save"
+      onclick="createFolder()">
+      ＋ Create Folder
+    </button>
+
+  `);
+
+
+  const choices =
+    $("folderChoices");
+
+
+  const none =
+    document.createElement(
+      "button"
+    );
+
+  none.textContent=
+    "No Folder";
+
+  none.onclick=()=>{
+
+    chat.folder="";
+
+    saveChatsOnly();
+
+    closeModal();
+
+  };
+
+  choices.appendChild(none);
+
+
+  folders.forEach(
+    folder=>{
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.textContent=
+        "📁 "+folder;
+
+      button.onclick=()=>{
+
+        chat.folder=
+          folder;
+
+        saveChatsOnly();
+
+        closeModal();
+
+        toastMsg(
+          "Folder updated"
+        );
+
+      };
+
+
+      choices.appendChild(
+        button
+      );
+
+    }
+  );
+
+}
+
 
 window.createFolder=()=>{
-const name=prompt("Folder name:");
-if(name){
-settings.folders=settings.folders||[];
-settings.folders.push(name);
-save();
-closeModal();
-moveFolder(chat);
-}
-};
-}
+
+  const name =
+    prompt(
+      "Folder name:"
+    );
 
 
-/* =========================================================
-   CUSTOM PERSONA
-========================================================= */
+  if(!name){
+    return;
+  }
 
-$("customPersona").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Create Persona</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="field"><label>Name</label><input id="personaName"></div>
-<div class="field"><label>Instructions</label><textarea id="personaInstructions"></textarea></div>
-<button class="save" onclick="savePersona()">Create Persona</button>
-`);
 
-window.savePersona=()=>{
-const name=$("personaName").value.trim();
-const instructions=$("personaInstructions").value.trim();
+  settings.folders.push(
+    name.trim()
+  );
 
-if(!name)return;
 
-settings.customPersonas=settings.customPersonas||[];
-settings.customPersonas.push({name,instructions});
-settings.persona=name;
-save();
-closeModal();
-toastMsg("Custom persona created");
-};
+  save();
+
+  closeModal();
+
+  toastMsg(
+    "Folder created"
+  );
+
 };
 
 
@@ -1379,128 +4939,217 @@ toastMsg("Custom persona created");
 ========================================================= */
 
 $("promptLibrary").onclick=()=>{
-const prompts=[
-["Explain","Explain the following clearly for a beginner:\n"],
-["Ideas","Give me 10 creative ideas about:\n"],
-["Professional","Rewrite the following professionally:\n"],
-["Summary","Summarize the following:\n"],
-["Plan","Create a detailed step-by-step plan for:\n"],
-["Code","Write complete working code for:\n"],
-["Compare","Compare these options objectively:\n"],
-["Teach","Teach me this step by step:\n"],
-["Translate","Translate this into English:\n"],
-["Business","Create a practical business plan for:\n"]
-];
 
-openModal(`
-<div class="modal-head"><h2>Prompt Library</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="menu">
-${prompts.map((p,i)=>`<button onclick="usePrompt(${i})">${p[0]}</button>`).join("")}
-</div>
-`);
+  const prompts=[
 
-window.usePrompt=i=>{
-input.value=prompts[i][1];
-resizeInput();
-closeModal();
-input.focus();
-};
+    [
+      "Explain",
+      "Explain this clearly for a beginner:\n"
+    ],
+
+    [
+      "Ideas",
+      "Give me 10 creative ideas about:\n"
+    ],
+
+    [
+      "Professional",
+      "Rewrite the following professionally:\n"
+    ],
+
+    [
+      "Summary",
+      "Summarize the following:\n"
+    ],
+
+    [
+      "Plan",
+      "Create a detailed step-by-step plan for:\n"
+    ],
+
+    [
+      "Code",
+      "Write complete working code for:\n"
+    ],
+
+    [
+      "Compare",
+      "Compare these options objectively:\n"
+    ],
+
+    [
+      "Teach",
+      "Teach me this step by step:\n"
+    ],
+
+    [
+      "Translate",
+      "Translate this into English:\n"
+    ],
+
+    [
+      "Business",
+      "Create a practical business plan for:\n"
+    ]
+
+  ];
+
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Prompt Library</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div
+      class="menu"
+      id="promptChoices">
+    </div>
+
+  `);
+
+
+  const container =
+    $("promptChoices");
+
+
+  prompts.forEach(
+    ([name,text],i)=>{
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.textContent=name;
+
+      button.onclick=()=>{
+
+        input.value=
+          text;
+
+        resizeInput();
+
+        updateCounter();
+
+        closeModal();
+
+        input.focus();
+
+      };
+
+
+      container.appendChild(
+        button
+      );
+
+    }
+  );
+
 };
 
 
 /* =========================================================
-   MEMORY
-========================================================= */
-
-$("memoryBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Conversation Memory</h2><button class="close" onclick="closeModal()">×</button></div>
-<p style="font-size:11px;color:var(--muted);margin-bottom:10px">
-Saved memory items are stored locally in this browser.
-</p>
-<div id="memoryList"></div>
-<div class="field" style="margin-top:10px">
-<input id="memoryInput" placeholder="Add a memory...">
-</div>
-<button class="save" onclick="addMemory()">Add Memory</button>
-`);
-
-renderMemory();
-
-window.addMemory=()=>{
-const value=$("memoryInput").value.trim();
-if(!value)return;
-settings.memory.push(value);
-save();
-renderMemory();
-$("memoryInput").value="";
-};
-
-window.removeMemory=i=>{
-settings.memory.splice(i,1);
-save();
-renderMemory();
-};
-};
-
-function renderMemory(){
-const el=$("memoryList");
-if(!el)return;
-
-el.innerHTML="";
-
-if(!settings.memory.length){
-el.innerHTML='<p style="font-size:11px;color:var(--muted)">No memories yet.</p>';
-return;
-}
-
-settings.memory.forEach((m,i)=>{
-const row=document.createElement("div");
-row.className="memory";
-row.innerHTML=`
-${escape(m)}
-<button style="float:right;border:0;background:none;color:var(--danger)" onclick="removeMemory(${i})">×</button>
-`;
-el.appendChild(row);
-});
-}
-
-
-/* =========================================================
-   COMPARE RESPONSES
+   COMPARE
 ========================================================= */
 
 $("compareBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Compare Responses</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="field">
-<label>Prompt</label>
-<textarea id="comparePrompt" placeholder="Enter a prompt to compare two AI responses"></textarea>
-</div>
-<button class="save" onclick="compareResponses()">Generate Comparison</button>
-<div id="compareResult" style="margin-top:12px"></div>
-`);
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Compare Responses</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Prompt
+      </label>
+
+      <textarea
+        id="comparePrompt"
+        placeholder="Enter a prompt..."></textarea>
+
+    </div>
+
+    <button
+      class="save"
+      onclick="compareResponses()">
+      Generate Comparison
+    </button>
+
+    <div
+      id="compareResult">
+    </div>
+
+  `);
+
+};
+
 
 window.compareResponses=async()=>{
-const prompt=$("comparePrompt").value.trim();
-if(!prompt)return;
 
-$("compareResult").innerHTML="Generating...";
+  const prompt =
+    $("comparePrompt")
+      .value
+      .trim();
 
-try{
-const [a,b]=await Promise.all([
-directAI(prompt+" Give your first answer."),
-directAI(prompt+" Give an alternative answer with a different approach.")
-]);
 
-$("compareResult").innerHTML=`
-<div class="card"><h3>Response A</h3>${markdown(a)}</div>
-<div class="card"><h3>Response B</h3>${markdown(b)}</div>
-`;
-}catch(e){
-$("compareResult").textContent=e.message;
-}
-};
+  if(!prompt){
+    return;
+  }
+
+
+  $("compareResult")
+    .innerHTML=
+      "Generating...";
+
+
+  try{
+
+    const results =
+      await Promise.all([
+
+        directAI(
+          prompt+
+          "\nGive your first answer."
+        ),
+
+        directAI(
+          prompt+
+          "\nGive an alternative answer using a different approach."
+        )
+
+      ]);
+
+
+    $("compareResult")
+      .innerHTML=
+        results.map(
+          (x,i)=>
+            `
+              <div class="result-card">
+                <strong>
+                  Response ${i+1}
+                </strong>
+                ${markdown(x)}
+              </div>
+            `
+        ).join("");
+
+  }catch(error){
+
+    $("compareResult")
+      .textContent=
+        error.message;
+
+  }
+
 };
 
 
@@ -1509,304 +5158,1243 @@ $("compareResult").textContent=e.message;
 ========================================================= */
 
 $("variationsBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Response Variations</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="field">
-<label>Prompt</label>
-<textarea id="variationPrompt"></textarea>
-</div>
-<button class="save" onclick="generateVariations()">Generate 3 Variations</button>
-<div id="variationResult" style="margin-top:12px"></div>
-`);
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Response Variations</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Prompt
+      </label>
+
+      <textarea
+        id="variationPrompt"></textarea>
+
+    </div>
+
+    <button
+      class="save"
+      onclick="generateVariations()">
+      Generate 3 Variations
+    </button>
+
+    <div id="variationResult">
+    </div>
+
+  `);
+
+};
+
 
 window.generateVariations=async()=>{
-const prompt=$("variationPrompt").value.trim();
-if(!prompt)return;
 
-$("variationResult").innerHTML="Generating 3 responses...";
+  const prompt =
+    $("variationPrompt")
+      .value
+      .trim();
 
-try{
-const answers=await Promise.all([
-directAI(prompt),
-directAI(prompt+"\nGive a different version."),
-directAI(prompt+"\nGive another alternative version.")
-]);
 
-$("variationResult").innerHTML=answers.map((a,i)=>
-`<div class="card"><h3>Variation ${i+1}</h3>${markdown(a)}</div>`
-).join("");
-}catch(e){
-$("variationResult").textContent=e.message;
-}
-};
+  if(!prompt){
+    return;
+  }
+
+
+  $("variationResult")
+    .innerHTML=
+      "Generating 3 responses...";
+
+
+  try{
+
+    const answers =
+      await Promise.all([
+
+        directAI(prompt),
+
+        directAI(
+          prompt+
+          "\nGive a substantially different version."
+        ),
+
+        directAI(
+          prompt+
+          "\nGive another alternative version."
+        )
+
+      ]);
+
+
+    $("variationResult")
+      .innerHTML=
+        answers.map(
+          (answer,i)=>
+            `
+              <div class="result-card">
+                <strong>
+                  Variation ${i+1}
+                </strong>
+                ${markdown(answer)}
+              </div>
+            `
+        ).join("");
+
+  }catch(error){
+
+    $("variationResult")
+      .textContent=
+        error.message;
+
+  }
+
 };
 
 
 /* =========================================================
-   DIRECT AI REQUEST
+   CHAT SUMMARY
 ========================================================= */
 
-async function directAI(prompt){
-const chat=current();
+$("summaryBtn").onclick=
+  summarizeChat;
 
-const response=await fetch("/.netlify/functions/chat",{
-method:"POST",
-headers:{"Content-Type":"application/json"},
-body:JSON.stringify({
-message:prompt,
-history:chat?chat.messages.slice(-10):[],
-systemPrompt:getSystem(),
-temperature:Number(settings.temperature),
-maxTokens:Number(settings.maxTokens)
-})
-});
 
-const data=await response.json();
+async function summarizeChat(){
 
-if(!response.ok)throw new Error(data.error||"AI request failed");
+  const chat=current();
 
-return data.reply||"";
-}
+  if(
+    !chat ||
+    !chat.messages.length
+  ){
 
-function getSystem(){
-return "Act as "+settings.persona+". "+settings.systemPrompt;
+    toastMsg(
+      "There is no conversation to summarize."
+    );
+
+    return;
+
+  }
+
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>AI Chat Summary</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div id="summaryResult">
+      Creating summary...
+    </div>
+
+  `);
+
+
+  try{
+
+    const transcript =
+      chat.messages
+        .map(
+          m=>
+            (m.role==="user"
+              ?"User"
+              :"Assistant")+
+            ":\n"+
+            m.content
+        )
+        .join("\n\n");
+
+
+    const summary =
+      await directAI(
+        "Summarize this entire conversation. Include the main topic, important points, decisions and useful next steps:\n\n"+
+        transcript,
+        {
+          maxTokens:1200
+        }
+      );
+
+
+    $("summaryResult")
+      .innerHTML=
+        markdown(summary);
+
+  }catch(error){
+
+    $("summaryResult")
+      .textContent=
+        error.message;
+
+  }
+
 }
 
 
 /* =========================================================
-   AI SETTINGS
+   REWRITE
 ========================================================= */
 
-$("conversationSettings").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>AI Settings</h2><button class="close" onclick="closeModal()">×</button></div>
+$("rewriteBtn").onclick=()=>{
 
-<div class="field">
-<label>System Prompt</label>
-<textarea id="systemValue">${escape(settings.systemPrompt)}</textarea>
-</div>
+  const text =
+    getSelectedText() ||
+    input.value.trim();
 
-<div class="field">
-<label>Temperature: <span id="tempText">${settings.temperature}</span></label>
-<input id="tempValue" type="range" min="0" max="2" step=".1" value="${settings.temperature}">
-</div>
 
-<div class="field">
-<label>Maximum Tokens</label>
-<input id="tokenValueInput" type="number" min="100" max="8000" value="${settings.maxTokens}">
-</div>
+  if(!text){
 
-<div class="field">
-<label>Response Length</label>
-<select id="lengthValue">
-<option ${settings.mode==="Concise"?"selected":""}>Concise</option>
-<option ${settings.mode==="Balanced"?"selected":""}>Balanced</option>
-<option ${settings.mode==="Detailed"?"selected":""}>Detailed</option>
-<option ${settings.mode==="Creative"?"selected":""}>Creative</option>
-</select>
-</div>
+    toastMsg(
+      "Select text or type something first."
+    );
 
-<button class="save" onclick="saveAISettings()">Save Settings</button>
-`);
+    return;
 
-$("tempValue").oninput=()=>{
-$("tempText").textContent=$("tempValue").value;
+  }
+
+
+  input.value =
+    "Rewrite this naturally while preserving the meaning:\n\n"+
+    text;
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
 };
 
-window.saveAISettings=()=>{
-settings.systemPrompt=$("systemValue").value;
-settings.temperature=Math.max(0,Math.min(2,Number($("tempValue").value)));
-settings.maxTokens=Math.max(100,Math.min(8000,Number($("tokenValueInput").value)||2000));
-settings.mode=$("lengthValue").value;
-save();
-closeModal();
-toastMsg("AI settings saved");
+
+/* =========================================================
+   TONE
+========================================================= */
+
+$("toneBtn").onclick=()=>{
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Tone Control</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="menu">
+
+      <button onclick="setTone('Natural')">
+        Natural
+      </button>
+
+      <button onclick="setTone('Professional')">
+        Professional
+      </button>
+
+      <button onclick="setTone('Friendly')">
+        Friendly
+      </button>
+
+      <button onclick="setTone('Formal')">
+        Formal
+      </button>
+
+      <button onclick="setTone('Simple')">
+        Simple
+      </button>
+
+      <button onclick="setTone('Creative')">
+        Creative
+      </button>
+
+    </div>
+
+  `);
+
 };
+
+
+window.setTone=tone=>{
+
+  settings.tone=tone;
+
+  save();
+
+  closeModal();
+
+  toastMsg(
+    tone+" tone selected"
+  );
+
 };
+
+
+/* =========================================================
+   LANGUAGE
+========================================================= */
+
+$("languageBtn").onclick=()=>{
+
+  const languages=[
+    "Auto",
+    "English",
+    "Urdu",
+    "Arabic",
+    "Chinese",
+    "Spanish",
+    "French",
+    "German",
+    "Hindi",
+    "Turkish"
+  ];
+
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Chat Language</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div
+      class="menu"
+      id="languageChoices">
+    </div>
+
+  `);
+
+
+  const box =
+    $("languageChoices");
+
+
+  languages.forEach(
+    language=>{
+
+      const button =
+        document.createElement(
+          "button"
+        );
+
+      button.textContent=
+        language;
+
+      button.onclick=()=>{
+
+        settings.language=
+          language;
+
+        save();
+
+        closeModal();
+
+        toastMsg(
+          "Language: "+
+          language
+        );
+
+      };
+
+
+      box.appendChild(
+        button
+      );
+
+    }
+  );
+
+};
+
+
+/* =========================================================
+   CALCULATOR
+========================================================= */
+
+$("calculatorBtn").onclick=()=>{
+
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Calculator / Math Mode</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="field">
+
+      <label>
+        Expression
+      </label>
+
+      <input
+        id="calcInput"
+        placeholder="Example: (25 × 4) + 10">
+
+    </div>
+
+    <button
+      class="save"
+      onclick="calculateExpression()">
+      Calculate
+    </button>
+
+    <div
+      id="calcResult"
+      class="result-card"
+      style="display:none">
+    </div>
+
+  `);
+
+};
+
+
+window.calculateExpression=()=>{
+
+  const expression =
+    $("calcInput")
+      .value
+      .trim();
+
+
+  try{
+
+    const result =
+      safeCalculate(
+        expression
+      );
+
+
+    $("calcResult")
+      .style.display=
+        "block";
+
+    $("calcResult")
+      .innerHTML=
+        "<strong>Result:</strong> "+
+        escapeHTML(
+          String(result)
+        );
+
+  }catch{
+
+    $("calcResult")
+      .style.display=
+        "block";
+
+    $("calcResult")
+      .textContent=
+        "Invalid mathematical expression.";
+
+  }
+
+};
+
+
+/*
+ * Safe arithmetic evaluator.
+ *
+ * No arbitrary JavaScript execution.
+ */
+
+function safeCalculate(
+  expression
+){
+
+  let s =
+    expression
+      .replace(/×/g,"*")
+      .replace(/÷/g,"/")
+      .replace(/−/g,"-")
+      .replace(/\^/g,"**")
+      .replace(/,/g,"");
+
+
+  if(
+    !/^[0-9+\-*/().%\s*]+$/.test(s)
+  ){
+    throw new Error("Invalid");
+  }
+
+
+  /*
+   * Function is used only after
+   * restricting the expression to
+   * arithmetic characters.
+   */
+
+  return Function(
+    '"use strict";return ('+
+    s+
+    ')'
+  )();
+
+}
+
+
+/* =========================================================
+   EXPLAIN SELECTION
+========================================================= */
+
+$("explainSelectionBtn").onclick=()=>{
+
+  const selected =
+    getSelectedText();
+
+
+  if(!selected){
+
+    toastMsg(
+      "Select text on the page first."
+    );
+
+    return;
+
+  }
+
+
+  input.value =
+    "Explain this selected text clearly:\n\n"+
+    selected;
+
+  resizeInput();
+
+  updateCounter();
+
+  input.focus();
+
+};
+
+
+function getSelectedText(){
+
+  const selection =
+    window.getSelection();
+
+
+  if(!selection){
+    return "";
+  }
+
+
+  return selection
+    .toString()
+    .trim();
+
+}
 
 
 /* =========================================================
    FILES
 ========================================================= */
 
-$("attachBtn").onclick=()=>$("fileInput").click();
-$("filesBtn").onclick=openFiles;
+$("attachBtn").onclick=()=>
+  $("fileInput").click();
+
+
+$("filesBtn").onclick=
+  openFiles;
+
 
 $("fileInput").onchange=e=>{
-handleFiles(e.target.files);
-e.target.value="";
+
+  handleFiles(
+    e.target.files
+  );
+
+  e.target.value="";
+
 };
 
-function handleFiles(list){
-[...list].forEach(file=>{
-if(file.name.toLowerCase().endsWith(".txt")||
-file.name.toLowerCase().endsWith(".md")){
-const reader=new FileReader();
 
-reader.onload=()=>{
-files.push({
-name:file.name,
-size:file.size,
-type:file.type,
-content:reader.result
-});
+function handleFiles(
+  list
+){
 
-save();
-toastMsg(file.name+" added");
-};
+  [
+    ...list
+  ].forEach(
+    file=>{
 
-reader.readAsText(file);
-}else if(file.name.toLowerCase().endsWith(".pdf")){
-files.push({
-name:file.name,
-size:file.size,
-type:"application/pdf",
-content:"PDF file stored. Browser PDF text extraction can be connected through a PDF parser."
-});
-save();
-toastMsg(file.name+" added");
-}else{
-toastMsg("Unsupported file: "+file.name);
+      const lower =
+        file.name.toLowerCase();
+
+
+      if(
+        !lower.endsWith(".txt") &&
+        !lower.endsWith(".md") &&
+        !lower.endsWith(".csv")
+      ){
+
+        toastMsg(
+          "Unsupported file: "+
+          file.name
+        );
+
+        return;
+
+      }
+
+
+      const reader =
+        new FileReader();
+
+
+      reader.onload=()=>{
+
+        const existing =
+          files.find(
+            f=>
+              f.name===
+              file.name
+          );
+
+
+        const item={
+
+          name:file.name,
+
+          size:file.size,
+
+          type:file.type,
+
+          content:
+            String(
+              reader.result || ""
+            )
+
+        };
+
+
+        if(existing){
+
+          Object.assign(
+            existing,
+            item
+          );
+
+        }else{
+
+          files.push(item);
+
+        }
+
+
+        save();
+
+        toastMsg(
+          file.name+
+          " added"
+        );
+
+      };
+
+
+      reader.readAsText(
+        file
+      );
+
+    }
+  );
+
 }
-});
+
+
+function getSelectedFile(){
+
+  if(!settings.selectedFile){
+    return null;
+  }
+
+
+  return files.find(
+    f=>
+      f.name===
+      settings.selectedFile
+  ) || null;
+
 }
+
 
 function openFiles(){
-openModal(`
-<div class="modal-head"><h2>File Library</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="dropzone" id="dropzone">
-<strong>Drop files here</strong><br>
-TXT, Markdown and PDF
-<br><br>
-<button class="pbtn" onclick="document.getElementById('fileInput').click()">Choose Files</button>
-</div>
-<div id="fileList"></div>
-`);
 
-renderFiles();
+  openModal(`
 
-const dz=$("dropzone");
+    <div class="modal-head">
+      <h2>File Library</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
 
-dz.ondragover=e=>{
-e.preventDefault();
-dz.classList.add("drag");
-};
+    <div
+      class="dropzone"
+      id="dropzone">
 
-dz.ondragleave=()=>{
-dz.classList.remove("drag");
-};
+      <strong>
+        Drop TXT, MD or CSV files here
+      </strong>
 
-dz.ondrop=e=>{
-e.preventDefault();
-dz.classList.remove("drag");
-handleFiles(e.dataTransfer.files);
-renderFiles();
-};
+      <br><br>
+
+      <button
+        class="pbtn"
+        onclick="document.getElementById('fileInput').click()">
+        Choose Files
+      </button>
+
+    </div>
+
+    <div id="fileList">
+    </div>
+
+  `);
+
+
+  renderFiles();
+
+
+  const dz =
+    $("dropzone");
+
+
+  dz.ondragover=e=>{
+
+    e.preventDefault();
+
+    dz.classList.add(
+      "drag"
+    );
+
+  };
+
+
+  dz.ondragleave=()=>{
+
+    dz.classList.remove(
+      "drag"
+    );
+
+  };
+
+
+  dz.ondrop=e=>{
+
+    e.preventDefault();
+
+    dz.classList.remove(
+      "drag"
+    );
+
+    handleFiles(
+      e.dataTransfer.files
+    );
+
+    setTimeout(
+      renderFiles,
+      300
+    );
+
+  };
+
 }
+
 
 function renderFiles(){
-const el=$("fileList");
-if(!el)return;
 
-el.innerHTML="";
+  const el =
+    $("fileList");
 
-files.forEach((f,i)=>{
-const row=document.createElement("div");
-row.className="file-item";
 
-row.innerHTML=`
-<span>📄 ${escape(f.name)}</span>
-<button style="border:0;background:none;color:var(--danger)" onclick="deleteFile(${i})">×</button>
-`;
+  if(!el){
+    return;
+  }
 
-el.appendChild(row);
-});
+
+  el.innerHTML="";
+
+
+  if(!files.length){
+
+    el.innerHTML=
+      '<p style="font-size:11px;color:var(--muted)">No files yet.</p>';
+
+    return;
+
+  }
+
+
+  files.forEach(
+    (file,i)=>{
+
+      const row =
+        document.createElement(
+          "div"
+        );
+
+      row.className=
+        "file-item";
+
+
+      const info =
+        document.createElement(
+          "span"
+        );
+
+      info.textContent=
+        "📄 "+
+        file.name;
+
+
+      const buttons =
+        document.createElement(
+          "span"
+        );
+
+
+      const use =
+        document.createElement(
+          "button"
+        );
+
+      use.className=
+        "file-use";
+
+      use.textContent=
+        settings.selectedFile===
+        file.name
+          ?"Selected"
+          :"Use";
+
+
+      use.onclick=()=>{
+
+        settings.selectedFile=
+          file.name;
+
+        save();
+
+        renderFiles();
+
+        toastMsg(
+          file.name+
+          " selected for Q&A"
+        );
+
+      };
+
+
+      const remove =
+        document.createElement(
+          "button"
+        );
+
+      remove.className=
+        "file-use";
+
+      remove.style.color=
+        "var(--danger)";
+
+      remove.textContent=
+        "Delete";
+
+
+      remove.onclick=()=>{
+
+        files.splice(
+          i,
+          1
+        );
+
+
+        if(
+          settings.selectedFile===
+          file.name
+        ){
+
+          settings.selectedFile="";
+
+        }
+
+
+        save();
+
+        renderFiles();
+
+      };
+
+
+      buttons.append(
+        use,
+        remove
+      );
+
+
+      row.append(
+        info,
+        buttons
+      );
+
+
+      el.appendChild(row);
+
+    }
+  );
+
 }
-
-window.deleteFile=i=>{
-files.splice(i,1);
-save();
-renderFiles();
-};
 
 
 /* =========================================================
-   EXPORTS
+   IMAGE UNDERSTANDING
+========================================================= */
+
+$("imageBtn").onclick=()=>
+  $("imageInput").click();
+
+
+$("imageInput").onchange=e=>{
+
+  const file =
+    e.target.files[0];
+
+
+  if(!file){
+    return;
+  }
+
+
+  if(!file.type.startsWith("image/")){
+
+    toastMsg(
+      "Please select an image."
+    );
+
+    return;
+
+  }
+
+
+  const reader =
+    new FileReader();
+
+
+  reader.onload=()=>{
+
+    selectedImage =
+      reader.result;
+
+    selectedImageName=
+      file.name;
+
+
+    toastMsg(
+      "Image attached. Ask a question about it."
+    );
+
+  };
+
+
+  reader.readAsDataURL(
+    file
+  );
+
+
+  e.target.value="";
+
+};
+
+
+function clearAttachment(){
+
+  selectedImage=null;
+
+  selectedImageName="";
+
+  settings.selectedFile="";
+
+}
+
+
+/* =========================================================
+   EXPORT
 ========================================================= */
 
 function exportMarkdown(){
-const chat=current();
-if(!chat)return;
 
-const text="# "+chat.name+"\n\n"+
-chat.messages.map(m=>
-"## "+(m.role==="user"?"You":"AI")+"\n\n"+m.content
-).join("\n\n");
+  const chat=current();
 
-download(chat.name+".md",text,"text/markdown");
-toastMsg("Markdown exported");
+  if(!chat){
+    return;
+  }
+
+
+  const text =
+    "# "+
+    chat.name+
+    "\n\n"+
+    chat.messages
+      .map(
+        m=>
+          "## "+
+          (
+            m.role==="user"
+              ?"You"
+              :"AI"
+          )+
+          "\n\n"+
+          m.content
+      )
+      .join("\n\n");
+
+
+  download(
+    chat.name+".md",
+    text,
+    "text/markdown"
+  );
+
+
+  toastMsg(
+    "Markdown exported"
+  );
+
 }
+
 
 function exportHTML(){
-const chat=current();
-if(!chat)return;
 
-const html=`
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  const html=`
+
 <!DOCTYPE html>
+
 <html>
-<head><meta charset="UTF-8"><title>${escape(chat.name)}</title></head>
+
+<head>
+
+<meta charset="UTF-8">
+
+<title>
+${escapeHTML(chat.name)}
+</title>
+
+<style>
+body{
+font-family:Arial;
+max-width:850px;
+margin:40px auto;
+line-height:1.6;
+padding:20px;
+}
+</style>
+
+</head>
+
 <body>
-<h1>${escape(chat.name)}</h1>
-${chat.messages.map(m=>`
+
+<h1>
+${escapeHTML(chat.name)}
+</h1>
+
+${chat.messages.map(
+  m=>`
+
 <section>
-<h2>${m.role==="user"?"You":"AI"}</h2>
-<div>${m.role==="assistant"?markdown(m.content):escape(m.content).replace(/\n/g,"<br>")}</div>
+
+<h2>
+${
+  m.role==="user"
+    ?"You"
+    :"AI"
+}
+</h2>
+
+<div>
+${
+  m.role==="assistant"
+    ?markdown(m.content)
+    :escapeHTML(m.content)
+       .replace(/\n/g,"<br>")
+}
+</div>
+
 </section>
-`).join("")}
+
+`
+).join("")}
+
 </body>
-</html>`;
 
-download(chat.name+".html",html,"text/html");
-toastMsg("HTML exported");
+</html>
+`;
+
+
+  download(
+    chat.name+".html",
+    html,
+    "text/html"
+  );
+
+
+  toastMsg(
+    "HTML exported"
+  );
+
 }
 
-function download(name,text,type){
-const blob=new Blob([text],{type});
-const url=URL.createObjectURL(blob);
-const a=document.createElement("a");
-a.href=url;
-a.download=name.replace(/[<>:"/\\|?*]/g,"_");
-a.click();
-URL.revokeObjectURL(url);
+
+function download(
+  name,
+  text,
+  type
+){
+
+  const blob =
+    new Blob(
+      [text],
+      {type}
+    );
+
+
+  const url =
+    URL.createObjectURL(
+      blob
+    );
+
+
+  const a =
+    document.createElement(
+      "a"
+    );
+
+
+  a.href=url;
+
+  a.download=
+    name.replace(
+      /[<>:"/\\|?*]/g,
+      "_"
+    );
+
+
+  document.body.appendChild(a);
+
+  a.click();
+
+  a.remove();
+
+  setTimeout(
+    ()=>URL.revokeObjectURL(url),
+    1000
+  );
+
 }
+
 
 function printChat(){
-const chat=current();
-if(!chat)return;
 
-const win=window.open("","_blank");
-if(!win){
-toastMsg("Allow popups to print");
-return;
+  const chat=current();
+
+  if(!chat){
+    return;
+  }
+
+
+  const win =
+    window.open(
+      "",
+      "_blank"
+    );
+
+
+  if(!win){
+
+    toastMsg(
+      "Allow popups to print."
+    );
+
+    return;
+
+  }
+
+
+  win.document.write(`
+
+<!DOCTYPE html>
+
+<html>
+
+<head>
+
+<title>
+${escapeHTML(chat.name)}
+</title>
+
+<style>
+
+body{
+font-family:Arial;
+max-width:850px;
+margin:30px auto;
+line-height:1.6;
 }
 
-win.document.write(`
-<!DOCTYPE html>
-<html>
-<head><title>${escape(chat.name)}</title></head>
+</style>
+
+</head>
+
 <body>
-<h1>${escape(chat.name)}</h1>
-${chat.messages.map(m=>`
-<h3>${m.role==="user"?"You":"AI"}</h3>
-<div>${m.role==="assistant"?markdown(m.content):escape(m.content).replace(/\n/g,"<br>")}</div>
+
+<h1>
+${escapeHTML(chat.name)}
+</h1>
+
+${chat.messages.map(
+  m=>`
+
+<h3>
+${
+  m.role==="user"
+    ?"You"
+    :"AI"
+}
+</h3>
+
+<div>
+${
+  m.role==="assistant"
+    ?markdown(m.content)
+    :escapeHTML(m.content)
+       .replace(/\n/g,"<br>")
+}
+</div>
+
 <hr>
-`).join("")}
+
+`
+).join("")}
+
 </body>
+
 </html>
+
 `);
 
-win.document.close();
-win.print();
+
+  win.document.close();
+
+  win.print();
+
 }
 
 
@@ -1815,22 +6403,59 @@ win.print();
 ========================================================= */
 
 $("backgroundBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Background</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="grid2">
-<button class="pbtn" onclick="setBackground('default')">Default</button>
-<button class="pbtn" onclick="setBackground('blue')">Blue</button>
-<button class="pbtn" onclick="setBackground('purple')">Purple</button>
-<button class="pbtn" onclick="setBackground('dark')">Dark</button>
-</div>
-`);
 
-window.setBackground=v=>{
-settings.background=v;
-applySettings();
-save();
-closeModal();
+  openModal(`
+
+    <div class="modal-head">
+      <h2>Background</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
+
+    <div class="grid2">
+
+      <button
+        class="pbtn"
+        onclick="setBackground('default')">
+        Default
+      </button>
+
+      <button
+        class="pbtn"
+        onclick="setBackground('blue')">
+        Blue
+      </button>
+
+      <button
+        class="pbtn"
+        onclick="setBackground('purple')">
+        Purple
+      </button>
+
+      <button
+        class="pbtn"
+        onclick="setBackground('dark')">
+        Dark
+      </button>
+
+    </div>
+
+  `);
+
 };
+
+
+window.setBackground=value=>{
+
+  settings.background=
+    value;
+
+  applySettings();
+
+  save();
+
+  closeModal();
+
 };
 
 
@@ -1839,117 +6464,451 @@ closeModal();
 ========================================================= */
 
 $("appearanceBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Appearance</h2><button class="close" onclick="closeModal()">×</button></div>
 
-<div class="field">
-<label>Accent Color</label>
-<input id="accentColor" type="color" value="${settings.accent}">
-</div>
+  openModal(`
 
-<div class="field">
-<label>Chat Density</label>
-<select id="density">
-<option value="comfortable">Comfortable</option>
-<option value="compact">Compact</option>
-</select>
-</div>
+    <div class="modal-head">
+      <h2>Appearance</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
 
-<div class="field">
-<label>AI Avatar</label>
-<input id="avatarValue" maxlength="4" value="${escape(settings.avatar)}">
-</div>
+    <div class="field">
 
-<button class="save" onclick="saveAppearance()">Save Appearance</button>
-`);
+      <label>
+        Accent Color
+      </label>
 
-window.saveAppearance=()=>{
-settings.accent=$("accentColor").value;
-settings.density=$("density").value;
-settings.avatar=$("avatarValue").value||"AI";
-applySettings();
-save();
-closeModal();
-renderChat();
-};
+      <input
+        id="accentColor"
+        type="color"
+        value="${settings.accent}">
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        Chat Density
+      </label>
+
+      <select id="density">
+
+        <option value="comfortable">
+          Comfortable
+        </option>
+
+        <option value="compact">
+          Compact
+        </option>
+
+      </select>
+
+    </div>
+
+    <div class="field">
+
+      <label>
+        AI Avatar
+      </label>
+
+      <input
+        id="avatarValue"
+        maxlength="4"
+        value="${escapeHTML(settings.avatar)}">
+
+    </div>
+
+    <button
+      class="save"
+      onclick="saveAppearance()">
+      Save Appearance
+    </button>
+
+  `);
+
+
+  $("density").value=
+    settings.density;
+
+
+  window.saveAppearance=()=>{
+
+    settings.accent=
+      $("accentColor").value;
+
+    settings.density=
+      $("density").value;
+
+    settings.avatar=
+      $("avatarValue").value ||
+      "AI";
+
+
+    applySettings();
+
+    save();
+
+    closeModal();
+
+    renderChat();
+
+  };
+
 };
 
 
 /* =========================================================
-   CUSTOMIZATION
+   AI SETTINGS
 ========================================================= */
 
-function applySettings(){
-document.body.classList.toggle("dark",settings.theme==="dark");
-document.body.classList.toggle("compact",settings.density==="compact");
-document.body.classList.toggle("noanimations",!settings.animations);
+$("conversationSettings").onclick=()=>{
 
-document.documentElement.style.setProperty("--accent",settings.accent);
+  openModal(`
 
-if(settings.background==="blue"){
-document.body.style.background="linear-gradient(135deg,#edf4ff,#f6f2ff)";
-}else if(settings.background==="purple"){
-document.body.style.background="linear-gradient(135deg,#f5efff,#eef0ff)";
-}else if(settings.background==="dark"){
-document.body.style.background="#090d17";
-}else{
-document.body.style.background="var(--bg)";
-}
+    <div class="modal-head">
 
-$("appLogo").textContent=settings.avatar;
-$("personaBadge").textContent=settings.persona;
-}
+      <h2>
+        AI Settings
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        System Prompt
+      </label>
+
+      <textarea
+        id="systemValue">${escapeHTML(settings.systemPrompt)}</textarea>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Temperature:
+        <span id="tempText">
+          ${settings.temperature}
+        </span>
+      </label>
+
+      <input
+        id="tempValue"
+        type="range"
+        min="0"
+        max="2"
+        step=".1"
+        value="${settings.temperature}">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Maximum Tokens
+      </label>
+
+      <input
+        id="tokenValueInput"
+        type="number"
+        min="100"
+        max="8000"
+        value="${settings.maxTokens}">
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Answer Length
+      </label>
+
+      <select id="lengthValue">
+
+        <option
+          value="Short">
+          Short
+        </option>
+
+        <option
+          value="Balanced">
+          Balanced
+        </option>
+
+        <option
+          value="Long">
+          Long
+        </option>
+
+        <option
+          value="Detailed">
+          Detailed
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      class="save"
+      onclick="saveAISettings()">
+      Save Settings
+    </button>
+
+  `);
+
+
+  $("lengthValue").value=
+    settings.answerLength;
+
+
+  $("tempValue").oninput=()=>{
+
+    $("tempText").textContent=
+      $("tempValue").value;
+
+  };
+
+
+  window.saveAISettings=()=>{
+
+    settings.systemPrompt=
+      $("systemValue").value;
+
+    settings.temperature=
+      Math.max(
+        0,
+        Math.min(
+          2,
+          Number(
+            $("tempValue").value
+          )
+        )
+      );
+
+    settings.maxTokens=
+      Math.max(
+        100,
+        Math.min(
+          8000,
+          Number(
+            $("tokenValueInput").value
+          ) ||
+          2000
+        )
+      );
+
+    settings.answerLength=
+      $("lengthValue").value;
+
+
+    save();
+
+    closeModal();
+
+    toastMsg(
+      "AI settings saved"
+    );
+
+  };
+
+};
 
 
 /* =========================================================
-   SETTINGS
+   GENERAL SETTINGS
 ========================================================= */
 
 $("settingsBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Settings</h2><button class="close" onclick="closeModal()">×</button></div>
 
-<div class="field">
-<label>Theme</label>
-<select id="themeSetting">
-<option value="light" ${settings.theme==="light"?"selected":""}>Light</option>
-<option value="dark" ${settings.theme==="dark"?"selected":""}>Dark</option>
-</select>
-</div>
+  openModal(`
 
-<div class="field">
-<label>Animation</label>
-<select id="animationSetting">
-<option value="on" ${settings.animations?"selected":""}>On</option>
-<option value="off" ${!settings.animations?"selected":""}>Off</option>
-</select>
-</div>
+    <div class="modal-head">
+      <h2>Settings</h2>
+      <button class="close"
+        onclick="closeModal()">×</button>
+    </div>
 
-<div class="field">
-<label>Default System Prompt</label>
-<textarea id="defaultPrompt">${escape(settings.systemPrompt)}</textarea>
-</div>
+    <div class="field">
 
-<button class="save" onclick="saveGeneralSettings()">Save Settings</button>
-`);
+      <label>
+        Theme
+      </label>
 
-window.saveGeneralSettings=()=>{
-settings.theme=$("themeSetting").value;
-settings.animations=$("animationSetting").value==="on";
-settings.systemPrompt=$("defaultPrompt").value;
-applySettings();
-save();
-closeModal();
-toastMsg("Settings saved");
+      <select id="themeSetting">
+
+        <option value="light">
+          Light
+        </option>
+
+        <option value="dark">
+          Dark
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <div class="field">
+
+      <label>
+        Animations
+      </label>
+
+      <select id="animationSetting">
+
+        <option value="on">
+          On
+        </option>
+
+        <option value="off">
+          Off
+        </option>
+
+      </select>
+
+    </div>
+
+
+    <button
+      class="save"
+      onclick="saveGeneralSettings()">
+      Save Settings
+    </button>
+
+  `);
+
+
+  $("themeSetting").value=
+    settings.theme;
+
+  $("animationSetting").value=
+    settings.animations
+      ?"on"
+      :"off";
+
+
+  window.saveGeneralSettings=()=>{
+
+    settings.theme=
+      $("themeSetting").value;
+
+    settings.animations=
+      $("animationSetting").value===
+      "on";
+
+
+    applySettings();
+
+    save();
+
+    closeModal();
+
+    toastMsg(
+      "Settings saved"
+    );
+
+  };
+
 };
-};
+
+
+/* =========================================================
+   APPLY SETTINGS
+========================================================= */
+
+function applySettings(){
+
+  document.body.classList.toggle(
+    "dark",
+    settings.theme==="dark"
+  );
+
+
+  document.body.classList.toggle(
+    "compact",
+    settings.density==="compact"
+  );
+
+
+  document.body.classList.toggle(
+    "noanimations",
+    !settings.animations
+  );
+
+
+  document.documentElement
+    .style
+    .setProperty(
+      "--accent",
+      settings.accent
+    );
+
+
+  if(
+    settings.background===
+    "blue"
+  ){
+
+    document.body.style.background=
+      "linear-gradient(135deg,#edf4ff,#f6f2ff)";
+
+  }else if(
+    settings.background===
+    "purple"
+  ){
+
+    document.body.style.background=
+      "linear-gradient(135deg,#f5efff,#eef0ff)";
+
+  }else if(
+    settings.background===
+    "dark"
+  ){
+
+    document.body.style.background=
+      "#090d17";
+
+  }else{
+
+    document.body.style.background=
+      "var(--bg)";
+
+  }
+
+
+  $("appLogo").textContent=
+    settings.avatar;
+
+  $("personaBadge").textContent=
+    settings.persona;
+
+
+  updatePersonaButtons();
+
+}
 
 
 /* =========================================================
    SEARCH
 ========================================================= */
 
-$("search").oninput=renderHistory;
+$("search").oninput=
+  renderHistory;
 
 
 /* =========================================================
@@ -1957,38 +6916,106 @@ $("search").oninput=renderHistory;
 ========================================================= */
 
 $("newChat").onclick=()=>{
-if(generating)stopGeneration();
-createChat();
+
+  if(generating){
+    stopGeneration();
+  }
+
+  createChat();
+
 };
 
 
 /* =========================================================
-   TOP BUTTONS
+   TOP ACTIONS
 ========================================================= */
 
-$("favoriteBtn").onclick=()=>toggleFavorite();
+$("favoriteBtn").onclick=
+  ()=>toggleFavorite();
 
-$("renameBtn").onclick=()=>renameChat();
 
-$("archiveBtn").onclick=()=>archiveChat();
+$("renameBtn").onclick=
+  ()=>renameChat();
+
+
+$("archiveBtn").onclick=
+  ()=>archiveChat();
+
 
 $("fullscreenBtn").onclick=()=>{
-document.body.classList.toggle("fullscreen");
+
+  document.body
+    .classList.toggle(
+      "fullscreen"
+    );
+
 };
 
+
 $("moreBtn").onclick=()=>{
-openModal(`
-<div class="modal-head"><h2>Chat Tools</h2><button class="close" onclick="closeModal()">×</button></div>
-<div class="menu">
-<button onclick="copyAll();closeModal()">📋 Copy Conversation</button>
-<button onclick="exportMarkdown();closeModal()">⬇ Markdown Export</button>
-<button onclick="exportHTML();closeModal()">⬇ HTML Export</button>
-<button onclick="printChat();closeModal()">🖨 Print</button>
-<button onclick="duplicateChat(current());closeModal()">⑂ Duplicate Chat</button>
-<button onclick="branchChat();closeModal()">🌿 Branch Chat</button>
-<button onclick="clearConversation();closeModal()">⌫ Clear Chat</button>
-</div>
-`);
+
+  openModal(`
+
+    <div class="modal-head">
+
+      <h2>
+        Chat Tools
+      </h2>
+
+      <button
+        class="close"
+        onclick="closeModal()">
+        ×
+      </button>
+
+    </div>
+
+    <div class="menu">
+
+      <button
+        onclick="copyAll();closeModal()">
+        📋 Copy Conversation
+      </button>
+
+      <button
+        onclick="exportMarkdown();closeModal()">
+        ⬇ Markdown Export
+      </button>
+
+      <button
+        onclick="exportHTML();closeModal()">
+        ⬇ HTML Export
+      </button>
+
+      <button
+        onclick="printChat();closeModal()">
+        🖨 Print
+      </button>
+
+      <button
+        onclick="duplicateChat(current());closeModal()">
+        ⑂ Duplicate
+      </button>
+
+      <button
+        onclick="branchChat();closeModal()">
+        🌿 Branch Chat
+      </button>
+
+      <button
+        onclick="clearConversation();closeModal()">
+        ⌫ Clear Chat
+      </button>
+
+      <button
+        onclick="summarizeChat();">
+        📝 AI Summary
+      </button>
+
+    </div>
+
+  `);
+
 };
 
 
@@ -1997,22 +7024,55 @@ openModal(`
 ========================================================= */
 
 function branchChat(){
-const chat=current();
-if(!chat)return;
 
-const branch=JSON.parse(JSON.stringify(chat));
+  const chat=current();
 
-branch.id=Date.now().toString()+Math.random();
-branch.name=chat.name+" — Branch";
-branch.created=Date.now();
+  if(!chat){
+    return;
+  }
 
-chats.unshift(branch);
-currentId=branch.id;
 
-save();
-renderHistory();
-renderChat();
-toastMsg("Conversation branched");
+  const branch =
+    JSON.parse(
+      JSON.stringify(chat)
+    );
+
+
+  branch.id=
+    Date.now().toString()+
+    Math.random()
+      .toString(36)
+      .slice(2);
+
+
+  branch.name=
+    chat.name+
+    " — Branch";
+
+
+  branch.created=
+    Date.now();
+
+
+  chats.unshift(
+    branch
+  );
+
+
+  currentId=
+    branch.id;
+
+
+  saveChatsOnly();
+
+  renderHistory();
+
+  renderChat();
+
+  toastMsg(
+    "Conversation branched"
+  );
+
 }
 
 
@@ -2021,15 +7081,33 @@ toastMsg("Conversation branched");
 ========================================================= */
 
 function clearConversation(){
-const chat=current();
-if(!chat)return;
 
-if(!confirm("Clear this conversation?"))return;
+  const chat=current();
 
-chat.messages=[];
-save();
-renderChat();
-toastMsg("Conversation cleared");
+  if(!chat){
+    return;
+  }
+
+
+  if(
+    !confirm(
+      "Clear this conversation?"
+    )
+  ){
+    return;
+  }
+
+
+  chat.messages=[];
+
+  saveChatsOnly();
+
+  renderChat();
+
+  toastMsg(
+    "Conversation cleared"
+  );
+
 }
 
 
@@ -2038,7 +7116,26 @@ toastMsg("Conversation cleared");
 ========================================================= */
 
 $("collapseBtn").onclick=()=>{
-$("sidebar").classList.toggle("collapsed");
+
+  $("sidebar")
+    .classList.toggle(
+      "collapsed"
+    );
+
+};
+
+
+/* =========================================================
+   MOBILE MENU
+========================================================= */
+
+$("mobileMenuBtn").onclick=()=>{
+
+  document.body
+    .classList.toggle(
+      "mobile-sidebar"
+    );
+
 };
 
 
@@ -2047,9 +7144,17 @@ $("sidebar").classList.toggle("collapsed");
 ========================================================= */
 
 $("themeBtn").onclick=()=>{
-settings.theme=settings.theme==="dark"?"light":"dark";
-applySettings();
-save();
+
+  settings.theme=
+    settings.theme==="dark"
+      ?"light"
+      :"dark";
+
+
+  applySettings();
+
+  save();
+
 };
 
 
@@ -2057,42 +7162,249 @@ save();
    QUICK PROMPTS
 ========================================================= */
 
-document.querySelectorAll(".quick button").forEach(b=>{
-b.onclick=()=>{
-input.value=b.dataset.prompt;
-resizeInput();
-input.focus();
-};
-});
+document
+  .querySelectorAll(
+    ".quick button"
+  )
+  .forEach(button=>{
+
+    button.onclick=()=>{
+
+      input.value=
+        button.dataset.prompt;
+
+      resizeInput();
+
+      updateCounter();
+
+      input.focus();
+
+    };
+
+  });
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+document
+  .querySelectorAll(
+    ".tool[data-action]"
+  )
+  .forEach(button=>{
+
+    button.onclick=()=>{
+
+      const action=
+        button.dataset.action;
+
+
+      if(action==="bold"){
+        wrapSelection(
+          "**",
+          "**"
+        );
+      }
+
+
+      if(action==="italic"){
+        wrapSelection(
+          "*",
+          "*"
+        );
+      }
+
+
+      if(action==="heading"){
+        wrapSelection(
+          "# ",
+          ""
+        );
+      }
+
+
+      if(action==="bullet"){
+        wrapSelection(
+          "- ",
+          ""
+        );
+      }
+
+
+      if(action==="code"){
+        wrapSelection(
+          "`",
+          "`"
+        );
+      }
+
+
+      if(action==="quote"){
+        wrapSelection(
+          "> ",
+          ""
+        );
+      }
+
+
+      if(action==="summarize"){
+
+        input.value=
+          "Summarize this:\n\n"+
+          input.value;
+
+      }
+
+
+      if(action==="translate"){
+
+        input.value=
+          "Translate this into English:\n\n"+
+          input.value;
+
+      }
+
+
+      if(action==="grammar"){
+
+        input.value=
+          "Correct the grammar of this:\n\n"+
+          input.value;
+
+      }
+
+
+      resizeInput();
+
+      updateCounter();
+
+    };
+
+  });
+
+
+function wrapSelection(
+  before,
+  after
+){
+
+  const start=
+    input.selectionStart;
+
+  const end=
+    input.selectionEnd;
+
+
+  const selected=
+    input.value.slice(
+      start,
+      end
+    );
+
+
+  const value=
+    selected ||
+    "text";
+
+
+  input.value=
+    input.value.slice(0,start)+
+    before+
+    value+
+    after+
+    input.value.slice(end);
+
+
+  input.focus();
+
+
+  input.setSelectionRange(
+    start+
+      before.length,
+    start+
+      before.length+
+      value.length
+  );
+
+}
 
 
 /* =========================================================
    INPUT
 ========================================================= */
 
-input.addEventListener("input",()=>{
-resizeInput();
-updateCounter();
-});
+input.addEventListener(
+  "input",
+  ()=>{
 
-input.addEventListener("keydown",e=>{
-if(e.key==="Enter"&&!e.shiftKey){
-e.preventDefault();
-sendMessage();
-}
-});
+    resizeInput();
 
-send.onclick=sendMessage;
+    updateCounter();
+
+  }
+);
+
+
+input.addEventListener(
+  "keydown",
+  e=>{
+
+    if(
+      e.key==="Enter" &&
+      !e.shiftKey
+    ){
+
+      e.preventDefault();
+
+      sendMessage();
+
+    }
+
+  }
+);
+
+
+send.onclick=
+  sendMessage;
+
+
+$("voiceBtn").onclick=
+  startVoice;
+
 
 function resizeInput(){
-input.style.height="auto";
-input.style.height=Math.min(input.scrollHeight,150)+"px";
+
+  input.style.height=
+    "auto";
+
+  input.style.height=
+    Math.min(
+      input.scrollHeight,
+      150
+    )+
+    "px";
+
 }
 
+
 function updateCounter(){
-const text=input.value;
-const words=text.trim()?text.trim().split(/\s+/).length:0;
-$("counter").textContent=text.length+" characters · "+words+" words";
+
+  const text=
+    input.value;
+
+  const words=
+    text.trim()
+      ?text.trim().split(/\s+/).length
+      :0;
+
+
+  $("counter").textContent=
+    text.length+
+    " characters · "+
+    words+
+    " words";
+
 }
 
 
@@ -2101,20 +7413,66 @@ $("counter").textContent=text.length+" characters · "+words+" words";
 ========================================================= */
 
 function updateStats(){
-const chat=current();
-if(!chat)return;
 
-const users=chat.messages.filter(m=>m.role==="user");
-const ai=chat.messages.filter(m=>m.role==="assistant");
-const pinned=chat.messages.filter(m=>m.pinned);
+  const chat=current();
 
-const words=users.map(m=>m.content).join(" ").trim();
-const count=words?words.split(/\s+/).length:0;
+  if(!chat){
+    return;
+  }
 
-$("statMessages").textContent=chat.messages.length;
-$("statWords").textContent=count;
-$("statAI").textContent=ai.length;
-$("statPinned").textContent=pinned.length;
+
+  const users=
+    chat.messages.filter(
+      m=>m.role==="user"
+    );
+
+
+  const ai=
+    chat.messages.filter(
+      m=>m.role==="assistant"
+    );
+
+
+  const pinned=
+    chat.messages.filter(
+      m=>m.pinned
+    );
+
+
+  const words=
+    users
+      .map(
+        m=>m.content
+      )
+      .join(" ")
+      .trim();
+
+
+  const count=
+    words
+      ?words.split(/\s+/).length
+      :0;
+
+
+  $("statMessages")
+    .textContent=
+      chat.messages.length;
+
+
+  $("statWords")
+    .textContent=
+      count;
+
+
+  $("statAI")
+    .textContent=
+      ai.length;
+
+
+  $("statPinned")
+    .textContent=
+      pinned.length;
+
 }
 
 
@@ -2122,27 +7480,69 @@ $("statPinned").textContent=pinned.length;
    MODAL
 ========================================================= */
 
-function openModal(html){
-modal.innerHTML=html;
-modalBg.classList.add("show");
+function openModal(
+  html
+){
+
+  modal.innerHTML=
+    html;
+
+  modalBg.classList.add(
+    "show"
+  );
+
 }
+
 
 function closeModal(){
-modalBg.classList.remove("show");
-modal.innerHTML="";
+
+  modalBg.classList.remove(
+    "show"
+  );
+
+  modal.innerHTML="";
+
 }
+
 
 modalBg.onclick=e=>{
-if(e.target===modalBg)closeModal();
+
+  if(
+    e.target===
+    modalBg
+  ){
+
+    closeModal();
+
+  }
+
 };
 
-$("contextMenu").onclick=e=>e.stopPropagation();
 
-document.addEventListener("click",e=>{
-if(!e.target.closest(".history-more")){
-$("contextMenu").classList.remove("show");
-}
-});
+$("contextMenu").onclick=
+  e=>
+    e.stopPropagation();
+
+
+document.addEventListener(
+  "click",
+  e=>{
+
+    if(
+      !e.target.closest(
+        ".history-more"
+      )
+    ){
+
+      $("contextMenu")
+        .classList.remove(
+          "show"
+        );
+
+    }
+
+  }
+);
 
 
 /* =========================================================
@@ -2151,11 +7551,32 @@ $("contextMenu").classList.remove("show");
 
 let toastTimer;
 
+
 function toastMsg(text){
-toast.textContent=text;
-toast.classList.add("show");
-clearTimeout(toastTimer);
-toastTimer=setTimeout(()=>toast.classList.remove("show"),2200);
+
+  toast.textContent=
+    text;
+
+  toast.classList.add(
+    "show"
+  );
+
+
+  clearTimeout(
+    toastTimer
+  );
+
+
+  toastTimer=
+    setTimeout(
+      ()=>{
+        toast.classList.remove(
+          "show"
+        );
+      },
+      2200
+    );
+
 }
 
 
@@ -2163,55 +7584,117 @@ toastTimer=setTimeout(()=>toast.classList.remove("show"),2200);
    KEYBOARD SHORTCUTS
 ========================================================= */
 
-document.addEventListener("keydown",e=>{
+document.addEventListener(
+  "keydown",
+  e=>{
 
-if((e.ctrlKey||e.metaKey)&&e.key==="k"){
-e.preventDefault();
-$("search").focus();
-}
+    if(
+      (e.ctrlKey||e.metaKey) &&
+      e.key.toLowerCase()==="k"
+    ){
 
-if((e.ctrlKey||e.metaKey)&&e.key==="n"){
-e.preventDefault();
-createChat();
-}
+      e.preventDefault();
 
-if((e.ctrlKey||e.metaKey)&&e.key==="e"){
-e.preventDefault();
-exportMarkdown();
-}
+      $("search").focus();
 
-if(e.key==="Escape"){
-closeModal();
-$("contextMenu").classList.remove("show");
-}
+    }
 
-});
+
+    if(
+      (e.ctrlKey||e.metaKey) &&
+      e.key.toLowerCase()==="n"
+    ){
+
+      e.preventDefault();
+
+      createChat();
+
+    }
+
+
+    if(
+      (e.ctrlKey||e.metaKey) &&
+      e.key.toLowerCase()==="e"
+    ){
+
+      e.preventDefault();
+
+      exportMarkdown();
+
+    }
+
+
+    if(e.key==="Escape"){
+
+      closeModal();
+
+      $("contextMenu")
+        .classList.remove(
+          "show"
+        );
+
+    }
+
+  }
+);
 
 
 /* =========================================================
-   FILE DRAG/DROP OVER APP
+   DRAG AND DROP
 ========================================================= */
 
-document.addEventListener("dragover",e=>{
-if(e.dataTransfer&&e.dataTransfer.types.includes("Files")){
-e.preventDefault();
-}
-});
+document.addEventListener(
+  "dragover",
+  e=>{
 
-document.addEventListener("drop",e=>{
-if(e.dataTransfer&&e.dataTransfer.files.length){
-e.preventDefault();
-handleFiles(e.dataTransfer.files);
-toastMsg("Files added");
-}
-});
+    if(
+      e.dataTransfer &&
+      e.dataTransfer.types.includes(
+        "Files"
+      )
+    ){
+
+      e.preventDefault();
+
+    }
+
+  }
+);
+
+
+document.addEventListener(
+  "drop",
+  e=>{
+
+    if(
+      e.dataTransfer &&
+      e.dataTransfer.files.length
+    ){
+
+      e.preventDefault();
+
+      handleFiles(
+        e.dataTransfer.files
+      );
+
+      toastMsg(
+        "Files added"
+      );
+
+    }
+
+  }
+);
 
 
 /* =========================================================
-   INIT
+   INITIALIZE
 ========================================================= */
+
+setupModes();
 
 load();
+
 updateCounter();
 
 </script>
