@@ -2,31 +2,33 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0">
-<title>Simple Chat AI</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Pakistani Intelligent</title>
 
 <style>
 :root{
-  --bg:#f4f6fb;
-  --panel:#ffffff;
-  --panel2:#f8f9fd;
-  --text:#172033;
-  --muted:#718096;
-  --border:#e3e7ef;
+  --bg:#eef2ff;
+  --panel:rgba(255,255,255,.82);
+  --panel-solid:#ffffff;
+  --panel2:rgba(248,250,252,.88);
+  --text:#111827;
+  --muted:#64748b;
+  --border:rgba(148,163,184,.25);
   --accent:#5b5cf0;
   --accent2:#7c3aed;
   --danger:#ef4444;
   --success:#16a34a;
   --warning:#f59e0b;
-  --bubble:#f1f3f8;
-  --shadow:0 12px 35px rgba(20,30,60,.08);
+  --bubble:#f1f5f9;
+  --shadow:0 18px 50px rgba(15,23,42,.10);
 }
 
 *{
   box-sizing:border-box;
 }
 
-html,body{
+html,
+body{
   width:100%;
   height:100%;
   margin:0;
@@ -35,9 +37,31 @@ html,body{
 
 body{
   min-height:100vh;
-  background:var(--bg);
   color:var(--text);
   font-family:Inter,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+
+  background:
+    radial-gradient(circle at 8% 8%,rgba(99,102,241,.22),transparent 32%),
+    radial-gradient(circle at 92% 18%,rgba(14,165,233,.18),transparent 32%),
+    radial-gradient(circle at 50% 100%,rgba(168,85,247,.16),transparent 40%),
+    linear-gradient(135deg,#eef2ff 0%,#f8fafc 48%,#e0f2fe 100%);
+}
+
+body.dark{
+  --bg:#080d1c;
+  --panel:rgba(15,23,42,.82);
+  --panel-solid:#111827;
+  --panel2:rgba(15,23,42,.90);
+  --text:#f8fafc;
+  --muted:#94a3b8;
+  --border:rgba(148,163,184,.18);
+  --bubble:#1e293b;
+
+  background:
+    radial-gradient(circle at 8% 8%,rgba(99,102,241,.24),transparent 32%),
+    radial-gradient(circle at 92% 18%,rgba(14,165,233,.17),transparent 32%),
+    radial-gradient(circle at 50% 100%,rgba(168,85,247,.13),transparent 40%),
+    linear-gradient(135deg,#080d1c 0%,#111827 48%,#0c2340 100%);
 }
 
 button,
@@ -56,178 +80,166 @@ button{
   height:100vh;
   min-height:0;
   display:grid;
-  grid-template-columns:280px minmax(0,1fr) 315px;
+  grid-template-columns:280px minmax(0,1fr) 310px;
   overflow:hidden;
 }
 
-body.dark{
-  --bg:#0c1020;
-  --panel:#13182a;
-  --panel2:#181e32;
-  --text:#edf2ff;
-  --muted:#9aa6c0;
-  --border:#283149;
-  --bubble:#1d2539;
-  --shadow:0 15px 40px rgba(0,0,0,.3);
-}
-
-/* SIDEBAR */
+/* =========================
+   SIDEBAR
+========================= */
 
 .sidebar{
-  min-width:0;
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
-  background:var(--panel);
+  padding:18px;
   border-right:1px solid var(--border);
-  padding:16px;
-  display:flex;
-  flex-direction:column;
-  gap:12px;
+  background:var(--panel);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
 }
 
 .brand{
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:6px 4px 14px;
+  gap:12px;
+  margin-bottom:18px;
 }
 
 .logo{
-  width:42px;
-  height:42px;
+  width:44px;
+  height:44px;
   border-radius:14px;
   display:grid;
   place-items:center;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
   color:white;
-  font-size:22px;
-  box-shadow:var(--shadow);
+  font-size:21px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+  box-shadow:0 10px 25px rgba(91,92,240,.30);
 }
 
-.brand strong{
-  font-size:18px;
+.brand h1{
+  margin:0;
+  font-size:17px;
 }
 
 .brand small{
-  display:block;
   color:var(--muted);
-  margin-top:2px;
+  font-size:11px;
 }
 
 .side-btn{
   width:100%;
   border:1px solid var(--border);
-  background:var(--panel2);
+  background:rgba(255,255,255,.30);
   color:var(--text);
-  border-radius:12px;
   padding:11px 12px;
+  border-radius:12px;
+  margin-bottom:8px;
   text-align:left;
-  transition:.18s;
+  transition:.2s;
+}
+
+body.dark .side-btn{
+  background:rgba(255,255,255,.035);
 }
 
 .side-btn:hover{
-  border-color:var(--accent);
   transform:translateY(-1px);
+  border-color:rgba(91,92,240,.4);
+  background:rgba(91,92,240,.10);
 }
 
-.side-btn.primary{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:white;
-  border:0;
-}
-
-.search-box{
-  position:relative;
-}
-
-.search-box input{
-  width:100%;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:11px;
-  padding:10px 12px;
-  outline:none;
-}
-
-.section-title{
+.side-title{
+  margin:18px 4px 8px;
   color:var(--muted);
   font-size:11px;
   text-transform:uppercase;
   letter-spacing:.08em;
-  margin:7px 3px 2px;
 }
 
-.chat-list{
+.search-box{
+  width:100%;
+  padding:10px 12px;
+  border-radius:11px;
+  border:1px solid var(--border);
+  outline:none;
+  color:var(--text);
+  background:var(--panel2);
+  margin-bottom:10px;
+}
+
+.chat-history{
   display:flex;
   flex-direction:column;
   gap:5px;
 }
 
-.chat-item{
-  padding:10px;
-  border-radius:11px;
+.history-item{
   border:1px solid transparent;
+  border-radius:11px;
+  padding:10px;
+  color:var(--text);
   cursor:pointer;
+  overflow:hidden;
+  transition:.2s;
 }
 
-.chat-item:hover,
-.chat-item.active{
-  background:var(--panel2);
-  border-color:var(--border);
+.history-item:hover{
+  background:rgba(91,92,240,.08);
 }
 
-.chat-item-title{
+.history-item.active{
+  background:rgba(91,92,240,.13);
+  border-color:rgba(91,92,240,.25);
+}
+
+.history-title{
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
   font-size:13px;
 }
 
-.chat-item-meta{
-  font-size:10px;
+.history-time{
   color:var(--muted);
+  font-size:10px;
   margin-top:3px;
 }
 
-.side-bottom{
-  margin-top:auto;
-  display:flex;
-  flex-direction:column;
-  gap:7px;
-}
-
-/* MAIN */
+/* =========================
+   MAIN
+========================= */
 
 .main{
   min-width:0;
   min-height:0;
   height:100vh;
-  overflow:hidden;
   display:flex;
   flex-direction:column;
-  background:var(--bg);
+  overflow:hidden;
 }
 
 .topbar{
-  height:64px;
+  min-height:68px;
   flex-shrink:0;
   display:flex;
   align-items:center;
-  gap:10px;
-  padding:10px 15px;
+  justify-content:space-between;
+  gap:12px;
+  padding:12px 18px;
   border-bottom:1px solid var(--border);
   background:var(--panel);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
 }
 
-.top-title{
+.chat-info{
   min-width:0;
-  flex:1;
 }
 
-.top-title strong{
-  display:block;
+.chat-title{
+  font-weight:700;
   white-space:nowrap;
   overflow:hidden;
   text-overflow:ellipsis;
@@ -235,252 +247,285 @@ body.dark{
 
 .badges{
   display:flex;
-  gap:5px;
-  margin-top:3px;
+  gap:6px;
+  margin-top:4px;
+  flex-wrap:wrap;
 }
 
 .badge{
   font-size:10px;
-  padding:3px 7px;
+  padding:4px 7px;
   border-radius:999px;
-  background:var(--panel2);
-  color:var(--muted);
-  border:1px solid var(--border);
+  background:rgba(91,92,240,.10);
+  color:var(--accent);
+}
+
+.top-actions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:flex-end;
 }
 
 .icon-btn{
   width:36px;
   height:36px;
   border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
   border-radius:10px;
+  background:var(--panel2);
+  color:var(--text);
+  display:grid;
+  place-items:center;
+  transition:.2s;
 }
 
 .icon-btn:hover{
-  border-color:var(--accent);
+  background:rgba(91,92,240,.12);
+  transform:translateY(-1px);
 }
+
+/* =========================
+   MESSAGES
+========================= */
 
 .messages{
   min-height:0;
   flex:1 1 auto;
   overflow-y:auto !important;
   overflow-x:hidden;
+  padding:24px;
   overscroll-behavior:contain;
   -webkit-overflow-scrolling:touch;
-  padding:25px clamp(14px,4vw,55px);
 }
 
 .welcome{
   max-width:850px;
-  margin:30px auto;
+  margin:7vh auto 25px;
   text-align:center;
 }
 
 .welcome-logo{
-  width:70px;
-  height:70px;
+  width:72px;
+  height:72px;
   margin:auto;
+  border-radius:24px;
   display:grid;
   place-items:center;
-  border-radius:22px;
-  color:white;
-  font-size:34px;
+  color:#fff;
+  font-size:30px;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
-  box-shadow:var(--shadow);
+  box-shadow:0 18px 45px rgba(91,92,240,.30);
 }
 
-.welcome h1{
+.welcome h2{
   margin:18px 0 8px;
+  font-size:30px;
 }
 
 .welcome p{
   color:var(--muted);
+  margin:0 auto 20px;
+  max-width:600px;
 }
 
 .quick-prompts{
   display:grid;
   grid-template-columns:repeat(2,minmax(0,1fr));
   gap:10px;
-  margin-top:22px;
 }
 
 .quick{
-  padding:14px;
   border:1px solid var(--border);
+  border-radius:14px;
+  padding:13px;
   background:var(--panel);
   color:var(--text);
-  border-radius:14px;
   text-align:left;
+  transition:.2s;
 }
 
 .quick:hover{
-  border-color:var(--accent);
-}
-
-.message-row{
-  display:flex;
-  margin:14px 0;
-}
-
-.message-row.user{
-  justify-content:flex-end;
+  transform:translateY(-2px);
+  border-color:rgba(91,92,240,.35);
+  box-shadow:var(--shadow);
 }
 
 .message{
-  max-width:min(820px,88%);
+  display:flex;
+  gap:12px;
+  max-width:900px;
+  margin:0 auto 18px;
 }
 
-.message-bubble{
+.message.user{
+  justify-content:flex-end;
+}
+
+.avatar{
+  width:36px;
+  height:36px;
+  flex:0 0 36px;
+  border-radius:12px;
+  display:grid;
+  place-items:center;
+  color:#fff;
+  font-size:14px;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.message.user .avatar{
+  order:2;
+  background:linear-gradient(135deg,#0f172a,#475569);
+}
+
+.message-body{
+  min-width:0;
+  max-width:calc(100% - 50px);
+}
+
+.bubble{
   padding:13px 15px;
-  border-radius:17px;
-  background:var(--panel);
   border:1px solid var(--border);
-  box-shadow:0 3px 12px rgba(0,0,0,.025);
+  border-radius:16px;
+  background:var(--panel);
+  box-shadow:0 5px 18px rgba(15,23,42,.05);
   line-height:1.6;
   overflow-wrap:anywhere;
 }
 
-.user .message-bubble{
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:white;
-  border:0;
-}
-
-.message-head{
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:15px;
-  margin-bottom:5px;
-}
-
-.message-role{
-  font-size:11px;
-  font-weight:700;
-  opacity:.7;
-}
-
-.message-time{
-  font-size:10px;
-  opacity:.55;
+.message.user .bubble{
+  background:linear-gradient(135deg,rgba(91,92,240,.14),rgba(124,58,237,.10));
 }
 
 .message-actions{
   display:flex;
-  flex-wrap:wrap;
   gap:5px;
   margin-top:6px;
+  flex-wrap:wrap;
 }
 
 .message-actions button{
-  border:1px solid var(--border);
-  background:var(--panel);
+  border:0;
+  background:transparent;
   color:var(--muted);
+  font-size:11px;
+  padding:4px 6px;
   border-radius:7px;
-  padding:4px 7px;
-  font-size:10px;
 }
 
 .message-actions button:hover{
+  background:rgba(91,92,240,.10);
   color:var(--accent);
 }
 
-.message img{
-  max-width:100%;
-  max-height:350px;
-  border-radius:12px;
-  margin-top:8px;
+.bubble h1,
+.bubble h2,
+.bubble h3{
+  margin-top:12px;
 }
 
-.md h1,.md h2,.md h3{
-  line-height:1.25;
+.bubble p{
+  margin:8px 0;
 }
 
-.md code{
-  background:rgba(127,127,127,.13);
+.bubble ul,
+.bubble ol{
+  padding-left:22px;
+}
+
+.bubble code{
+  background:rgba(100,116,139,.15);
   padding:2px 5px;
   border-radius:5px;
 }
 
-.md pre{
-  background:#101522;
-  color:#e8eefc;
+.bubble pre{
+  overflow:auto;
   padding:13px;
   border-radius:11px;
-  overflow:auto;
+  background:#0f172a;
+  color:#e2e8f0;
 }
 
-.md blockquote{
-  margin:8px 0;
-  padding-left:12px;
-  border-left:3px solid var(--accent);
-  color:var(--muted);
+.bubble pre code{
+  background:none;
+  padding:0;
 }
 
 .typing{
   display:flex;
   gap:5px;
-  align-items:center;
+  padding:8px;
 }
 
 .dot{
   width:7px;
   height:7px;
   border-radius:50%;
-  background:var(--accent);
-  animation:bounce 1s infinite;
+  background:var(--muted);
+  animation:blink 1s infinite;
 }
 
-.dot:nth-child(2){animation-delay:.15s}
-.dot:nth-child(3){animation-delay:.3s}
-
-@keyframes bounce{
-  0%,100%{transform:translateY(0);opacity:.4}
-  50%{transform:translateY(-5px);opacity:1}
+.dot:nth-child(2){
+  animation-delay:.15s;
 }
 
-/* COMPOSER */
+.dot:nth-child(3){
+  animation-delay:.3s;
+}
+
+@keyframes blink{
+  0%,100%{opacity:.25}
+  50%{opacity:1}
+}
+
+/* =========================
+   COMPOSER
+========================= */
 
 .composer{
   position:relative;
   z-index:20;
   flex-shrink:0;
+  padding:10px 18px 16px;
   pointer-events:auto !important;
-  padding:10px 15px 14px;
-  background:var(--bg);
 }
 
-.composer-inner{
-  max-width:1000px;
+.composer-box{
+  max-width:900px;
   margin:auto;
   border:1px solid var(--border);
-  background:var(--panel);
   border-radius:18px;
+  background:var(--panel);
   box-shadow:var(--shadow);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
   overflow:hidden;
 }
 
 .toolbar{
   display:flex;
   gap:4px;
-  padding:7px;
+  padding:8px;
   overflow-x:auto;
   border-bottom:1px solid var(--border);
 }
 
 .toolbar button{
-  flex:0 0 auto;
-  border:1px solid transparent;
+  position:relative;
+  z-index:31;
+  pointer-events:auto !important;
+  border:0;
   background:transparent;
   color:var(--muted);
-  border-radius:7px;
   padding:6px 8px;
+  border-radius:7px;
+  white-space:nowrap;
   font-size:11px;
 }
 
 .toolbar button:hover{
-  background:var(--panel2);
+  background:rgba(91,92,240,.10);
   color:var(--accent);
 }
 
@@ -488,112 +533,143 @@ body.dark{
   display:flex;
   align-items:flex-end;
   gap:8px;
-  padding:8px;
+  padding:10px;
 }
 
 #input{
   position:relative;
   z-index:30;
   flex:1;
+  min-width:0;
   min-height:48px;
-  max-height:180px;
+  max-height:170px;
+  resize:none;
+  overflow-y:auto;
   border:0;
   outline:0;
-  resize:none;
-  background:transparent;
   color:var(--text);
+  background:transparent;
   pointer-events:auto !important;
   user-select:text !important;
   -webkit-user-select:text !important;
   cursor:text;
-  overflow-y:auto;
   line-height:1.5;
 }
 
-.send{
+#send{
+  position:relative;
+  z-index:31;
+  pointer-events:auto !important;
   width:44px;
   height:44px;
   border:0;
   border-radius:13px;
   color:white;
   background:linear-gradient(135deg,var(--accent),var(--accent2));
+  font-size:18px;
+  box-shadow:0 8px 20px rgba(91,92,240,.25);
 }
 
-.composer-bottom{
-  display:flex;
-  justify-content:space-between;
+#send:hover{
+  transform:translateY(-1px);
+}
+
+.counter{
   color:var(--muted);
-  padding:0 11px 8px;
   font-size:10px;
+  padding:0 12px 8px;
 }
 
-/* RIGHT PANEL */
+/* =========================
+   RIGHT PANEL
+========================= */
 
 .right-panel{
   min-height:0;
   overflow-y:auto;
   overflow-x:hidden;
-  background:var(--panel);
+  padding:16px;
   border-left:1px solid var(--border);
-  padding:14px;
+  background:var(--panel);
+  backdrop-filter:blur(22px);
+  -webkit-backdrop-filter:blur(22px);
 }
 
 .panel-title{
-  font-size:16px;
-  font-weight:800;
-  margin-bottom:12px;
+  font-weight:700;
+  margin:3px 0 12px;
 }
 
-.control-section{
-  padding:12px 0;
-  border-bottom:1px solid var(--border);
+.panel-section{
+  margin-bottom:18px;
 }
 
-.control-section h3{
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.06em;
+.section-label{
   color:var(--muted);
-  margin:0 0 9px;
+  font-size:10px;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  margin-bottom:8px;
 }
 
-.grid-buttons{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:6px;
-}
-
-.control-btn{
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:9px;
-  padding:8px 6px;
-  font-size:11px;
-}
-
-.control-btn.active{
-  border-color:var(--accent);
-  color:var(--accent);
-  background:rgba(91,92,240,.08);
-}
-
-.stat-grid{
+.personas{
   display:grid;
   grid-template-columns:repeat(2,1fr);
   gap:7px;
 }
 
-.stat{
-  background:var(--panel2);
+.persona{
   border:1px solid var(--border);
-  border-radius:10px;
+  background:var(--panel2);
+  color:var(--text);
   padding:9px;
+  border-radius:10px;
+  font-size:11px;
+}
+
+.persona.active{
+  background:rgba(91,92,240,.13);
+  border-color:rgba(91,92,240,.4);
+  color:var(--accent);
+}
+
+.mode-row{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:7px;
+}
+
+.mode{
+  border:1px solid var(--border);
+  background:var(--panel2);
+  color:var(--text);
+  padding:9px;
+  border-radius:10px;
+  font-size:11px;
+}
+
+.mode.active{
+  background:rgba(91,92,240,.13);
+  border-color:rgba(91,92,240,.4);
+  color:var(--accent);
+}
+
+.stat-grid{
+  display:grid;
+  grid-template-columns:repeat(2,1fr);
+  gap:8px;
+}
+
+.stat{
+  padding:11px;
+  border:1px solid var(--border);
+  border-radius:11px;
+  background:var(--panel2);
 }
 
 .stat strong{
   display:block;
-  font-size:17px;
+  font-size:18px;
 }
 
 .stat span{
@@ -601,230 +677,119 @@ body.dark{
   font-size:10px;
 }
 
-.progress{
-  height:8px;
-  background:var(--panel2);
-  border-radius:99px;
-  overflow:hidden;
-}
-
-.progress div{
-  height:100%;
-  width:0;
-  background:linear-gradient(90deg,var(--accent),var(--accent2));
-}
-
-/* MODAL */
+/* =========================
+   MODAL
+========================= */
 
 #modalBg{
-  display:none !important;
+  display:none;
   position:fixed;
   inset:0;
-  z-index:9999;
-  background:rgba(0,0,0,.55);
-  padding:20px;
+  z-index:1000;
   align-items:center;
   justify-content:center;
+  padding:20px;
+  background:rgba(2,6,23,.55);
+  backdrop-filter:blur(7px);
 }
 
 #modalBg.show{
-  display:flex !important;
+  display:flex;
 }
 
 .modal{
-  width:min(900px,100%);
-  max-height:90vh;
+  width:min(720px,100%);
+  max-height:85vh;
   overflow:auto;
-  background:var(--panel);
-  color:var(--text);
   border:1px solid var(--border);
-  border-radius:18px;
-  box-shadow:0 25px 80px rgba(0,0,0,.3);
-}
-
-.modal-head{
-  position:sticky;
-  top:0;
-  z-index:2;
-  display:flex;
-  justify-content:space-between;
-  align-items:center;
-  padding:15px;
-  background:var(--panel);
-  border-bottom:1px solid var(--border);
-}
-
-.modal-body{
-  padding:15px;
-}
-
-.modal-close{
-  border:1px solid var(--border);
-  background:var(--panel2);
+  border-radius:20px;
+  background:var(--panel-solid);
   color:var(--text);
-  border-radius:8px;
-  padding:6px 10px;
+  box-shadow:0 30px 80px rgba(0,0,0,.25);
+  padding:20px;
 }
 
-.form{
-  display:grid;
-  gap:10px;
+.modal h2{
+  margin-top:0;
 }
 
-.form input,
-.form textarea,
-.form select{
+.modal input,
+.modal textarea,
+.modal select{
   width:100%;
+  padding:10px 12px;
   border:1px solid var(--border);
+  border-radius:10px;
   background:var(--panel2);
   color:var(--text);
-  border-radius:9px;
-  padding:10px;
   outline:none;
+  margin-bottom:10px;
 }
 
-.primary-btn{
-  border:0;
-  background:linear-gradient(135deg,var(--accent),var(--accent2));
-  color:white;
-  border-radius:9px;
-  padding:10px 14px;
+.modal textarea{
+  min-height:130px;
+  resize:vertical;
 }
 
-.item{
-  border:1px solid var(--border);
-  background:var(--panel2);
-  border-radius:10px;
-  padding:10px;
-  margin-bottom:7px;
-}
-
-.item-row{
+.modal-actions{
   display:flex;
-  justify-content:space-between;
-  align-items:center;
-  gap:10px;
+  gap:8px;
+  justify-content:flex-end;
+  flex-wrap:wrap;
 }
 
-.small{
-  color:var(--muted);
-  font-size:11px;
-}
-
-.toast{
-  position:fixed;
-  right:18px;
-  bottom:18px;
-  z-index:10000;
-  background:#111827;
-  color:white;
-  padding:11px 15px;
+.primary{
+  border:0;
   border-radius:10px;
-  transform:translateY(100px);
+  padding:10px 14px;
+  color:white;
+  background:linear-gradient(135deg,var(--accent),var(--accent2));
+}
+
+.secondary{
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 14px;
+  color:var(--text);
+  background:var(--panel2);
+}
+
+/* =========================
+   TOAST
+========================= */
+
+#toast{
+  position:fixed;
+  right:20px;
+  bottom:20px;
+  z-index:2000;
+  padding:11px 15px;
+  border-radius:11px;
+  color:#fff;
+  background:#111827;
+  box-shadow:0 12px 30px rgba(0,0,0,.25);
+  transform:translateY(20px);
   opacity:0;
-  transition:.2s;
   pointer-events:none;
+  transition:.25s;
 }
 
-.toast.show{
-  transform:translateY(0);
+#toast.show{
   opacity:1;
+  transform:translateY(0);
 }
 
-.hidden{
-  display:none !important;
-}
+/* =========================
+   MOBILE
+========================= */
 
-.focus-mode .sidebar,
-.focus-mode .right-panel{
+.mobile-only{
   display:none;
 }
 
-.focus-mode .app{
-  grid-template-columns:1fr;
-}
-
-.reading{
-  max-width:800px;
-  margin:auto;
-  font-size:17px;
-  line-height:1.9;
-}
-
-.quiz-option{
-  display:block;
-  width:100%;
-  text-align:left;
-  margin:6px 0;
-  padding:9px;
-  border:1px solid var(--border);
-  background:var(--panel);
-  color:var(--text);
-  border-radius:9px;
-}
-
-.workspace-tabs{
-  display:flex;
-  gap:4px;
-  overflow:auto;
-  padding:5px 15px;
-  border-bottom:1px solid var(--border);
-  background:var(--panel);
-}
-
-.workspace-tab{
-  flex:0 0 auto;
-  border:1px solid var(--border);
-  background:var(--panel2);
-  color:var(--text);
-  border-radius:8px;
-  padding:6px 9px;
-  font-size:11px;
-}
-
-.workspace-tab.active{
-  border-color:var(--accent);
-}
-
-.calendar{
-  display:grid;
-  grid-template-columns:repeat(7,1fr);
-  gap:5px;
-}
-
-.calendar div{
-  min-height:45px;
-  border:1px solid var(--border);
-  border-radius:8px;
-  padding:5px;
-  font-size:11px;
-}
-
-.bar{
-  height:8px;
-  background:var(--panel2);
-  border-radius:99px;
-  overflow:hidden;
-}
-
-.bar div{
-  height:100%;
-  background:var(--accent);
-}
-
-.dropzone{
-  border:2px dashed var(--border);
-  border-radius:12px;
-  padding:25px;
-  text-align:center;
-  color:var(--muted);
-}
-
-/* MOBILE */
-
 @media(max-width:1100px){
   .app{
-    grid-template-columns:250px minmax(0,1fr);
+    grid-template-columns:240px minmax(0,1fr);
   }
 
   .right-panel{
@@ -839,35 +804,30 @@ body.dark{
 
   .sidebar{
     display:none;
-    position:fixed;
-    inset:0 auto 0 0;
-    width:290px;
-    z-index:5000;
-    box-shadow:20px 0 50px rgba(0,0,0,.2);
   }
 
-  .sidebar.mobile-open{
-    display:flex;
+  .mobile-only{
+    display:grid;
+  }
+
+  .topbar{
+    padding:10px;
+  }
+
+  .messages{
+    padding:14px 10px;
+  }
+
+  .composer{
+    padding:8px;
   }
 
   .quick-prompts{
     grid-template-columns:1fr;
   }
 
-  .topbar{
-    padding:8px;
-  }
-
-  .messages{
-    padding:15px 9px;
-  }
-
-  .composer{
-    padding:7px;
-  }
-
-  .toolbar{
-    max-width:100%;
+  .welcome h2{
+    font-size:24px;
   }
 
   #input{
@@ -879,6 +839,31 @@ body.dark{
 body.modal-open{
   overflow:hidden;
 }
+
+body.focus-mode .sidebar,
+body.focus-mode .right-panel{
+  display:none;
+}
+
+body.focus-mode .app{
+  grid-template-columns:1fr;
+}
+
+/* scrollbar */
+
+::-webkit-scrollbar{
+  width:8px;
+  height:8px;
+}
+
+::-webkit-scrollbar-thumb{
+  background:rgba(100,116,139,.35);
+  border-radius:99px;
+}
+
+::-webkit-scrollbar-track{
+  background:transparent;
+}
 </style>
 </head>
 
@@ -886,93 +871,109 @@ body.modal-open{
 
 <div class="app">
 
-  <aside class="sidebar" id="sidebar">
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
 
     <div class="brand">
       <div class="logo">✦</div>
       <div>
-        <strong>Simple Chat AI</strong>
-        <small>Smart • Private • Personal</small>
+        <h1>Simple Chat AI</h1>
+        <small>Smart conversations</small>
       </div>
     </div>
 
-    <button class="side-btn primary" id="newChatBtn">＋ New Chat</button>
+    <button class="side-btn" id="newChatBtn">＋ New Chat</button>
 
-    <div class="search-box">
-      <input id="chatSearch" placeholder="🔎 Search chats...">
-    </div>
+    <input
+      id="searchChats"
+      class="search-box"
+      placeholder="Search chats..."
+      autocomplete="off"
+    >
 
-    <div class="section-title">Workspace</div>
+    <div class="side-title">Chats</div>
 
-    <button class="side-btn" data-command="dashboard">📊 Command Center</button>
-    <button class="side-btn" data-command="calendar">📅 Chat Calendar</button>
-    <button class="side-btn" data-command="saved">🔖 Saved Answers</button>
-    <button class="side-btn" data-command="tasks">☑️ To-Do List</button>
-    <button class="side-btn" data-command="files">📁 File Library</button>
+    <div id="history" class="chat-history"></div>
 
-    <div class="section-title">Chats</div>
-    <div class="chat-list" id="chatList"></div>
+    <div class="side-title">Workspace</div>
 
-    <div class="side-bottom">
-      <button class="side-btn" id="themeBtn">🌙 Theme</button>
-      <button class="side-btn" id="focusBtn">🎯 Focus Mode</button>
-      <button class="side-btn" id="settingsBtn">⚙️ Settings</button>
-      <button class="side-btn" id="collapseBtn">◀ Collapse</button>
-    </div>
+    <button class="side-btn" id="savedBtn">🔖 Saved Answers</button>
+    <button class="side-btn" id="tasksBtn">✓ Smart Tasks</button>
+    <button class="side-btn" id="calendarBtn">📅 Chat Calendar</button>
+    <button class="side-btn" id="commandBtn">⚡ Command Center</button>
 
+    <div class="side-title">Controls</div>
+
+    <button class="side-btn" id="themeBtn">🌙 Theme</button>
+    <button class="side-btn" id="focusBtn">🎯 Focus Mode</button>
+    <button class="side-btn" id="settingsBtn">⚙ Settings</button>
   </aside>
 
+  <!-- MAIN -->
   <main class="main">
 
     <header class="topbar">
 
-      <button class="icon-btn" id="mobileBtn">☰</button>
+      <div style="display:flex;align-items:center;gap:9px;min-width:0;">
 
-      <div class="top-title">
-        <strong id="chatTitle">New Chat</strong>
-        <div class="badges">
-          <span class="badge" id="personaBadge">Assistant</span>
-          <span class="badge">🔒 Local UI</span>
+        <button
+          class="icon-btn mobile-only"
+          id="mobileMenuBtn"
+          title="Menu"
+        >☰</button>
+
+        <div class="chat-info">
+          <div class="chat-title" id="chatTitle">New Chat</div>
+
+          <div class="badges">
+            <span class="badge" id="personaBadge">Assistant</span>
+            <span class="badge">🔒 Private</span>
+          </div>
         </div>
+
       </div>
 
-      <button class="icon-btn" id="favoriteBtn" title="Favorite">☆</button>
-      <button class="icon-btn" id="renameBtn" title="Rename">✎</button>
-      <button class="icon-btn" id="moreBtn" title="More">⋯</button>
+      <div class="top-actions">
+
+        <button class="icon-btn" id="favoriteBtn" title="Favorite">☆</button>
+        <button class="icon-btn" id="renameBtn" title="Rename">✎</button>
+        <button class="icon-btn" id="clearBtn" title="Clear">⌫</button>
+        <button class="icon-btn" id="fullscreenBtn" title="Fullscreen">⛶</button>
+        <button class="icon-btn" id="moreBtn" title="More">⋮</button>
+
+      </div>
 
     </header>
 
-    <div class="workspace-tabs" id="workspaceTabs"></div>
+    <section id="messages" class="messages">
 
-    <section class="messages" id="messages">
-
-      <div class="welcome" id="welcome">
+      <div id="welcome" class="welcome">
 
         <div class="welcome-logo">✦</div>
 
-        <h1>What can I help you with?</h1>
+        <h2>How can I help you?</h2>
 
         <p>
-          Ask questions, write, learn, plan, calculate,
-          analyze files, understand images and organize your work.
+          Ask questions, write, learn, brainstorm, code,
+          summarize, calculate, or simply have a conversation.
         </p>
 
         <div class="quick-prompts">
 
-          <button class="quick" data-prompt="Explain something to me step by step.">
-            📚 Explain something
+          <button class="quick">
+            💡 Explain something simply
           </button>
 
-          <button class="quick" data-prompt="Help me make a detailed plan.">
-            🗺️ Make a plan
+          <button class="quick">
+            ✍️ Help me write something
           </button>
 
-          <button class="quick" data-prompt="Help me write something professionally.">
-            ✍️ Write something
+          <button class="quick">
+            💻 Help me with coding
           </button>
 
-          <button class="quick" data-prompt="Give me useful ideas for a new project.">
-            💡 Give me ideas
+          <button class="quick">
+            🧠 Give me creative ideas
           </button>
 
         </div>
@@ -981,29 +982,27 @@ body.modal-open{
 
     </section>
 
+    <!-- COMPOSER -->
     <div class="composer">
 
-      <div class="composer-inner">
+      <div class="composer-box">
 
         <div class="toolbar">
 
-          <button data-tool="bold">B</button>
-          <button data-tool="italic">I</button>
+          <button data-tool="bold"><b>B</b></button>
+          <button data-tool="italic"><i>I</i></button>
           <button data-tool="heading">H</button>
           <button data-tool="list">☷ List</button>
-          <button data-tool="code">{"</>"}</button>
+          <button data-tool="code">&lt;/&gt;</button>
           <button data-tool="quote">❝</button>
           <button data-tool="summarize">Summarize</button>
           <button data-tool="translate">Translate</button>
           <button data-tool="grammar">Grammar</button>
           <button data-tool="rewrite">Rewrite</button>
           <button data-tool="tone">Tone</button>
-          <button data-tool="language">Language</button>
           <button data-tool="calculator">Calculator</button>
-          <button data-tool="explain">Explain</button>
-          <button id="fileBtn">📎 File</button>
-          <button id="imageBtn">🖼️ Image</button>
-          <button id="voiceBtn">🎤 Voice</button>
+          <button data-tool="file">📎 File</button>
+          <button data-tool="image">🖼 Image</button>
 
         </div>
 
@@ -1011,17 +1010,17 @@ body.modal-open{
 
           <textarea
             id="input"
-            rows="1"
             placeholder="Message Simple Chat AI..."
+            rows="1"
+            autocomplete="off"
           ></textarea>
 
-          <button class="send" id="sendBtn">➤</button>
+          <button id="send" title="Send">➤</button>
 
         </div>
 
-        <div class="composer-bottom">
-          <span id="attachmentLabel">No attachment</span>
-          <span id="counter">0 characters • 0 words</span>
+        <div class="counter" id="counter">
+          0 characters · 0 words
         </div>
 
       </div>
@@ -1030,45 +1029,74 @@ body.modal-open{
 
   </main>
 
+  <!-- RIGHT PANEL -->
   <aside class="right-panel">
 
     <div class="panel-title">AI Control Center</div>
 
-    <div class="control-section">
+    <div class="panel-section">
 
-      <h3>AI Persona</h3>
+      <div class="section-label">Persona</div>
 
-      <div class="grid-buttons">
+      <div class="personas">
 
-        <button class="control-btn active" data-persona="Assistant">🤖 Assistant</button>
-        <button class="control-btn" data-persona="Teacher">📚 Teacher</button>
-        <button class="control-btn" data-persona="Coder">💻 Coder</button>
-        <button class="control-btn" data-persona="Writer">✍️ Writer</button>
-        <button class="control-btn" data-persona="Creative">🎨 Creative</button>
-        <button class="control-btn" data-persona="Business">💼 Business</button>
+        <button class="persona active" data-persona="Assistant">
+          🤖 Assistant
+        </button>
+
+        <button class="persona" data-persona="Teacher">
+          📚 Teacher
+        </button>
+
+        <button class="persona" data-persona="Coder">
+          💻 Coder
+        </button>
+
+        <button class="persona" data-persona="Writer">
+          ✍️ Writer
+        </button>
+
+        <button class="persona" data-persona="Creative">
+          🎨 Creative
+        </button>
+
+        <button class="persona" data-persona="Business">
+          💼 Business
+        </button>
 
       </div>
 
     </div>
 
-    <div class="control-section">
+    <div class="panel-section">
 
-      <h3>Response Mode</h3>
+      <div class="section-label">Response Mode</div>
 
-      <div class="grid-buttons">
+      <div class="mode-row">
 
-        <button class="control-btn active" data-mode="Balanced">Balanced</button>
-        <button class="control-btn" data-mode="Concise">Concise</button>
-        <button class="control-btn" data-mode="Detailed">Detailed</button>
-        <button class="control-btn" data-mode="Creative">Creative</button>
+        <button class="mode active" data-mode="Balanced">
+          Balanced
+        </button>
+
+        <button class="mode" data-mode="Concise">
+          Concise
+        </button>
+
+        <button class="mode" data-mode="Detailed">
+          Detailed
+        </button>
+
+        <button class="mode" data-mode="Creative">
+          Creative
+        </button>
 
       </div>
 
     </div>
 
-    <div class="control-section">
+    <div class="panel-section">
 
-      <h3>Conversation Stats</h3>
+      <div class="section-label">Conversation Stats</div>
 
       <div class="stat-grid">
 
@@ -1096,59 +1124,20 @@ body.modal-open{
 
     </div>
 
-    <div class="control-section">
+    <div class="panel-section">
 
-      <h3>Conversation Goal</h3>
+      <div class="section-label">AI Tools</div>
 
-      <input
-        id="goalInput"
-        class="form-input"
-        style="width:100%;padding:9px;border:1px solid var(--border);border-radius:8px;background:var(--panel2);color:var(--text)"
-        placeholder="Set a goal..."
-      >
-
-      <div style="margin-top:8px">
-        <input id="progressInput" type="range" min="0" max="100" value="0" style="width:100%">
-        <div class="small" id="progressText">0% complete</div>
-      </div>
-
-    </div>
-
-    <div class="control-section">
-
-      <h3>AI Tools</h3>
-
-      <div class="grid-buttons">
-
-        <button class="control-btn" data-command="memory">🧠 Memory</button>
-        <button class="control-btn" data-command="prompts">🧩 Prompts</button>
-        <button class="control-btn" data-command="compare">⚖️ Compare</button>
-        <button class="control-btn" data-command="variations">🔁 Variations</button>
-        <button class="control-btn" data-command="quiz">❓ Quiz Maker</button>
-        <button class="control-btn" data-command="cards">🃏 Study Cards</button>
-        <button class="control-btn" data-command="keypoints">📌 Key Points</button>
-        <button class="control-btn" data-command="decision">📊 Decision Table</button>
-        <button class="control-btn" data-command="meeting">📝 Meeting Notes</button>
-        <button class="control-btn" data-command="email">✉️ Email Writer</button>
-        <button class="control-btn" data-command="outline">📑 Outline</button>
-        <button class="control-btn" data-command="brief">📰 Daily Brief</button>
-
-      </div>
-
-    </div>
-
-    <div class="control-section">
-
-      <h3>Workspace</h3>
-
-      <div class="grid-buttons">
-
-        <button class="control-btn" data-command="statistics">📈 Statistics</button>
-        <button class="control-btn" data-command="snapshot">📸 Snapshot</button>
-        <button class="control-btn" data-command="read">📖 Reading Mode</button>
-        <button class="control-btn" data-command="clean">🧹 Text Cleaner</button>
-
-      </div>
+      <button class="side-btn" id="memoryBtn">🧠 Long-Term Memory</button>
+      <button class="side-btn" id="followupBtn">💬 Follow-Up Suggestions</button>
+      <button class="side-btn" id="summaryBtn">📝 Summarize Chat</button>
+      <button class="side-btn" id="emailBtn">✉ Email Writer</button>
+      <button class="side-btn" id="outlineBtn">📑 Document Outline</button>
+      <button class="side-btn" id="studyBtn">🎓 Study Cards</button>
+      <button class="side-btn" id="quizBtn">❓ Quiz Maker</button>
+      <button class="side-btn" id="keyPointsBtn">🔑 Key Points</button>
+      <button class="side-btn" id="meetingBtn">🗒 Meeting Notes</button>
+      <button class="side-btn" id="dailyBtn">☀ Daily AI Brief</button>
 
     </div>
 
@@ -1156,861 +1145,504 @@ body.modal-open{
 
 </div>
 
-<input id="fileInput" type="file" hidden accept=".txt,.md,.csv">
-<input id="imageInput" type="file" hidden accept="image/*">
-
+<!-- MODAL -->
 <div id="modalBg">
-  <div class="modal" id="modal"></div>
+  <div id="modal" class="modal"></div>
 </div>
 
-<div class="toast" id="toast"></div>
+<!-- TOAST -->
+<div id="toast"></div>
+
+<input
+  id="fileInput"
+  type="file"
+  hidden
+  accept=".txt,.md,.csv,.json"
+>
+
+<input
+  id="imageInput"
+  type="file"
+  hidden
+  accept="image/*"
+>
 
 <script>
 "use strict";
 
-/* =========================================================
+/* =========================
    STORAGE
-========================================================= */
+========================= */
 
-const KEYS = {
-  chats:"sca_chats_v2",
-  settings:"sca_settings_v2",
-  files:"sca_files_v2",
-  memory:"sca_memory_v2",
-  prompts:"sca_prompts_v2",
-  saved:"sca_saved_v2",
-  tasks:"sca_tasks_v2",
-  reminders:"sca_reminders_v2",
-  snapshots:"sca_snapshots_v2",
-  workspace:"sca_workspace_v2",
-  draft:"sca_drafts_v2"
-};
+const CHAT_KEY = "simple_chat_ai_chats_v3";
+const SETTING_KEY = "simple_chat_ai_settings_v3";
+const SAVED_KEY = "simple_chat_ai_saved_v3";
+const TASK_KEY = "simple_chat_ai_tasks_v3";
+const MEMORY_KEY = "simple_chat_ai_memory_v3";
 
-const DEFAULT_SETTINGS = {
-  theme:"light",
-  persona:"Assistant",
-  mode:"Balanced",
-  language:"English",
-  tone:"Natural",
-  answerLength:"Balanced",
-  temperature:1,
-  maxTokens:2000,
-  systemPrompt:"",
-  customInstructions:"",
-  memoryEnabled:true,
-  animations:true,
-  temporary:false,
-  accent:"#5b5cf0"
-};
-
-let settings = loadJSON(KEYS.settings, DEFAULT_SETTINGS);
-let chats = loadJSON(KEYS.chats, []);
-let files = loadJSON(KEYS.files, []);
-let memories = loadJSON(KEYS.memory, []);
-let prompts = loadJSON(KEYS.prompts, []);
-let savedAnswers = loadJSON(KEYS.saved, []);
-let tasks = loadJSON(KEYS.tasks, []);
-let reminders = loadJSON(KEYS.reminders, []);
-let snapshots = loadJSON(KEYS.snapshots, []);
-let workspace = loadJSON(KEYS.workspace, {
-  openTabs:[],
-  dailyBrief:"",
-  lastRecovery:""
-});
+let chats = [];
+let savedAnswers = [];
+let tasks = [];
+let memory = [];
 
 let currentId = null;
 let generating = false;
 let controller = null;
 let selectedImage = null;
 let selectedImageName = "";
-let selectedFile = null;
-let recognition = null;
-let listening = false;
 
-/* =========================================================
+let settings = {
+  theme:"light",
+  persona:"Assistant",
+  mode:"Balanced",
+  temperature:1,
+  maxTokens:2000,
+  systemPrompt:"",
+  customInstructions:""
+};
+
+/* =========================
    DOM
-========================================================= */
+========================= */
 
 const $ = id => document.getElementById(id);
 
-const messagesEl = $("messages");
+const messages = $("messages");
 const input = $("input");
-const sendBtn = $("sendBtn");
-const chatList = $("chatList");
-const chatTitle = $("chatTitle");
+const send = $("send");
+const historyBox = $("history");
 const welcome = $("welcome");
-const toastEl = $("toast");
+const counter = $("counter");
 const modalBg = $("modalBg");
 const modal = $("modal");
+const toastBox = $("toast");
 
-/* =========================================================
-   HELPERS
-========================================================= */
-
-function loadJSON(key,fallback){
-  try{
-    const value = localStorage.getItem(key);
-    return value ? JSON.parse(value) : fallback;
-  }catch{
-    return fallback;
-  }
-}
-
-function saveJSON(key,value){
-  try{
-    localStorage.setItem(key,JSON.stringify(value));
-  }catch(error){
-    console.warn("Storage error:",error);
-  }
-}
+/* =========================
+   UTILITIES
+========================= */
 
 function uid(prefix="id"){
-  return prefix + "_" + Date.now().toString(36) + "_" +
+  return prefix + "_" + Date.now() + "_" +
     Math.random().toString(36).slice(2,8);
-}
-
-function now(){
-  return new Date().toLocaleTimeString([],{
-    hour:"2-digit",
-    minute:"2-digit"
-  });
 }
 
 function escapeHTML(value){
   return String(value ?? "")
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replace(/&/g,"&amp;")
+    .replace(/</g,"&lt;")
+    .replace(/>/g,"&gt;")
+    .replace(/"/g,"&quot;")
+    .replace(/'/g,"&#039;");
 }
 
-function toast(message){
-  toastEl.textContent = message;
-  toastEl.classList.add("show");
+function showToast(text){
+  toastBox.textContent = text;
+  toastBox.classList.add("show");
 
-  clearTimeout(toast.timer);
+  clearTimeout(showToast.timer);
 
-  toast.timer = setTimeout(()=>{
-    toastEl.classList.remove("show");
+  showToast.timer = setTimeout(() => {
+    toastBox.classList.remove("show");
   },2600);
 }
 
+function openModal(html){
+  modal.innerHTML = html;
+  modalBg.classList.add("show");
+  document.body.classList.add("modal-open");
+}
+
+function closeModal(){
+  modalBg.classList.remove("show");
+  modal.innerHTML = "";
+  document.body.classList.remove("modal-open");
+}
+
+/* =========================
+   STORAGE
+========================= */
+
 function saveAll(){
-  saveJSON(KEYS.chats,chats);
-  saveJSON(KEYS.settings,settings);
-  saveJSON(KEYS.files,files);
-  saveJSON(KEYS.memory,memories);
-  saveJSON(KEYS.prompts,prompts);
-  saveJSON(KEYS.saved,savedAnswers);
-  saveJSON(KEYS.tasks,tasks);
-  saveJSON(KEYS.reminders,reminders);
-  saveJSON(KEYS.snapshots,snapshots);
-  saveJSON(KEYS.workspace,workspace);
+  localStorage.setItem(CHAT_KEY,JSON.stringify(chats));
+  localStorage.setItem(SETTING_KEY,JSON.stringify(settings));
+  localStorage.setItem(SAVED_KEY,JSON.stringify(savedAnswers));
+  localStorage.setItem(TASK_KEY,JSON.stringify(tasks));
+  localStorage.setItem(MEMORY_KEY,JSON.stringify(memory));
 }
 
-function currentChat(){
-  return chats.find(c=>c.id===currentId) || null;
+function loadAll(){
+
+  try{
+    chats = JSON.parse(
+      localStorage.getItem(CHAT_KEY) || "[]"
+    );
+  }catch{
+    chats = [];
+  }
+
+  try{
+    settings = {
+      ...settings,
+      ...JSON.parse(
+        localStorage.getItem(SETTING_KEY) || "{}"
+      )
+    };
+  }catch{}
+
+  try{
+    savedAnswers = JSON.parse(
+      localStorage.getItem(SAVED_KEY) || "[]"
+    );
+  }catch{
+    savedAnswers = [];
+  }
+
+  try{
+    tasks = JSON.parse(
+      localStorage.getItem(TASK_KEY) || "[]"
+    );
+  }catch{
+    tasks = [];
+  }
+
+  try{
+    memory = JSON.parse(
+      localStorage.getItem(MEMORY_KEY) || "[]"
+    );
+  }catch{
+    memory = [];
+  }
+
+  if(!chats.length){
+    createChat(false);
+  }else{
+    currentId = chats[0].id;
+  }
+
+  applyTheme();
+  renderHistory();
+  renderChat();
 }
 
-/* =========================================================
-   CHAT CREATION
-========================================================= */
+/* =========================
+   CHAT
+========================= */
 
-function createChat(){
+function createChat(save=true){
+
   const chat = {
     id:uid("chat"),
     title:"New Chat",
     createdAt:Date.now(),
     updatedAt:Date.now(),
     favorite:false,
-    archived:false,
-    folder:"",
-    tags:[],
-    locked:false,
-    goal:"",
-    progress:0,
     messages:[]
   };
 
   chats.unshift(chat);
   currentId = chat.id;
 
-  if(!workspace.openTabs.includes(chat.id)){
-    workspace.openTabs.push(chat.id);
-  }
+  if(save) saveAll();
 
-  if(!settings.temporary){
-    saveAll();
-  }
-
-  renderEverything();
+  renderHistory();
+  renderChat();
 }
 
-function ensureChat(){
-  if(!currentChat()){
-    createChat();
-  }
+function currentChat(){
+  return chats.find(c => c.id === currentId);
 }
-
-/* =========================================================
-   RENDER HISTORY
-========================================================= */
 
 function renderHistory(){
-  const query = $("chatSearch").value.toLowerCase().trim();
 
-  chatList.innerHTML = "";
+  historyBox.innerHTML = "";
+
+  const search =
+    $("searchChats").value.trim().toLowerCase();
 
   chats
-    .filter(c=>!c.archived)
-    .filter(c=>!query || c.title.toLowerCase().includes(query))
-    .forEach(chat=>{
+    .filter(chat => {
+      return !search ||
+        chat.title.toLowerCase().includes(search) ||
+        chat.messages.some(m =>
+          String(m.content).toLowerCase().includes(search)
+        );
+    })
+    .forEach(chat => {
 
-      const item = document.createElement("div");
+      const div = document.createElement("div");
 
-      item.className =
-        "chat-item " +
-        (chat.id===currentId ? "active":"");
+      div.className =
+        "history-item" +
+        (chat.id === currentId ? " active" : "");
 
-      item.innerHTML = `
-        <div class="chat-item-title">
-          ${chat.favorite ? "⭐ ":""}${escapeHTML(chat.title)}
+      div.innerHTML = `
+        <div class="history-title">
+          ${chat.favorite ? "★ " : ""}
+          ${escapeHTML(chat.title)}
         </div>
-        <div class="chat-item-meta">
-          ${chat.messages.length} messages
+        <div class="history-time">
+          ${new Date(chat.updatedAt).toLocaleString()}
         </div>
       `;
 
-      item.onclick = ()=>{
-        openChat(chat.id);
+      div.onclick = () => {
+        currentId = chat.id;
+        renderHistory();
+        renderChat();
       };
 
-      item.oncontextmenu = event=>{
-        event.preventDefault();
-        chatMenu(chat.id);
-      };
-
-      chatList.appendChild(item);
+      historyBox.appendChild(div);
     });
 }
-
-function openChat(id){
-  const chat = chats.find(c=>c.id===id);
-
-  if(!chat) return;
-
-  if(chat.locked){
-    const code = prompt("Enter chat lock code:");
-
-    if(code !== chat.locked){
-      toast("Incorrect lock code.");
-      return;
-    }
-  }
-
-  currentId = id;
-
-  if(!workspace.openTabs.includes(id)){
-    workspace.openTabs.push(id);
-  }
-
-  renderEverything();
-}
-
-function chatMenu(id){
-  const chat = chats.find(c=>c.id===id);
-
-  if(!chat) return;
-
-  openModal(`
-    <div class="modal-head">
-      <strong>Chat Options</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="grid-buttons">
-
-        <button class="control-btn" onclick="renameChat('${id}');closeModal()">✏️ Rename</button>
-        <button class="control-btn" onclick="duplicateChat('${id}');closeModal()">📋 Duplicate</button>
-        <button class="control-btn" onclick="branchChat('${id}');closeModal()">🌿 Branch</button>
-        <button class="control-btn" onclick="archiveChat('${id}');closeModal()">📦 Archive</button>
-        <button class="control-btn" onclick="toggleFavorite('${id}');closeModal()">⭐ Favorite</button>
-        <button class="control-btn" onclick="deleteChat('${id}');closeModal()">🗑️ Delete</button>
-
-      </div>
-
-    </div>
-  `);
-}
-
-/* =========================================================
-   RENDER CHAT
-========================================================= */
 
 function renderChat(){
+
   const chat = currentChat();
 
-  messagesEl.innerHTML = "";
+  if(!chat) return;
 
-  if(!chat){
-    messagesEl.appendChild(welcome);
-    return;
-  }
-
-  if(chat.messages.length===0){
-    messagesEl.appendChild(welcome);
-  }else{
-
-    chat.messages.forEach(message=>{
-      renderMessage(message);
-    });
-
-  }
-
-  chatTitle.textContent = chat.title;
+  $("chatTitle").textContent = chat.title;
   $("personaBadge").textContent = settings.persona;
 
-  updateStats();
-  updateGoalUI();
+  messages.innerHTML = "";
 
-  setTimeout(()=>{
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-  },20);
+  if(!chat.messages.length){
+    messages.appendChild(welcome);
+    welcome.style.display = "block";
+  }else{
+    welcome.style.display = "none";
+
+    chat.messages.forEach(message => {
+      renderMessage(message);
+    });
+  }
+
+  updateStats();
+
+  requestAnimationFrame(() => {
+    messages.scrollTop = messages.scrollHeight;
+  });
 }
 
 function renderMessage(message){
 
-  const row = document.createElement("div");
+  const wrapper = document.createElement("div");
 
-  row.className =
-    "message-row " +
-    (message.role==="user" ? "user":"assistant");
+  wrapper.className =
+    "message " +
+    (message.role === "user" ? "user" : "assistant");
 
-  const box = document.createElement("div");
-  box.className = "message";
+  const avatar =
+    message.role === "user"
+      ? "U"
+      : "✦";
 
-  const imageHTML =
-    message.imagePreview
-      ? `<img src="${message.imagePreview}" alt="Uploaded image">`
-      : "";
+  wrapper.innerHTML = `
+    <div class="avatar">${avatar}</div>
 
-  box.innerHTML = `
-    <div class="message-head">
-      <span class="message-role">
-        ${message.role==="user" ? "You":"Simple Chat AI"}
-      </span>
-      <span class="message-time">${message.time || ""}</span>
-    </div>
+    <div class="message-body">
 
-    <div class="message-bubble md">
-      ${message.role==="assistant"
-        ? markdown(message.content)
-        : escapeHTML(message.content).replaceAll("\n","<br>")}
-      ${imageHTML}
-    </div>
+      <div class="bubble">
+        ${markdown(message.content)}
+      </div>
 
-    <div class="message-actions">
+      <div class="message-actions">
 
-      <button onclick="copyMessage('${message.id}')">Copy</button>
-      ${message.role==="assistant"
-        ? `<button onclick="regenerate('${message.id}')">Regenerate</button>`
-        : `<button onclick="editMessage('${message.id}')">Edit</button>`}
+        <button data-action="copy">Copy</button>
+        <button data-action="pin">
+          ${message.pinned ? "Unpin" : "Pin"}
+        </button>
+        <button data-action="save">Save</button>
 
-      ${message.role==="assistant"
-        ? `<button onclick="continueResponse('${message.id}')">Continue</button>`
-        : ""}
+        ${
+          message.role === "assistant"
+            ? `
+              <button data-action="regen">Regenerate</button>
+              <button data-action="read">🔊 Read</button>
+            `
+            : ""
+        }
 
-      <button onclick="pinMessage('${message.id}')">
-        ${message.pinned ? "📌 Unpin":"📌 Pin"}
-      </button>
-
-      <button onclick="bookmarkMessage('${message.id}')">
-        ${message.bookmarked ? "🔖 Saved":"🔖 Save"}
-      </button>
-
-      ${message.role==="assistant"
-        ? `<button onclick="readAloud('${message.id}')">🔊 Read</button>`
-        : ""}
-
-      ${message.role==="assistant"
-        ? `<button onclick="improveMessage('${message.id}')">✨ Improve</button>`
-        : ""}
-
-      ${message.role==="assistant"
-        ? `<button onclick="askResponse('${message.id}')">❓ Ask</button>`
-        : ""}
+      </div>
 
     </div>
   `;
 
-  row.appendChild(box);
-  messagesEl.appendChild(row);
+  wrapper
+    .querySelector('[data-action="copy"]')
+    .onclick = () => copyText(message.content);
+
+  wrapper
+    .querySelector('[data-action="pin"]')
+    .onclick = () => {
+
+      message.pinned = !message.pinned;
+
+      saveAll();
+      renderChat();
+
+      showToast(
+        message.pinned
+          ? "Message pinned"
+          : "Message unpinned"
+      );
+    };
+
+  wrapper
+    .querySelector('[data-action="save"]')
+    .onclick = () => {
+
+      savedAnswers.unshift({
+        id:uid("saved"),
+        content:message.content,
+        createdAt:Date.now()
+      });
+
+      saveAll();
+
+      showToast("Answer saved");
+    };
+
+  if(message.role === "assistant"){
+
+    wrapper
+      .querySelector('[data-action="regen"]')
+      .onclick = () => regenerate(message);
+
+    wrapper
+      .querySelector('[data-action="read"]')
+      .onclick = () => readAloud(message.content);
+  }
+
+  messages.appendChild(wrapper);
 }
 
-/* =========================================================
+/* =========================
    MARKDOWN
-========================================================= */
-
-function inlineMD(text){
-
-  let result = escapeHTML(text);
-
-  result = result.replace(
-    /`([^`]+)`/g,
-    "<code>$1</code>"
-  );
-
-  result = result.replace(
-    /\*\*([^*]+)\*\*/g,
-    "<strong>$1</strong>"
-  );
-
-  result = result.replace(
-    /\*([^*]+)\*/g,
-    "<em>$1</em>"
-  );
-
-  return result;
-}
+========================= */
 
 function markdown(text){
 
-  if(!text) return "";
+  let value = escapeHTML(text);
 
-  const lines = String(text).split("\n");
-  let html = "";
-  let inCode = false;
-  let code = "";
+  const codeBlocks = [];
 
-  for(const line of lines){
+  value = value.replace(
+    /```([\s\S]*?)```/g,
+    function(_,code){
+      const id = "__CODE_" + codeBlocks.length + "__";
 
-    if(line.trim().startsWith("```")){
+      codeBlocks.push(
+        `<pre><code>${code.trim()}</code></pre>`
+      );
 
-      if(inCode){
-
-        html += `<pre>${escapeHTML(code)}</pre>`;
-        code="";
-        inCode=false;
-
-      }else{
-
-        inCode=true;
-
-      }
-
-      continue;
+      return id;
     }
+  );
 
-    if(inCode){
-      code += line + "\n";
-      continue;
-    }
+  value = value
+    .replace(/^### (.*)$/gm,"<h3>$1</h3>")
+    .replace(/^## (.*)$/gm,"<h2>$1</h2>")
+    .replace(/^# (.*)$/gm,"<h1>$1</h1>")
+    .replace(/\*\*(.*?)\*\*/g,"<strong>$1</strong>")
+    .replace(/\*(.*?)\*/g,"<em>$1</em>")
+    .replace(/`([^`]+)`/g,"<code>$1</code>")
+    .replace(/^\s*[-*]\s+(.*)$/gm,"<li>$1</li>")
+    .replace(/\n/g,"<br>");
 
-    if(/^### /.test(line)){
-      html += `<h3>${inlineMD(line.slice(4))}</h3>`;
-    }
-    else if(/^## /.test(line)){
-      html += `<h2>${inlineMD(line.slice(3))}</h2>`;
-    }
-    else if(/^# /.test(line)){
-      html += `<h1>${inlineMD(line.slice(2))}</h1>`;
-    }
-    else if(/^> /.test(line)){
-      html += `<blockquote>${inlineMD(line.slice(2))}</blockquote>`;
-    }
-    else if(/^[-*] /.test(line)){
-      html += `<div>• ${inlineMD(line.slice(2))}</div>`;
-    }
-    else if(/^\d+\. /.test(line)){
-      html += `<div>${inlineMD(line)}</div>`;
-    }
-    else if(!line.trim()){
-      html += "<br>";
-    }
-    else{
-      html += `<div>${inlineMD(line)}</div>`;
-    }
-  }
+  value = value.replace(
+    /(<li>.*?<\/li>)+/gs,
+    match => `<ul>${match}</ul>`
+  );
 
-  return html;
+  codeBlocks.forEach((code,index) => {
+    value = value.replace(
+      "__CODE_" + index + "__",
+      code
+    );
+  });
+
+  return value;
 }
 
-/* =========================================================
-   MESSAGE ACTIONS
-========================================================= */
+/* =========================
+   SEND
+========================= */
 
-function addMessage(role,content,extra={}){
-  ensureChat();
+async function sendMessage(){
+
+  if(generating) return;
+
+  const text = input.value.trim();
+
+  if(!text && !selectedImage){
+    showToast("Write a message first");
+    return;
+  }
 
   const chat = currentChat();
 
-  const message = {
-    id:uid("msg"),
-    role,
-    content:String(content ?? ""),
-    time:now(),
-    pinned:false,
-    bookmarked:false,
-    reaction:"",
-    feedback:"",
-    versions:[],
-    ...extra
-  };
-
-  chat.messages.push(message);
-  chat.updatedAt=Date.now();
-
-  if(!settings.temporary){
-    saveAll();
-  }
-
-  renderChat();
-
-  return message;
-}
-
-function copyMessage(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg) return;
-
-  navigator.clipboard.writeText(msg.content)
-    .then(()=>toast("Copied."));
-}
-
-function copyAll(){
-  const chat=currentChat();
-
   if(!chat) return;
 
-  const text=chat.messages
-    .map(m=>(m.role==="user"?"You":"AI")+": "+m.content)
-    .join("\n\n");
+  const imageData = selectedImage;
 
-  navigator.clipboard.writeText(text)
-    .then(()=>toast("Conversation copied."));
-}
+  const messageText =
+    text || "Please analyze this image.";
 
-function pinMessage(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
+  const userMessage = {
+    id:uid("msg"),
+    role:"user",
+    content:messageText,
+    time:Date.now()
+  };
 
-  if(!msg) return;
+  chat.messages.push(userMessage);
+  chat.updatedAt = Date.now();
 
-  msg.pinned=!msg.pinned;
-
-  saveAll();
-  renderChat();
-}
-
-function bookmarkMessage(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg) return;
-
-  msg.bookmarked=!msg.bookmarked;
-
-  if(msg.bookmarked){
-    savedAnswers.unshift({
-      id:uid("saved"),
-      content:msg.content,
-      chatId:chat.id,
-      createdAt:Date.now()
-    });
+  if(chat.title === "New Chat"){
+    chat.title =
+      text.slice(0,45) ||
+      "Image Conversation";
   }
 
-  saveAll();
-  renderChat();
-  toast(msg.bookmarked ? "Saved answer." : "Bookmark removed.");
-}
+  input.value = "";
+  selectedImage = null;
+  selectedImageName = "";
 
-function editMessage(id){
-
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg || msg.role!=="user") return;
-
-  input.value=msg.content;
-  input.focus();
-
-  chat.messages=chat.messages.slice(
-    0,
-    chat.messages.indexOf(msg)
-  );
-
-  saveAll();
-  renderChat();
   updateCounter();
-}
+  saveAll();
+  renderChat();
 
-function regenerate(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg || msg.role!=="assistant") return;
-
-  const index=chat.messages.indexOf(msg);
-
-  const previousUser=
-    [...chat.messages.slice(0,index)]
-      .reverse()
-      .find(m=>m.role==="user");
-
-  if(!previousUser){
-    toast("No user message found.");
-    return;
-  }
-
-  chat.messages.splice(index,1);
-
-  generate(previousUser.content);
-}
-
-function continueResponse(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg) return;
-
-  generate(
-    "Continue the previous response naturally. Do not repeat what has already been said.",
-    null,
-    msg.content
+  await generate(
+    messageText,
+    imageData
   );
 }
 
-function improveMessage(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
+/* =========================
+   AI REQUEST
+========================= */
 
-  if(!msg) return;
+async function generate(userText,imageData=null){
 
-  generate(
-    "Improve this response while preserving its meaning:\n\n"+msg.content
-  );
-}
+  generating = true;
+  send.textContent = "■";
 
-function askResponse(id){
+  const chat = currentChat();
 
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg) return;
-
-  openModal(`
-    <div class="modal-head">
-      <strong>Ask About This Response</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body form">
-
-      <div class="item">
-        ${markdown(msg.content)}
-      </div>
-
-      <textarea id="askResponseInput" rows="4"
-        placeholder="What would you like to know about this response?"></textarea>
-
-      <button class="primary-btn" onclick="
-        const q=document.getElementById('askResponseInput').value.trim();
-        closeModal();
-        if(q) generate(q,null,'Previous response:\\n'+${JSON.stringify(msg.content)});
-      ">
-        Ask AI
-      </button>
-
-    </div>
-  `);
-}
-
-function readAloud(id){
-  const chat=currentChat();
-  const msg=chat?.messages.find(m=>m.id===id);
-
-  if(!msg) return;
-
-  if(!("speechSynthesis" in window)){
-    toast("Read aloud is not supported here.");
+  if(!chat){
+    generating = false;
     return;
   }
 
-  speechSynthesis.cancel();
+  const typing = document.createElement("div");
 
-  const utterance=new SpeechSynthesisUtterance(msg.content);
-  speechSynthesis.speak(utterance);
-}
+  typing.className = "message assistant";
 
-/* =========================================================
-   AI GENERATION
-========================================================= */
-
-async function generate(userText,file=null,extraPrompt="",imageData=null){
-
-  if(generating){
-    toast("AI is already responding.");
-    return;
-  }
-
-  ensureChat();
-
-  const chat=currentChat();
-
-  const history=chat.messages
-    .slice(-20)
-    .map(m=>({
-      role:m.role,
-      content:m.content
-    }));
-
-  let systemPrompt=getSystemPrompt();
-
-  if(extraPrompt){
-    systemPrompt += "\n\nAdditional context:\n"+extraPrompt;
-  }
-
-  if(file){
-    systemPrompt +=
-      "\n\nThe user supplied this file content:\n"+file;
-  }
-
-  if(selectedFile){
-    systemPrompt +=
-      "\n\nRelevant uploaded file:\n"+selectedFile.content;
-  }
-
-  if(settings.memoryEnabled && memories.length){
-    systemPrompt +=
-      "\n\nUseful remembered information:\n"+
-      memories.slice(0,15).join("\n");
-  }
-
-  if(settings.customInstructions){
-    systemPrompt +=
-      "\n\nCustom instructions:\n"+
-      settings.customInstructions;
-  }
-
-  const userMessage=addMessage(
-    "user",
-    userText,
-    {
-      imageName:imageData ? selectedImageName : ""
-    }
-  );
-
-  if(imageData){
-    userMessage.imagePreview=imageData;
-    if(!settings.temporary) saveAll();
-    renderChat();
-  }
-
-  generating=true;
-  sendBtn.textContent="■";
-
-  showTyping();
-
-  controller=new AbortController();
-
-  try{
-
-    const response=await fetch(
-      "/.netlify/functions/chat",
-      {
-        method:"POST",
-        headers:{
-          "Content-Type":"application/json"
-        },
-        body:JSON.stringify({
-          message:userText,
-          history,
-          systemPrompt,
-          temperature:Number(settings.temperature)||1,
-          maxTokens:Number(settings.maxTokens)||2000,
-          imageData:imageData || null
-        }),
-        signal:controller.signal
-      }
-    );
-
-    const data=await response.json().catch(()=>({}));
-
-    if(!response.ok){
-      throw new Error(
-        data.error ||
-        "The AI request failed."
-      );
-    }
-
-    const reply=
-      typeof data.reply==="string"
-        ? data.reply.trim()
-        : "";
-
-    if(!reply){
-      throw new Error("AI returned an empty response.");
-    }
-
-    removeTyping();
-
-    const aiMessage=addMessage(
-      "assistant",
-      reply
-    );
-
-    if(chat.messages.length===2){
-      chat.title=
-        userText.length>35
-          ? userText.slice(0,35)+"…"
-          : userText;
-    }
-
-    saveAll();
-    renderEverything();
-
-    showFollowups(aiMessage);
-
-  }catch(error){
-
-    removeTyping();
-
-    if(error.name==="AbortError"){
-      toast("Generation stopped.");
-    }else{
-      addMessage(
-        "assistant",
-        "⚠️ **Error:** "+error.message
-      );
-
-      toast(error.message);
-    }
-
-  }finally{
-
-    generating=false;
-    controller=null;
-    sendBtn.textContent="➤";
-
-  }
-}
-
-function showTyping(){
-
-  removeTyping();
-
-  const row=document.createElement("div");
-  row.className="message-row assistant";
-  row.id="typingRow";
-
-  row.innerHTML=`
-    <div class="message">
-      <div class="message-bubble">
+  typing.innerHTML = `
+    <div class="avatar">✦</div>
+    <div class="message-body">
+      <div class="bubble">
         <div class="typing">
           <span class="dot"></span>
           <span class="dot"></span>
@@ -2020,2680 +1652,1544 @@ function showTyping(){
     </div>
   `;
 
-  messagesEl.appendChild(row);
+  messages.appendChild(typing);
 
-  messagesEl.scrollTop=messagesEl.scrollHeight;
+  messages.scrollTop = messages.scrollHeight;
+
+  controller = new AbortController();
+
+  const history = chat.messages
+    .slice(-20)
+    .filter(m =>
+      m.role === "user" ||
+      m.role === "assistant"
+    )
+    .map(m => ({
+      role:m.role,
+      content:m.content
+    }));
+
+  const systemPrompt = buildSystemPrompt();
+
+  try{
+
+    const response = await fetch(
+      "/.netlify/functions/chat",
+      {
+        method:"POST",
+        headers:{
+          "Content-Type":"application/json"
+        },
+        signal:controller.signal,
+        body:JSON.stringify({
+          message:userText,
+          history:history.slice(0,-1),
+          systemPrompt:systemPrompt,
+          temperature:Number(settings.temperature) || 1,
+          maxTokens:Number(settings.maxTokens) || 2000,
+          imageData:imageData || null
+        })
+      }
+    );
+
+    const data = await response.json();
+
+    if(!response.ok){
+      throw new Error(
+        data.error ||
+        "AI request failed."
+      );
+    }
+
+    if(!data.reply){
+      throw new Error(
+        "The AI returned an empty response."
+      );
+    }
+
+    const aiMessage = {
+      id:uid("msg"),
+      role:"assistant",
+      content:data.reply,
+      time:Date.now(),
+      pinned:false
+    };
+
+    chat.messages.push(aiMessage);
+    chat.updatedAt = Date.now();
+
+    saveAll();
+
+    typing.remove();
+
+    renderMessage(aiMessage);
+
+    updateStats();
+
+    messages.scrollTop =
+      messages.scrollHeight;
+
+  }catch(error){
+
+    typing.remove();
+
+    if(error.name === "AbortError"){
+      showToast("Generation stopped");
+    }else{
+
+      const errorMessage = {
+        id:uid("msg"),
+        role:"assistant",
+        content:
+          "⚠️ **Error:** " +
+          (error.message || "Could not connect to AI."),
+        time:Date.now()
+      };
+
+      chat.messages.push(errorMessage);
+
+      saveAll();
+      renderChat();
+    }
+
+  }finally{
+
+    generating = false;
+    controller = null;
+    send.textContent = "➤";
+  }
 }
 
-function removeTyping(){
-  $("typingRow")?.remove();
+function buildSystemPrompt(){
+
+  const personaPrompts = {
+
+    Assistant:
+      "You are a helpful, clear and friendly AI assistant.",
+
+    Teacher:
+      "You are a patient teacher. Explain concepts step by step using simple language.",
+
+    Coder:
+      "You are an expert coding assistant. Give complete, correct and practical code when requested.",
+
+    Writer:
+      "You are a skilled writing assistant. Produce natural, polished and well-structured writing.",
+
+    Creative:
+      "You are a creative assistant. Generate original and imaginative ideas.",
+
+    Business:
+      "You are a practical business assistant. Give organized and useful business guidance."
+  };
+
+  const modes = {
+
+    Balanced:
+      "Give a balanced amount of detail.",
+
+    Concise:
+      "Keep answers concise and direct.",
+
+    Detailed:
+      "Give detailed explanations with useful examples.",
+
+    Creative:
+      "Use a creative and engaging style when appropriate."
+  };
+
+  return [
+    personaPrompts[settings.persona] ||
+      personaPrompts.Assistant,
+
+    modes[settings.mode] ||
+      modes.Balanced,
+
+    settings.customInstructions || "",
+
+    settings.systemPrompt || "",
+
+    memory.length
+      ? "Useful remembered information:\n" +
+        memory.slice(-10).join("\n")
+      : ""
+  ]
+  .filter(Boolean)
+  .join("\n\n");
 }
+
+/* =========================
+   COPY
+========================= */
+
+async function copyText(text){
+
+  try{
+    await navigator.clipboard.writeText(text);
+    showToast("Copied");
+  }catch{
+    showToast("Copy failed");
+  }
+}
+
+/* =========================
+   REGENERATE
+========================= */
+
+async function regenerate(message){
+
+  const chat = currentChat();
+
+  if(!chat || generating) return;
+
+  const index =
+    chat.messages.findIndex(
+      m => m.id === message.id
+    );
+
+  if(index < 0) return;
+
+  const previousUser =
+    [...chat.messages]
+      .slice(0,index)
+      .reverse()
+      .find(m => m.role === "user");
+
+  if(!previousUser){
+    showToast("No user message found");
+    return;
+  }
+
+  chat.messages.splice(index,1);
+
+  saveAll();
+  renderChat();
+
+  await generate(previousUser.content);
+}
+
+/* =========================
+   STOP
+========================= */
 
 function stopGeneration(){
+
   if(controller){
     controller.abort();
   }
 }
 
-/* =========================================================
-   AI SYSTEM
-========================================================= */
+/* =========================
+   READ ALOUD
+========================= */
 
-function getSystemPrompt(){
+function readAloud(text){
 
-  const persona={
-    Assistant:"You are a helpful, accurate and friendly AI assistant.",
-    Teacher:"You are a patient teacher. Explain clearly and step by step.",
-    Coder:"You are an expert programming assistant. Provide complete working code when requested.",
-    Writer:"You are a skilled writing assistant. Produce polished natural writing.",
-    Creative:"You are a creative assistant. Generate original useful ideas.",
-    Business:"You are a practical business assistant. Focus on clear plans, operations and useful calculations."
-  };
-
-  const mode={
-    Balanced:"Give a balanced amount of detail.",
-    Concise:"Be concise while still answering completely.",
-    Detailed:"Give detailed explanations and examples.",
-    Creative:"Use a creative and engaging approach."
-  };
-
-  return (
-    persona[settings.persona] ||
-    persona.Assistant
-  )+
-  "\n"+
-  (mode[settings.mode] || mode.Balanced)+
-  "\nRespond in "+settings.language+"."+
-  "\nTone: "+settings.tone+".";
-}
-
-/* =========================================================
-   FOLLOW UPS
-========================================================= */
-
-function showFollowups(message){
-
-  if(!message || !message.content) return;
-
-  const row=document.createElement("div");
-
-  row.className="message-row assistant";
-
-  row.innerHTML=`
-    <div class="message">
-      <div class="message-actions">
-        <button>💡 Give an example</button>
-        <button>🔎 Explain more</button>
-        <button>📌 Summarize</button>
-      </div>
-    </div>
-  `;
-
-  [...row.querySelectorAll("button")].forEach(button=>{
-    button.onclick=()=>{
-      input.value=button.textContent
-        .replace("💡 ","")
-        .replace("🔎 ","")
-        .replace("📌 ","");
-      input.focus();
-      updateCounter();
-    };
-  });
-
-  messagesEl.appendChild(row);
-}
-
-/* =========================================================
-   SEND
-========================================================= */
-
-async function sendMessage(){
-
-  const text=input.value.trim();
-
-  if(!text && !selectedImage){
+  if(!("speechSynthesis" in window)){
+    showToast("Read aloud is not supported");
     return;
   }
 
-  const imageData=selectedImage;
-  const file=selectedFile;
+  speechSynthesis.cancel();
 
-  const finalText=
-    text ||
-    "Please analyze the uploaded image.";
+  const utterance =
+    new SpeechSynthesisUtterance(text);
 
-  input.value="";
-  updateCounter();
+  utterance.rate = .95;
+  utterance.pitch = 1;
 
-  clearAttachment();
-
-  await generate(
-    finalText,
-    file,
-    "",
-    imageData
-  );
+  speechSynthesis.speak(utterance);
 }
 
-function clearAttachment(){
-
-  selectedImage=null;
-  selectedImageName="";
-  selectedFile=null;
-
-  $("attachmentLabel").textContent="No attachment";
-}
-
-/* =========================================================
-   FILES
-========================================================= */
-
-$("fileBtn").onclick=()=>{
-  $("fileInput").click();
-};
-
-$("fileInput").addEventListener("change",async event=>{
-
-  const file=event.target.files[0];
-
-  if(!file) return;
-
-  const text=await file.text();
-
-  selectedFile={
-    name:file.name,
-    content:text.slice(0,120000)
-  };
-
-  $("attachmentLabel").textContent=
-    "📎 "+file.name;
-
-  files.unshift({
-    id:uid("file"),
-    name:file.name,
-    size:file.size,
-    content:text.slice(0,120000),
-    createdAt:Date.now()
-  });
-
-  files=files.slice(0,30);
-
-  saveJSON(KEYS.files,files);
-
-  toast("File attached.");
-});
-
-$("imageBtn").onclick=()=>{
-  $("imageInput").click();
-};
-
-$("imageInput").addEventListener("change",event=>{
-
-  const file=event.target.files[0];
-
-  if(!file) return;
-
-  if(!file.type.startsWith("image/")){
-    toast("Please choose an image.");
-    return;
-  }
-
-  const reader=new FileReader();
-
-  reader.onload=event=>{
-
-    const image=new Image();
-
-    image.onload=()=>{
-
-      const max=1400;
-
-      let width=image.width;
-      let height=image.height;
-
-      if(width>max || height>max){
-
-        const scale=Math.min(
-          max/width,
-          max/height
-        );
-
-        width=Math.round(width*scale);
-        height=Math.round(height*scale);
-
-      }
-
-      const canvas=document.createElement("canvas");
-
-      canvas.width=width;
-      canvas.height=height;
-
-      const ctx=canvas.getContext("2d");
-
-      ctx.drawImage(
-        image,
-        0,
-        0,
-        width,
-        height
-      );
-
-      selectedImage=
-        canvas.toDataURL(
-          "image/jpeg",
-          .82
-        );
-
-      selectedImageName=file.name;
-
-      $("attachmentLabel").textContent=
-        "🖼️ "+file.name;
-
-      toast("Image attached.");
-    };
-
-    image.src=event.target.result;
-  };
-
-  reader.readAsDataURL(file);
-});
-
-/* =========================================================
-   VOICE
-========================================================= */
-
-$("voiceBtn").onclick=()=>{
-
-  if(!("webkitSpeechRecognition" in window) &&
-     !("SpeechRecognition" in window)){
-
-    toast("Voice input is not supported by this browser.");
-    return;
-  }
-
-  if(listening){
-    recognition?.stop();
-    return;
-  }
-
-  const SpeechRecognition=
-    window.SpeechRecognition ||
-    window.webkitSpeechRecognition;
-
-  recognition=new SpeechRecognition();
-
-  recognition.lang=
-    settings.language==="Urdu"
-      ? "ur-PK"
-      : "en-US";
-
-  recognition.continuous=false;
-  recognition.interimResults=false;
-
-  recognition.onstart=()=>{
-    listening=true;
-    $("voiceBtn").textContent="⏹️ Stop";
-  };
-
-  recognition.onresult=event=>{
-    const text=event.results[0][0].transcript;
-    input.value +=
-      (input.value ? " ":"")+text;
-    updateCounter();
-  };
-
-  recognition.onerror=()=>{
-    toast("Voice input error.");
-  };
-
-  recognition.onend=()=>{
-    listening=false;
-    $("voiceBtn").textContent="🎤 Voice";
-  };
-
-  recognition.start();
-};
-
-/* =========================================================
+/* =========================
    COUNTER
-========================================================= */
+========================= */
 
 function updateCounter(){
 
-  const text=input.value;
+  const text = input.value;
 
-  const words=
+  const chars = text.length;
+
+  const words =
     text.trim()
       ? text.trim().split(/\s+/).length
       : 0;
 
-  $("counter").textContent=
-    `${text.length} characters • ${words} words`;
+  counter.textContent =
+    `${chars} characters · ${words} words`;
 }
 
-/* =========================================================
-   PERSONAS / MODES
-========================================================= */
+/* =========================
+   STATS
+========================= */
 
-document.querySelectorAll("[data-persona]")
-  .forEach(button=>{
+function updateStats(){
 
-    button.onclick=()=>{
+  const chat = currentChat();
 
-      settings.persona=
-        button.dataset.persona;
+  if(!chat) return;
 
-      document
-        .querySelectorAll("[data-persona]")
-        .forEach(b=>b.classList.remove("active"));
+  const msgs = chat.messages;
 
-      button.classList.add("active");
+  const words =
+    msgs.reduce(
+      (sum,m) =>
+        sum +
+        String(m.content)
+          .trim()
+          .split(/\s+/)
+          .filter(Boolean).length,
+      0
+    );
 
-      $("personaBadge").textContent=
-        settings.persona;
+  $("statMessages").textContent =
+    msgs.length;
 
-      saveJSON(KEYS.settings,settings);
-      toast("Persona: "+settings.persona);
-    };
+  $("statWords").textContent =
+    words;
 
-  });
+  $("statAI").textContent =
+    msgs.filter(m =>
+      m.role === "assistant"
+    ).length;
 
-document.querySelectorAll("[data-mode]")
-  .forEach(button=>{
+  $("statPinned").textContent =
+    msgs.filter(m => m.pinned).length;
+}
 
-    button.onclick=()=>{
+/* =========================
+   THEME
+========================= */
 
-      settings.mode=
-        button.dataset.mode;
+function applyTheme(){
 
-      document
-        .querySelectorAll("[data-mode]")
-        .forEach(b=>b.classList.remove("active"));
-
-      button.classList.add("active");
-
-      saveJSON(KEYS.settings,settings);
-
-      toast("Mode: "+settings.mode);
-    };
-
-  });
-
-/* =========================================================
-   TOOLS
-========================================================= */
-
-document.querySelectorAll("[data-tool]")
-  .forEach(button=>{
-
-    button.onclick=()=>{
-
-      const tool=button.dataset.tool;
-
-      const actions={
-        bold:()=>wrapSelection("**","**"),
-        italic:()=>wrapSelection("*","*"),
-        heading:()=>insertText("# "),
-        list:()=>insertText("- "),
-        code:()=>wrapSelection("`","`"),
-        quote:()=>insertText("> "),
-        summarize:()=>toolPrompt("Summarize this text clearly."),
-        translate:()=>toolPrompt("Translate this text to English."),
-        grammar:()=>toolPrompt("Correct the grammar and explain the important corrections."),
-        rewrite:()=>toolPrompt("Rewrite this naturally and professionally."),
-        tone:()=>toolPrompt("Improve the tone while preserving the meaning."),
-        language:()=>openLanguageModal(),
-        calculator:()=>openCalculator(),
-        explain:()=>toolPrompt("Explain this in simple words.")
-      };
-
-      actions[tool]?.();
-
-    };
-
-  });
-
-function wrapSelection(before,after){
-
-  const start=input.selectionStart;
-  const end=input.selectionEnd;
-
-  const selected=input.value.slice(start,end);
-
-  input.setRangeText(
-    before+selected+after,
-    start,
-    end,
-    "end"
+  document.body.classList.toggle(
+    "dark",
+    settings.theme === "dark"
   );
 
-  input.focus();
-  updateCounter();
+  $("themeBtn").textContent =
+    settings.theme === "dark"
+      ? "☀ Light Theme"
+      : "🌙 Dark Theme";
 }
 
-function insertText(text){
-  const start=input.selectionStart;
+function toggleTheme(){
 
-  input.setRangeText(
-    text,
-    start,
-    start,
-    "end"
-  );
+  settings.theme =
+    settings.theme === "dark"
+      ? "light"
+      : "dark";
 
-  input.focus();
-  updateCounter();
+  applyTheme();
+  saveAll();
 }
 
-function toolPrompt(prompt){
+/* =========================
+   PERSONAS
+========================= */
 
-  const selected=
-    input.value.trim();
+document.querySelectorAll(".persona")
+.forEach(button => {
 
-  if(selected){
-    input.value=
-      prompt+"\n\n"+selected;
-  }else{
-    input.value=prompt+"\n\n";
-  }
+  button.onclick = () => {
 
-  input.focus();
-  updateCounter();
-}
+    document
+      .querySelectorAll(".persona")
+      .forEach(b =>
+        b.classList.remove("active")
+      );
 
-/* =========================================================
-   SAFE CALCULATOR
-========================================================= */
+    button.classList.add("active");
 
-function tokenizeMath(expression){
+    settings.persona =
+      button.dataset.persona;
 
-  const tokens=[];
-  let i=0;
+    $("personaBadge").textContent =
+      settings.persona;
 
-  while(i<expression.length){
+    saveAll();
 
-    const char=expression[i];
-
-    if(/\s/.test(char)){
-      i++;
-      continue;
-    }
-
-    if(/[0-9.]/.test(char)){
-
-      let number="";
-
-      while(
-        i<expression.length &&
-        /[0-9.eE+-]/.test(expression[i])
-      ){
-
-        if(
-          (expression[i]==="+" ||
-           expression[i]==="-") &&
-          number &&
-          !/[eE]$/.test(number)
-        ){
-          break;
-        }
-
-        number+=expression[i++];
-      }
-
-      if(!Number.isFinite(Number(number))){
-        throw new Error("Invalid number.");
-      }
-
-      tokens.push({
-        type:"number",
-        value:Number(number)
-      });
-
-      continue;
-    }
-
-    if(/[a-zA-Z]/.test(char)){
-
-      let name="";
-
-      while(
-        i<expression.length &&
-        /[a-zA-Z]/.test(expression[i])
-      ){
-        name+=expression[i++];
-      }
-
-      tokens.push({
-        type:"name",
-        value:name.toLowerCase()
-      });
-
-      continue;
-    }
-
-    if("+-*/%^() ,".includes(char)){
-
-      tokens.push({
-        type:"operator",
-        value:char
-      });
-
-      i++;
-      continue;
-    }
-
-    throw new Error("Unsupported calculator character.");
-  }
-
-  return tokens;
-}
-
-function safeCalculate(expression){
-
-  const tokens=tokenizeMath(expression);
-  let position=0;
-
-  const constants={
-    pi:Math.PI,
-    e:Math.E
+    showToast(
+      settings.persona +
+      " persona selected"
+    );
   };
+});
 
-  const functions={
-    sqrt:x=>Math.sqrt(x),
-    abs:x=>Math.abs(x),
-    round:x=>Math.round(x),
-    floor:x=>Math.floor(x),
-    ceil:x=>Math.ceil(x),
-    sin:x=>Math.sin(x),
-    cos:x=>Math.cos(x),
-    tan:x=>Math.tan(x),
-    log:x=>Math.log10(x),
-    ln:x=>Math.log(x)
+/* =========================
+   MODES
+========================= */
+
+document.querySelectorAll(".mode")
+.forEach(button => {
+
+  button.onclick = () => {
+
+    document
+      .querySelectorAll(".mode")
+      .forEach(b =>
+        b.classList.remove("active")
+      );
+
+    button.classList.add("active");
+
+    settings.mode =
+      button.dataset.mode;
+
+    saveAll();
+
+    showToast(
+      settings.mode +
+      " mode selected"
+    );
   };
+});
 
-  function peek(){
-    return tokens[position];
-  }
+/* =========================
+   QUICK PROMPTS
+========================= */
 
-  function consume(){
-    return tokens[position++];
-  }
+document.querySelectorAll(".quick")
+.forEach(button => {
 
-  function primary(){
+  button.onclick = () => {
 
-    const token=peek();
+    const text =
+      button.textContent.trim();
 
-    if(!token){
-      throw new Error("Unexpected end.");
-    }
+    const prompts = {
 
-    if(token.value==="("){
+      "💡 Explain something simply":
+        "Explain something interesting to me in simple words.",
 
-      consume();
+      "✍️ Help me write something":
+        "Help me write something clearly and naturally.",
 
-      const value=additive();
+      "💻 Help me with coding":
+        "Help me create a coding project.",
 
-      if(!peek() || consume().value!==")"){
-        throw new Error("Missing closing parenthesis.");
-      }
+      "🧠 Give me creative ideas":
+        "Give me some creative ideas for a project."
+    };
 
-      return value;
-    }
+    input.value =
+      prompts[text] ||
+      text;
 
-    if(token.value==="+"){
-      consume();
-      return primary();
-    }
+    updateCounter();
+    input.focus();
+  };
+});
 
-    if(token.value==="-"){
-      consume();
-      return -primary();
-    }
+/* =========================
+   BASIC BUTTONS
+========================= */
 
-    if(token.type==="number"){
-      consume();
-      return token.value;
-    }
+$("newChatBtn").onclick =
+  () => createChat();
 
-    if(token.type==="name"){
+$("themeBtn").onclick =
+  toggleTheme;
 
-      const name=consume().value;
+$("send").onclick =
+  sendMessage;
 
-      if(constants[name]!==undefined){
-        return constants[name];
-      }
+$("input").addEventListener(
+  "input",
+  updateCounter
+);
 
-      if(functions[name]){
+$("input").addEventListener(
+  "keydown",
+  event => {
 
-        if(!peek() || consume().value!=="("){
-          throw new Error("Function requires parentheses.");
-        }
-
-        const value=additive();
-
-        if(!peek() || consume().value!==")"){
-          throw new Error("Missing function parenthesis.");
-        }
-
-        return functions[name](value);
-      }
-
-      throw new Error("Unknown name: "+name);
-    }
-
-    throw new Error("Invalid expression.");
-  }
-
-  function power(){
-
-    let left=primary();
-
-    while(peek()?.value==="^"){
-      consume();
-      left=Math.pow(left,power());
-    }
-
-    return left;
-  }
-
-  function multiplicative(){
-
-    let left=power();
-
-    while(
-      peek() &&
-      ["*","/","%"].includes(peek().value)
+    if(
+      event.key === "Enter" &&
+      !event.shiftKey
     ){
-
-      const op=consume().value;
-      const right=power();
-
-      if(op==="*") left*=right;
-      if(op==="/") left/=right;
-      if(op==="%") left%=right;
+      event.preventDefault();
+      sendMessage();
     }
-
-    return left;
   }
+);
 
-  function additive(){
+$("searchChats").addEventListener(
+  "input",
+  renderHistory
+);
 
-    let left=multiplicative();
+/* =========================
+   RENAME
+========================= */
 
-    while(
-      peek() &&
-      ["+","+","-"].includes(peek().value)
-    ){
+$("renameBtn").onclick = () => {
 
-      const op=consume().value;
-      const right=multiplicative();
+  const chat = currentChat();
 
-      if(op==="+") left+=right;
-      if(op==="-") left-=right;
-    }
-
-    return left;
-  }
-
-  const result=additive();
-
-  if(position!==tokens.length){
-    throw new Error("Unexpected calculator input.");
-  }
-
-  if(!Number.isFinite(result)){
-    throw new Error("Result is not finite.");
-  }
-
-  return result;
-}
-
-function openCalculator(){
+  if(!chat) return;
 
   openModal(`
-    <div class="modal-head">
-      <strong>🧮 Safe Calculator</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
+    <h2>Rename Chat</h2>
 
-    <div class="modal-body form">
+    <input
+      id="renameInput"
+      value="${escapeHTML(chat.title)}"
+      maxlength="80"
+    >
 
-      <input id="calcInput"
-        placeholder="Example: (25 * 4) + sqrt(81)">
+    <div class="modal-actions">
 
-      <button class="primary-btn" onclick="runCalculator()">
-        Calculate
+      <button
+        class="secondary"
+        id="cancelRename"
+      >
+        Cancel
       </button>
 
-      <div id="calcResult" class="item">
-        Result will appear here.
-      </div>
-
-      <div class="small">
-        Supports + − × ÷ %, parentheses, ^, sqrt, abs,
-        round, floor, ceil, sin, cos, tan, log, ln, pi and e.
-      </div>
-
-    </div>
-  `);
-}
-
-function runCalculator(){
-
-  const expression=
-    $("calcInput").value.trim();
-
-  try{
-
-    const result=safeCalculate(expression);
-
-    $("calcResult").textContent=
-      String(result);
-
-  }catch(error){
-
-    $("calcResult").textContent=
-      "Error: "+error.message;
-
-  }
-}
-
-/* =========================================================
-   LANGUAGE
-========================================================= */
-
-function openLanguageModal(){
-
-  openModal(`
-    <div class="modal-head">
-      <strong>🌐 Language & Tone</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body form">
-
-      <select id="languageSelect">
-        <option>English</option>
-        <option>Urdu</option>
-        <option>Arabic</option>
-        <option>Chinese</option>
-        <option>Spanish</option>
-        <option>French</option>
-        <option>German</option>
-        <option>Hindi</option>
-      </select>
-
-      <select id="toneSelect">
-        <option>Natural</option>
-        <option>Professional</option>
-        <option>Friendly</option>
-        <option>Formal</option>
-        <option>Simple</option>
-        <option>Creative</option>
-      </select>
-
-      <button class="primary-btn" onclick="
-        settings.language=document.getElementById('languageSelect').value;
-        settings.tone=document.getElementById('toneSelect').value;
-        saveJSON(KEYS.settings,settings);
-        closeModal();
-        toast('Language and tone updated.');
-      ">
+      <button
+        class="primary"
+        id="saveRename"
+      >
         Save
       </button>
 
     </div>
   `);
 
-  $("languageSelect").value=settings.language;
-  $("toneSelect").value=settings.tone;
-}
+  $("renameInput").focus();
 
-/* =========================================================
-   COMMAND CENTER
-========================================================= */
+  $("cancelRename").onclick =
+    closeModal;
 
-function commandCenter(){
+  $("saveRename").onclick = () => {
 
-  openModal(`
-    <div class="modal-head">
-      <strong>🚀 Command Center</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
+    const title =
+      $("renameInput").value.trim();
 
-    <div class="modal-body">
+    if(title){
+      chat.title = title;
+      chat.updatedAt = Date.now();
+      saveAll();
+      renderHistory();
+      renderChat();
+      closeModal();
+    }
+  };
+};
 
-      <div class="grid-buttons">
+/* =========================
+   FAVORITE
+========================= */
 
-        <button class="control-btn" onclick="closeModal();showCalendar()">📅 Calendar</button>
-        <button class="control-btn" onclick="closeModal();showTasks()">☑️ Tasks</button>
-        <button class="control-btn" onclick="closeModal();showSaved()">🔖 Saved</button>
-        <button class="control-btn" onclick="closeModal();showMemory()">🧠 Memory</button>
-        <button class="control-btn" onclick="closeModal();showPrompts()">🧩 Prompts</button>
-        <button class="control-btn" onclick="closeModal();showStatistics()">📈 Statistics</button>
-        <button class="control-btn" onclick="closeModal();showFiles()">📁 Files</button>
-        <button class="control-btn" onclick="closeModal();dailyBrief()">📰 Daily Brief</button>
-        <button class="control-btn" onclick="closeModal();studyCards()">🃏 Study Cards</button>
-        <button class="control-btn" onclick="closeModal();quizMaker()">❓ Quiz</button>
-        <button class="control-btn" onclick="closeModal();keyPoints()">📌 Key Points</button>
-        <button class="control-btn" onclick="closeModal();emailWriter()">✉️ Email</button>
-        <button class="control-btn" onclick="closeModal();documentOutline()">📑 Outline</button>
-        <button class="control-btn" onclick="closeModal();meetingNotes()">📝 Meeting Notes</button>
-        <button class="control-btn" onclick="closeModal();decisionTable()">📊 Decision Table</button>
-        <button class="control-btn" onclick="closeModal();readingMode()">📖 Reading Mode</button>
+$("favoriteBtn").onclick = () => {
 
-      </div>
+  const chat = currentChat();
 
-    </div>
-  `);
-}
+  if(!chat) return;
 
-/* =========================================================
-   CALENDAR
-========================================================= */
+  chat.favorite =
+    !chat.favorite;
 
-function showCalendar(){
+  saveAll();
+  renderHistory();
 
-  const date=new Date();
+  $("favoriteBtn").textContent =
+    chat.favorite ? "★" : "☆";
+};
 
-  const year=date.getFullYear();
-  const month=date.getMonth();
+/* =========================
+   CLEAR
+========================= */
 
-  const first=new Date(year,month,1);
-  const last=new Date(year,month+1,0);
+$("clearBtn").onclick = () => {
 
-  let html="";
+  const chat = currentChat();
 
-  for(let i=0;i<first.getDay();i++){
-    html+="<div></div>";
+  if(!chat) return;
+
+  if(!confirm("Clear this conversation?")){
+    return;
   }
 
-  for(let day=1;day<=last.getDate();day++){
+  chat.messages = [];
+  chat.updatedAt = Date.now();
 
-    const count=chats.filter(chat=>{
-      const d=new Date(chat.createdAt);
+  saveAll();
+  renderChat();
 
-      return d.getFullYear()===year &&
-             d.getMonth()===month &&
-             d.getDate()===day;
-    }).length;
+  showToast("Conversation cleared");
+};
 
-    html+=`
-      <div>
-        <strong>${day}</strong>
-        ${count ? `<div class="small">${count} chat${count>1?"s":""}</div>`:""}
-      </div>
-    `;
-  }
+/* =========================
+   FULLSCREEN
+========================= */
 
-  openModal(`
-    <div class="modal-head">
-      <strong>📅 Chat Calendar — ${date.toLocaleString([],{
-        month:"long",
-        year:"numeric"
-      })}</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="calendar">
-        <div><strong>Sun</strong></div>
-        <div><strong>Mon</strong></div>
-        <div><strong>Tue</strong></div>
-        <div><strong>Wed</strong></div>
-        <div><strong>Thu</strong></div>
-        <div><strong>Fri</strong></div>
-        <div><strong>Sat</strong></div>
-        ${html}
-      </div>
-
-    </div>
-  `);
-}
-
-/* =========================================================
-   DAILY BRIEF
-========================================================= */
-
-async function dailyBrief(){
-
-  const chat=currentChat();
-
-  const context=
-    chat?.messages
-      .slice(-15)
-      .map(m=>m.role+": "+m.content)
-      .join("\n") ||
-    "No current conversation.";
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📰 Daily AI Brief</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div id="briefResult" class="item">
-        Generating your brief...
-      </div>
-
-    </div>
-  `);
+$("fullscreenBtn").onclick = async () => {
 
   try{
 
-    const result=await directAI(
-      "Create a short useful daily brief from this information. Include key points and useful next actions:\n\n"+context
-    );
-
-    $("briefResult").innerHTML=markdown(result);
-
-    workspace.dailyBrief=result;
-    saveJSON(KEYS.workspace,workspace);
-
-  }catch(error){
-
-    $("briefResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   DIRECT AI
-========================================================= */
-
-async function directAI(message){
-
-  const response=await fetch(
-    "/.netlify/functions/chat",
-    {
-      method:"POST",
-      headers:{
-        "Content-Type":"application/json"
-      },
-      body:JSON.stringify({
-        message,
-        history:[],
-        systemPrompt:getSystemPrompt(),
-        temperature:Number(settings.temperature)||1,
-        maxTokens:Number(settings.maxTokens)||2000
-      })
+    if(!document.fullscreenElement){
+      await document.documentElement.requestFullscreen();
+    }else{
+      await document.exitFullscreen();
     }
+
+  }catch{
+    showToast("Fullscreen unavailable");
+  }
+};
+
+/* =========================
+   FOCUS MODE
+========================= */
+
+$("focusBtn").onclick = () => {
+
+  document.body.classList.toggle(
+    "focus-mode"
   );
 
-  const data=await response.json();
+  showToast(
+    document.body.classList.contains("focus-mode")
+      ? "Focus mode enabled"
+      : "Focus mode disabled"
+  );
+};
 
-  if(!response.ok){
-    throw new Error(
-      data.error ||
-      "AI request failed."
-    );
-  }
-
-  return data.reply || "";
-}
-
-/* =========================================================
-   TASKS
-========================================================= */
-
-function showTasks(){
-
-  const render=()=>{
-
-    const list=tasks.map(task=>`
-
-      <div class="item">
-
-        <div class="item-row">
-
-          <label>
-            <input type="checkbox"
-              ${task.done?"checked":""}
-              onchange="toggleTask('${task.id}')">
-            ${escapeHTML(task.title)}
-          </label>
-
-          <button class="control-btn"
-            onclick="deleteTask('${task.id}')">
-            ×
-          </button>
-
-        </div>
-
-        ${task.due
-          ? `<div class="small">Due: ${escapeHTML(task.due)}</div>`
-          : ""}
-
-      </div>
-    `).join("");
-
-    modal.innerHTML=`
-
-      <div class="modal-head">
-        <strong>☑️ Smart To-Do List</strong>
-        <button class="modal-close" onclick="closeModal()">×</button>
-      </div>
-
-      <div class="modal-body">
-
-        <div class="form">
-
-          <input id="taskInput"
-            placeholder="Add a task...">
-
-          <button class="primary-btn"
-            onclick="addTask()">
-            Add Task
-          </button>
-
-        </div>
-
-        <div style="margin-top:15px">
-          ${list || '<div class="small">No tasks yet.</div>'}
-        </div>
-
-      </div>
-    `;
-  };
-
-  openModal("");
-  render();
-}
-
-function addTask(){
-
-  const value=$("taskInput").value.trim();
-
-  if(!value) return;
-
-  tasks.unshift({
-    id:uid("task"),
-    title:value,
-    done:false,
-    createdAt:Date.now()
-  });
-
-  saveJSON(KEYS.tasks,tasks);
-
-  showTasks();
-}
-
-function toggleTask(id){
-
-  const task=tasks.find(t=>t.id===id);
-
-  if(!task) return;
-
-  task.done=!task.done;
-
-  saveJSON(KEYS.tasks,tasks);
-
-  showTasks();
-}
-
-function deleteTask(id){
-
-  tasks=tasks.filter(t=>t.id!==id);
-
-  saveJSON(KEYS.tasks,tasks);
-
-  showTasks();
-}
-
-/* =========================================================
+/* =========================
    SAVED ANSWERS
-========================================================= */
+========================= */
 
-function showSaved(){
+$("savedBtn").onclick = () => {
 
-  const html=savedAnswers.map(item=>`
-
-    <div class="item">
-
-      <div>${markdown(item.content)}</div>
-
-      <div class="message-actions">
-        <button onclick="copySaved('${item.id}')">Copy</button>
-        <button onclick="deleteSaved('${item.id}')">Delete</button>
-      </div>
-
-    </div>
-
-  `).join("");
-
-  openModal(`
-    <div class="modal-head">
-      <strong>🔖 Saved Answers</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-      ${html || '<div class="small">No saved answers yet.</div>'}
-    </div>
-  `);
-}
-
-function copySaved(id){
-
-  const item=savedAnswers.find(x=>x.id===id);
-
-  if(item){
-    navigator.clipboard.writeText(item.content);
-    toast("Saved answer copied.");
-  }
-}
-
-function deleteSaved(id){
-
-  savedAnswers=savedAnswers.filter(x=>x.id!==id);
-
-  saveJSON(KEYS.saved,savedAnswers);
-
-  showSaved();
-}
-
-/* =========================================================
-   MEMORY
-========================================================= */
-
-function showMemory(){
-
-  openModal(`
-    <div class="modal-head">
-      <strong>🧠 Long-Term Memory</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="form">
-
-        <input id="memoryInput"
-          placeholder="Add something AI should remember...">
-
-        <button class="primary-btn" onclick="addMemory()">
-          Save Memory
-        </button>
-
-      </div>
-
-      <div style="margin-top:15px">
-
-        ${
-          memories.map((memory,index)=>`
-            <div class="item">
-              <div class="item-row">
-                <span>${escapeHTML(memory)}</span>
-                <button class="control-btn"
-                  onclick="deleteMemory(${index})">
-                  ×
-                </button>
-              </div>
+  const items =
+    savedAnswers.length
+      ? savedAnswers.map(item => `
+          <div style="
+            padding:12px;
+            border:1px solid var(--border);
+            border-radius:12px;
+            margin-bottom:8px;
+          ">
+            <div style="line-height:1.5">
+              ${markdown(item.content)}
             </div>
-          `).join("")
-          ||
-          '<div class="small">No memories stored.</div>'
-        }
 
-      </div>
-
-    </div>
-  `);
-}
-
-function addMemory(){
-
-  const value=$("memoryInput").value.trim();
-
-  if(!value) return;
-
-  memories.unshift(value);
-  memories=memories.slice(0,50);
-
-  saveJSON(KEYS.memory,memories);
-
-  showMemory();
-}
-
-function deleteMemory(index){
-
-  memories.splice(index,1);
-
-  saveJSON(KEYS.memory,memories);
-
-  showMemory();
-}
-
-/* =========================================================
-   PROMPTS
-========================================================= */
-
-function showPrompts(){
-
-  const defaults=[
-    "Explain this simply:",
-    "Give me a step-by-step plan for:",
-    "Rewrite this professionally:",
-    "Find the key points in:",
-    "Create a detailed checklist for:"
-  ];
-
-  openModal(`
-    <div class="modal-head">
-      <strong>🧩 Prompt Library</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      ${defaults.map(p=>`
-        <div class="item">
-          <div class="item-row">
-            <span>${escapeHTML(p)}</span>
-            <button class="control-btn"
-              onclick="usePrompt(${JSON.stringify(p)})">
-              Use
+            <button
+              class="secondary"
+              onclick="copyText(${JSON.stringify(item.content).replace(/</g,"\\u003c")})"
+            >
+              Copy
             </button>
           </div>
-        </div>
-      `).join("")}
-
-    </div>
-  `);
-}
-
-function usePrompt(prompt){
-
-  closeModal();
-
-  input.value=prompt+" ";
-  input.focus();
-
-  updateCounter();
-}
-
-/* =========================================================
-   STUDY CARDS
-========================================================= */
-
-async function studyCards(){
-
-  const chat=currentChat();
-
-  if(!chat || !chat.messages.length){
-    toast("Start a conversation first.");
-    return;
-  }
+        `).join("")
+      : "<p>No saved answers yet.</p>";
 
   openModal(`
-    <div class="modal-head">
-      <strong>🃏 AI Study Cards</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="cardsResult">
-      Creating cards...
-    </div>
-  `);
-
-  const context=chat.messages
-    .map(m=>m.content)
-    .join("\n");
-
-  try{
-
-    const result=await directAI(
-      "Create 8 study flashcards from this conversation. Format each as Question: ... Answer: ...\n\n"+context
-    );
-
-    $("cardsResult").innerHTML=
-      markdown(result);
-
-  }catch(error){
-
-    $("cardsResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   QUIZ
-========================================================= */
-
-async function quizMaker(){
-
-  const chat=currentChat();
-
-  if(!chat || !chat.messages.length){
-    toast("Start a conversation first.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>❓ AI Quiz Maker</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="quizResult">
-      Creating quiz...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Create a 5-question quiz from this conversation. Give each question four options and clearly identify the correct answer after the options.\n\n"+
-      chat.messages.map(m=>m.content).join("\n")
-    );
-
-    $("quizResult").innerHTML=markdown(result);
-
-  }catch(error){
-
-    $("quizResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   KEY POINTS
-========================================================= */
-
-async function keyPoints(){
-
-  const chat=currentChat();
-
-  if(!chat || !chat.messages.length){
-    toast("No conversation to analyze.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📌 Key Points Extractor</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="keyPointsResult">
-      Extracting key points...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Extract the most important key points from this conversation. Use a clear numbered list.\n\n"+
-      chat.messages.map(m=>m.content).join("\n")
-    );
-
-    $("keyPointsResult").innerHTML=markdown(result);
-
-  }catch(error){
-
-    $("keyPointsResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   DECISION TABLE
-========================================================= */
-
-async function decisionTable(){
-
-  const chat=currentChat();
-
-  if(!chat){
-    toast("Start a conversation first.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📊 Decision Table</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="decisionResult">
-      Creating table...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Turn the useful comparisons in this conversation into a clear markdown decision table. Do not choose a winner.\n\n"+
-      chat.messages.map(m=>m.content).join("\n")
-    );
-
-    $("decisionResult").innerHTML=markdown(result);
-
-  }catch(error){
-
-    $("decisionResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   MEETING NOTES
-========================================================= */
-
-async function meetingNotes(){
-
-  const chat=currentChat();
-
-  if(!chat){
-    toast("Start a conversation first.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📝 Meeting Notes Mode</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="meetingResult">
-      Organizing notes...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Organize this conversation as meeting notes with sections: Topics, Important Points, Decisions, Action Items, Open Questions.\n\n"+
-      chat.messages.map(m=>m.content).join("\n")
-    );
-
-    $("meetingResult").innerHTML=markdown(result);
-
-  }catch(error){
-
-    $("meetingResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   EMAIL WRITER
-========================================================= */
-
-function emailWriter(){
-
-  openModal(`
-    <div class="modal-head">
-      <strong>✉️ Email Writer</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body form">
-
-      <textarea id="emailInput" rows="7"
-        placeholder="Write your rough email or explain what you want to say..."></textarea>
-
-      <button class="primary-btn" onclick="generateEmail()">
-        Create Email
+    <h2>🔖 Saved Answers</h2>
+    ${items}
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Close
       </button>
-
-      <div id="emailResult"></div>
-
     </div>
   `);
-}
+};
 
-async function generateEmail(){
+/* =========================
+   TASKS
+========================= */
 
-  const text=$("emailInput").value.trim();
-
-  if(!text) return;
-
-  $("emailResult").textContent="Writing...";
-
-  try{
-
-    const result=await directAI(
-      "Turn this rough request into a polished natural email. Include an appropriate subject line.\n\n"+text
-    );
-
-    $("emailResult").innerHTML=
-      `<div class="item">${markdown(result)}</div>`;
-
-  }catch(error){
-
-    $("emailResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   DOCUMENT OUTLINE
-========================================================= */
-
-async function documentOutline(){
+$("tasksBtn").onclick = () => {
 
   openModal(`
-    <div class="modal-head">
-      <strong>📑 Document Outline</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
+    <h2>✓ Smart To-Do List</h2>
 
-    <div class="modal-body form">
+    <input
+      id="taskInput"
+      placeholder="Add a task..."
+    >
 
-      <textarea id="outlineInput" rows="8"
-        placeholder="Paste your document or describe the topic..."></textarea>
+    <button
+      class="primary"
+      id="addTask"
+    >
+      Add Task
+    </button>
 
-      <button class="primary-btn" onclick="generateOutline()">
-        Generate Outline
+    <div id="taskList" style="margin-top:15px"></div>
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Close
       </button>
-
-      <div id="outlineResult"></div>
-
     </div>
   `);
-}
 
-async function generateOutline(){
+  function renderTasks(){
 
-  const text=$("outlineInput").value.trim();
+    $("taskList").innerHTML =
+      tasks.length
+        ? tasks.map((task,index) => `
+            <div style="
+              display:flex;
+              align-items:center;
+              gap:8px;
+              padding:9px;
+              border-bottom:1px solid var(--border);
+            ">
+              <input
+                type="checkbox"
+                ${task.done ? "checked" : ""}
+                onchange="toggleTask(${index})"
+              >
 
-  if(!text) return;
+              <span style="
+                flex:1;
+                text-decoration:${task.done ? "line-through" : "none"};
+              ">
+                ${escapeHTML(task.title)}
+              </span>
 
-  $("outlineResult").textContent="Creating outline...";
-
-  try{
-
-    const result=await directAI(
-      "Create a logical document outline with headings and subheadings for:\n\n"+text
-    );
-
-    $("outlineResult").innerHTML=
-      `<div class="item">${markdown(result)}</div>`;
-
-  }catch(error){
-
-    $("outlineResult").textContent=error.message;
-
-  }
-}
-
-/* =========================================================
-   TEXT CLEANER
-========================================================= */
-
-function cleanText(){
-
-  const text=input.value;
-
-  if(!text){
-    toast("Write or paste text first.");
-    return;
-  }
-
-  let cleaned=text
-    .replace(/[ \t]+/g," ")
-    .replace(/\n{3,}/g,"\n\n")
-    .replace(/([!?.,])\1+/g,"$1")
-    .trim();
-
-  input.value=cleaned;
-
-  updateCounter();
-
-  toast("Text cleaned.");
-}
-
-/* =========================================================
-   READING MODE
-========================================================= */
-
-function readingMode(){
-
-  const chat=currentChat();
-
-  if(!chat){
-    toast("No response to read.");
-    return;
-  }
-
-  const lastAI=
-    [...chat.messages]
-      .reverse()
-      .find(m=>m.role==="assistant");
-
-  if(!lastAI){
-    toast("No AI response found.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📖 Reading Mode</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <article class="reading md">
-        ${markdown(lastAI.content)}
-      </article>
-
-    </div>
-  `);
-}
-
-/* =========================================================
-   STATISTICS
-========================================================= */
-
-function showStatistics(){
-
-  const allMessages=
-    chats.flatMap(c=>c.messages);
-
-  const totalWords=
-    allMessages.reduce(
-      (sum,m)=>
-        sum+
-        (m.content.trim()
-          ? m.content.trim().split(/\s+/).length
-          : 0),
-      0
-    );
-
-  const userMessages=
-    allMessages.filter(m=>m.role==="user").length;
-
-  const aiMessages=
-    allMessages.filter(m=>m.role==="assistant").length;
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📈 Chat Statistics</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="stat-grid">
-
-        <div class="stat">
-          <strong>${chats.length}</strong>
-          <span>Total Chats</span>
-        </div>
-
-        <div class="stat">
-          <strong>${allMessages.length}</strong>
-          <span>Total Messages</span>
-        </div>
-
-        <div class="stat">
-          <strong>${userMessages}</strong>
-          <span>User Messages</span>
-        </div>
-
-        <div class="stat">
-          <strong>${aiMessages}</strong>
-          <span>AI Replies</span>
-        </div>
-
-        <div class="stat">
-          <strong>${totalWords}</strong>
-          <span>Total Words</span>
-        </div>
-
-        <div class="stat">
-          <strong>${savedAnswers.length}</strong>
-          <span>Saved Answers</span>
-        </div>
-
-      </div>
-
-    </div>
-  `);
-}
-
-/* =========================================================
-   FILE LIBRARY
-========================================================= */
-
-function showFiles(){
-
-  openModal(`
-    <div class="modal-head">
-      <strong>📁 File Library</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      ${
-        files.map(file=>`
-          <div class="item">
-            <div class="item-row">
-              <strong>${escapeHTML(file.name)}</strong>
-              <button class="control-btn"
-                onclick="useLibraryFile('${file.id}')">
-                Use
+              <button
+                class="secondary"
+                onclick="deleteTask(${index})"
+              >
+                Delete
               </button>
             </div>
-            <div class="small">
-              ${(file.size/1024).toFixed(1)} KB
-            </div>
-          </div>
-        `).join("")
-        ||
-        '<div class="small">No files stored.</div>'
-      }
+          `).join("")
+        : "<p>No tasks.</p>";
+  }
 
+  $("addTask").onclick = () => {
+
+    const value =
+      $("taskInput").value.trim();
+
+    if(!value) return;
+
+    tasks.push({
+      id:uid("task"),
+      title:value,
+      done:false,
+      createdAt:Date.now()
+    });
+
+    saveAll();
+
+    $("taskInput").value = "";
+
+    renderTasks();
+  };
+
+  renderTasks();
+};
+
+window.toggleTask = function(index){
+
+  tasks[index].done =
+    !tasks[index].done;
+
+  saveAll();
+
+  $("tasksBtn").click();
+};
+
+window.deleteTask = function(index){
+
+  tasks.splice(index,1);
+
+  saveAll();
+
+  $("tasksBtn").click();
+};
+
+/* =========================
+   CALENDAR
+========================= */
+
+$("calendarBtn").onclick = () => {
+
+  const grouped = {};
+
+  chats.forEach(chat => {
+
+    const date =
+      new Date(chat.createdAt)
+        .toLocaleDateString();
+
+    grouped[date] =
+      (grouped[date] || 0) + 1;
+  });
+
+  const rows =
+    Object.entries(grouped)
+      .sort((a,b) =>
+        new Date(b[0]) -
+        new Date(a[0])
+      )
+      .map(([date,count]) => `
+        <div style="
+          padding:12px;
+          border:1px solid var(--border);
+          border-radius:11px;
+          margin-bottom:8px;
+        ">
+          <strong>${escapeHTML(date)}</strong>
+          <div style="color:var(--muted);font-size:12px">
+            ${count} chat${count === 1 ? "" : "s"}
+          </div>
+        </div>
+      `).join("");
+
+  openModal(`
+    <h2>📅 Chat Calendar</h2>
+    ${rows || "<p>No chats yet.</p>"}
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Close
+      </button>
     </div>
   `);
+};
+
+/* =========================
+   MEMORY
+========================= */
+
+$("memoryBtn").onclick = () => {
+
+  openModal(`
+    <h2>🧠 Long-Term Memory</h2>
+
+    <p style="color:var(--muted)">
+      Add information you want the AI to remember.
+    </p>
+
+    <textarea id="memoryInput"
+      placeholder="Example: I prefer simple explanations."></textarea>
+
+    <button class="primary" id="saveMemory">
+      Save Memory
+    </button>
+
+    <div style="margin-top:15px">
+      ${
+        memory.length
+          ? memory.map((item,index) => `
+              <div style="
+                padding:9px;
+                border-bottom:1px solid var(--border);
+              ">
+                ${escapeHTML(item)}
+
+                <button
+                  class="secondary"
+                  onclick="removeMemory(${index})"
+                >
+                  Remove
+                </button>
+              </div>
+            `).join("")
+          : "<p>No memories saved.</p>"
+      }
+    </div>
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Close
+      </button>
+    </div>
+  `);
+
+  $("saveMemory").onclick = () => {
+
+    const value =
+      $("memoryInput").value.trim();
+
+    if(!value) return;
+
+    memory.push(value);
+
+    saveAll();
+
+    $("memoryBtn").click();
+
+    showToast("Memory saved");
+  };
+};
+
+window.removeMemory = function(index){
+
+  memory.splice(index,1);
+
+  saveAll();
+
+  $("memoryBtn").click();
+};
+
+/* =========================
+   AI TOOLS
+========================= */
+
+async function aiTool(title,prompt){
+
+  const chat = currentChat();
+
+  if(!chat){
+    showToast("No active chat");
+    return;
+  }
+
+  const context =
+    chat.messages
+      .map(m =>
+        `${m.role}: ${m.content}`
+      )
+      .join("\n");
+
+  input.value =
+    prompt +
+    "\n\nConversation:\n" +
+    context;
+
+  updateCounter();
+
+  await sendMessage();
 }
 
-function useLibraryFile(id){
+$("summaryBtn").onclick = () =>
+  aiTool(
+    "Summary",
+    "Summarize this conversation clearly. Give the key points and important conclusions."
+  );
 
-  const file=files.find(f=>f.id===id);
+$("keyPointsBtn").onclick = () =>
+  aiTool(
+    "Key Points",
+    "Extract the most important key points from this conversation as a clear numbered list."
+  );
+
+$("emailBtn").onclick = () =>
+  aiTool(
+    "Email",
+    "Turn the useful information in this conversation into a polished professional email."
+  );
+
+$("outlineBtn").onclick = () =>
+  aiTool(
+    "Outline",
+    "Create a clear hierarchical document outline from the information in this conversation."
+  );
+
+$("meetingBtn").onclick = () =>
+  aiTool(
+    "Meeting",
+    "Convert this conversation into organized meeting notes with topics, decisions, action items and next steps."
+  );
+
+$("studyBtn").onclick = () =>
+  aiTool(
+    "Study Cards",
+    "Create useful study flashcards from this conversation. Format each as Question: and Answer:."
+  );
+
+$("quizBtn").onclick = () =>
+  aiTool(
+    "Quiz",
+    "Create a quiz from this conversation with questions, multiple-choice options and answers."
+  );
+
+$("dailyBtn").onclick = () =>
+  aiTool(
+    "Daily Brief",
+    "Create a short daily brief from this conversation containing the most important information and next actions."
+  );
+
+$("followupBtn").onclick = () =>
+  aiTool(
+    "Follow Ups",
+    "Suggest 5 useful follow-up questions or actions based on this conversation."
+  );
+
+/* =========================
+   TOOLBAR
+========================= */
+
+document
+  .querySelectorAll("[data-tool]")
+  .forEach(button => {
+
+    button.onclick = () => {
+
+      const tool =
+        button.dataset.tool;
+
+      const selection =
+        input.value.substring(
+          input.selectionStart,
+          input.selectionEnd
+        );
+
+      if(tool === "bold"){
+        input.setRangeText(
+          `**${selection || "text"}**`
+        );
+      }
+
+      else if(tool === "italic"){
+        input.setRangeText(
+          `*${selection || "text"}*`
+        );
+      }
+
+      else if(tool === "heading"){
+        input.setRangeText(
+          `## ${selection || "Heading"}`
+        );
+      }
+
+      else if(tool === "list"){
+        input.setRangeText(
+          `- ${selection || "Item"}`
+        );
+      }
+
+      else if(tool === "code"){
+        input.setRangeText(
+          "```\n" +
+          (selection || "code") +
+          "\n```"
+        );
+      }
+
+      else if(tool === "quote"){
+        input.setRangeText(
+          `> ${selection || "Quote"}`
+        );
+      }
+
+      else if(tool === "summarize"){
+        input.value =
+          "Summarize the following clearly:\n\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "translate"){
+        input.value =
+          "Translate the following into English:\n\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "grammar"){
+        input.value =
+          "Check and correct the grammar of the following:\n\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "rewrite"){
+        input.value =
+          "Rewrite the following naturally and clearly:\n\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "tone"){
+        input.value =
+          "Improve the tone of the following text while keeping its meaning:\n\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "calculator"){
+        input.value =
+          "Calculate this expression:\n" +
+          (selection || input.value);
+      }
+
+      else if(tool === "file"){
+        $("fileInput").click();
+        return;
+      }
+
+      else if(tool === "image"){
+        $("imageInput").click();
+        return;
+      }
+
+      updateCounter();
+      input.focus();
+    };
+  });
+
+/* =========================
+   FILE UPLOAD
+========================= */
+
+$("fileInput").onchange = event => {
+
+  const file =
+    event.target.files[0];
 
   if(!file) return;
 
-  selectedFile=file;
+  const reader =
+    new FileReader();
 
-  $("attachmentLabel").textContent=
-    "📎 "+file.name;
+  reader.onload = () => {
 
-  closeModal();
+    const content =
+      String(reader.result);
 
-  toast("File selected.");
-}
+    input.value +=
+      `\n\n[File: ${file.name}]\n${content}`;
 
-/* =========================================================
-   CHAT MANAGEMENT
-========================================================= */
+    updateCounter();
 
-function renameChat(id=currentId){
+    showToast(
+      file.name +
+      " loaded"
+    );
+  };
 
-  const chat=chats.find(c=>c.id===id);
+  reader.readAsText(file);
 
-  if(!chat) return;
+  event.target.value = "";
+};
 
-  const name=prompt(
-    "Enter new chat name:",
-    chat.title
-  );
+/* =========================
+   IMAGE UPLOAD
+========================= */
 
-  if(name && name.trim()){
+$("imageInput").onchange = event => {
 
-    chat.title=name.trim();
-    chat.updatedAt=Date.now();
+  const file =
+    event.target.files[0];
 
-    saveAll();
-    renderEverything();
-  }
-}
+  if(!file) return;
 
-function toggleFavorite(id=currentId){
-
-  const chat=chats.find(c=>c.id===id);
-
-  if(!chat) return;
-
-  chat.favorite=!chat.favorite;
-
-  saveAll();
-  renderEverything();
-}
-
-function archiveChat(id){
-
-  const chat=chats.find(c=>c.id===id);
-
-  if(!chat) return;
-
-  chat.archived=true;
-
-  if(currentId===id){
-    currentId=null;
-  }
-
-  saveAll();
-  renderEverything();
-}
-
-function duplicateChat(id){
-
-  const source=chats.find(c=>c.id===id);
-
-  if(!source) return;
-
-  const copy=JSON.parse(JSON.stringify(source));
-
-  copy.id=uid("chat");
-  copy.title=source.title+" Copy";
-  copy.createdAt=Date.now();
-  copy.updatedAt=Date.now();
-
-  copy.messages.forEach(m=>{
-    m.id=uid("msg");
-  });
-
-  chats.unshift(copy);
-  currentId=copy.id;
-
-  workspace.openTabs.push(copy.id);
-
-  saveAll();
-  renderEverything();
-}
-
-function branchChat(id){
-
-  const source=chats.find(c=>c.id===id);
-
-  if(!source) return;
-
-  const copy=JSON.parse(JSON.stringify(source));
-
-  copy.id=uid("chat");
-  copy.title=source.title+" Branch";
-  copy.createdAt=Date.now();
-  copy.updatedAt=Date.now();
-
-  copy.messages.forEach(m=>{
-    m.id=uid("msg");
-  });
-
-  chats.unshift(copy);
-  currentId=copy.id;
-
-  workspace.openTabs.push(copy.id);
-
-  saveAll();
-  renderEverything();
-
-  toast("Conversation branch created.");
-}
-
-function deleteChat(id){
-
-  if(!confirm("Delete this chat?")) return;
-
-  chats=chats.filter(c=>c.id!==id);
-
-  workspace.openTabs=
-    workspace.openTabs.filter(x=>x!==id);
-
-  if(currentId===id){
-    currentId=chats[0]?.id || null;
-  }
-
-  saveAll();
-  renderEverything();
-}
-
-/* =========================================================
-   SNAPSHOT
-========================================================= */
-
-function createSnapshot(){
-
-  const chat=currentChat();
-
-  if(!chat) return;
-
-  snapshots.unshift({
-    id:uid("snapshot"),
-    chatId:chat.id,
-    title:chat.title,
-    messages:JSON.parse(
-      JSON.stringify(chat.messages)
-    ),
-    createdAt:Date.now()
-  });
-
-  snapshots=snapshots.slice(0,30);
-
-  saveJSON(KEYS.snapshots,snapshots);
-
-  toast("Conversation snapshot saved.");
-}
-
-/* =========================================================
-   GOAL
-========================================================= */
-
-$("goalInput").addEventListener("change",()=>{
-
-  const chat=currentChat();
-
-  if(!chat) return;
-
-  chat.goal=$("goalInput").value.trim();
-
-  saveAll();
-});
-
-$("progressInput").addEventListener("input",()=>{
-
-  const chat=currentChat();
-
-  if(!chat) return;
-
-  chat.progress=
-    Number($("progressInput").value);
-
-  saveAll();
-  updateGoalUI();
-});
-
-function updateGoalUI(){
-
-  const chat=currentChat();
-
-  if(!chat){
-    $("goalInput").value="";
-    $("progressInput").value=0;
-    $("progressText").textContent="0% complete";
+  if(!file.type.startsWith("image/")){
+    showToast("Please select an image");
     return;
   }
 
-  $("goalInput").value=chat.goal || "";
-  $("progressInput").value=chat.progress || 0;
-  $("progressText").textContent=
-    `${chat.progress || 0}% complete`;
-}
+  const reader =
+    new FileReader();
 
-/* =========================================================
+  reader.onload = () => {
+
+    selectedImage =
+      reader.result;
+
+    selectedImageName =
+      file.name;
+
+    input.value =
+      `Analyze this image: ${file.name}`;
+
+    updateCounter();
+
+    showToast(
+      "Image attached"
+    );
+  };
+
+  reader.readAsDataURL(file);
+
+  event.target.value = "";
+};
+
+/* =========================
    SETTINGS
-========================================================= */
+========================= */
 
-function showSettings(){
+$("settingsBtn").onclick = () => {
 
   openModal(`
-    <div class="modal-head">
-      <strong>⚙️ Settings</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
+    <h2>⚙ Settings</h2>
 
-    <div class="modal-body form">
+    <label>Temperature</label>
+    <input
+      id="temperature"
+      type="number"
+      min="0"
+      max="2"
+      step=".1"
+      value="${settings.temperature}"
+    >
 
-      <label>
-        Maximum response tokens
-        <input id="maxTokensInput" type="number"
-          min="100" max="8000"
-          value="${settings.maxTokens}">
-      </label>
+    <label>Maximum Tokens</label>
+    <input
+      id="maxTokens"
+      type="number"
+      min="100"
+      max="8000"
+      step="100"
+      value="${settings.maxTokens}"
+    >
 
-      <label>
-        Temperature
-        <input id="temperatureInput" type="number"
-          min="0" max="2" step=".1"
-          value="${settings.temperature}">
-      </label>
+    <label>Custom Instructions</label>
+    <textarea
+      id="customInstructions"
+      placeholder="Tell the AI how you want it to respond..."
+    >${escapeHTML(settings.customInstructions)}</textarea>
 
-      <label>
-        Custom instructions
-        <textarea id="customInstructionsInput" rows="5"
-          placeholder="Tell the AI how you prefer responses...">${escapeHTML(settings.customInstructions)}</textarea>
-      </label>
+    <label>System Prompt</label>
+    <textarea
+      id="systemPrompt"
+      placeholder="Optional system instructions..."
+    >${escapeHTML(settings.systemPrompt)}</textarea>
 
-      <label>
-        <input id="memoryToggle" type="checkbox"
-          ${settings.memoryEnabled?"checked":""}>
-        Enable long-term memory
-      </label>
+    <div class="modal-actions">
 
-      <label>
-        <input id="temporaryToggle" type="checkbox"
-          ${settings.temporary?"checked":""}>
-        Temporary chat mode
-      </label>
+      <button
+        class="secondary"
+        onclick="closeModal()"
+      >
+        Cancel
+      </button>
 
-      <button class="primary-btn" onclick="saveSettings()">
+      <button
+        class="primary"
+        id="saveSettings"
+      >
         Save Settings
       </button>
 
     </div>
   `);
-}
 
-function saveSettings(){
+  $("saveSettings").onclick = () => {
 
-  settings.maxTokens=
-    Math.min(
-      8000,
-      Math.max(
-        100,
-        Number($("maxTokensInput").value)||2000
-      )
-    );
-
-  settings.temperature=
-    Math.min(
-      2,
+    settings.temperature =
       Math.max(
         0,
-        Number($("temperatureInput").value)||1
-      )
+        Math.min(
+          2,
+          Number($("temperature").value) || 1
+        )
+      );
+
+    settings.maxTokens =
+      Math.max(
+        100,
+        Math.min(
+          8000,
+          Number($("maxTokens").value) || 2000
+        )
+      );
+
+    settings.customInstructions =
+      $("customInstructions").value.trim();
+
+    settings.systemPrompt =
+      $("systemPrompt").value.trim();
+
+    saveAll();
+
+    closeModal();
+
+    showToast("Settings saved");
+  };
+};
+
+/* =========================
+   COMMAND CENTER
+========================= */
+
+$("commandBtn").onclick = () => {
+
+  openModal(`
+    <h2>⚡ Command Center</h2>
+
+    <p style="color:var(--muted)">
+      Quick access to your Simple Chat AI workspace.
+    </p>
+
+    <div style="
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:8px;
+    ">
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('newChatBtn').click()">
+        ＋ New Chat
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('savedBtn').click()">
+        🔖 Saved Answers
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('tasksBtn').click()">
+        ✓ Tasks
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('calendarBtn').click()">
+        📅 Calendar
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('memoryBtn').click()">
+        🧠 Memory
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('summaryBtn').click()">
+        📝 Summary
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('studyBtn').click()">
+        🎓 Study Cards
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('quizBtn').click()">
+        ❓ Quiz
+      </button>
+
+      <button class="side-btn" onclick="closeModal();document.getElementById('settingsBtn').click()">
+        ⚙ Settings
+      </button>
+
+    </div>
+
+    <div class="modal-actions" style="margin-top:15px">
+      <button
+        class="secondary"
+        onclick="closeModal()"
+      >
+        Close
+      </button>
+    </div>
+  `);
+};
+
+/* =========================
+   MOBILE MENU
+========================= */
+
+$("mobileMenuBtn").onclick = () => {
+
+  const sidebar =
+    document.querySelector(".sidebar");
+
+  const visible =
+    getComputedStyle(sidebar).display !== "none";
+
+  if(visible){
+    sidebar.style.display = "none";
+  }else{
+    sidebar.style.display = "block";
+    sidebar.style.position = "fixed";
+    sidebar.style.zIndex = "900";
+    sidebar.style.left = "0";
+    sidebar.style.top = "0";
+    sidebar.style.bottom = "0";
+    sidebar.style.width = "280px";
+  }
+};
+
+/* =========================
+   MORE
+========================= */
+
+$("moreBtn").onclick = () => {
+
+  openModal(`
+    <h2>More Options</h2>
+
+    <button class="side-btn" id="duplicateChat">
+      📋 Duplicate Chat
+    </button>
+
+    <button class="side-btn" id="exportChat">
+      📤 Export Chat
+    </button>
+
+    <button class="side-btn" id="printChat">
+      🖨 Print Chat
+    </button>
+
+    <button class="side-btn" id="deleteChat">
+      🗑 Delete Chat
+    </button>
+
+    <div class="modal-actions">
+      <button class="secondary" onclick="closeModal()">
+        Close
+      </button>
+    </div>
+  `);
+
+  $("duplicateChat").onclick = () => {
+
+    const chat = currentChat();
+
+    if(!chat) return;
+
+    const copy = JSON.parse(
+      JSON.stringify(chat)
     );
 
-  settings.customInstructions=
-    $("customInstructionsInput").value.trim();
+    copy.id = uid("chat");
+    copy.title += " Copy";
+    copy.createdAt = Date.now();
+    copy.updatedAt = Date.now();
 
-  settings.memoryEnabled=
-    $("memoryToggle").checked;
+    chats.unshift(copy);
+    currentId = copy.id;
 
-  settings.temporary=
-    $("temporaryToggle").checked;
-
-  saveJSON(KEYS.settings,settings);
-
-  closeModal();
-
-  toast("Settings saved.");
-}
-
-/* =========================================================
-   THEME
-========================================================= */
-
-function applyTheme(){
-
-  document.body.classList.toggle(
-    "dark",
-    settings.theme==="dark"
-  );
-
-  document.documentElement.style
-    .setProperty("--accent",settings.accent);
-}
-
-function toggleTheme(){
-
-  settings.theme=
-    settings.theme==="dark"
-      ? "light"
-      : "dark";
-
-  applyTheme();
-  saveJSON(KEYS.settings,settings);
-}
-
-/* =========================================================
-   MOBILE / FOCUS
-========================================================= */
-
-$("mobileBtn").onclick=()=>{
-  $("sidebar").classList.toggle("mobile-open");
-};
-
-$("focusBtn").onclick=()=>{
-  document.body.classList.toggle("focus-mode");
-};
-
-$("collapseBtn").onclick=()=>{
-  const sidebar=$("sidebar");
-
-  sidebar.style.display=
-    sidebar.style.display==="none"
-      ? ""
-      : "none";
-
-  if(window.innerWidth>1100){
-    document.querySelector(".app").style.gridTemplateColumns=
-      sidebar.style.display==="none"
-        ? "0 minmax(0,1fr) 315px"
-        : "";
-  }
-};
-
-/* =========================================================
-   MODAL
-========================================================= */
-
-function openModal(html){
-
-  modal.innerHTML=html;
-
-  modalBg.classList.add("show");
-
-  document.body.classList.add("modal-open");
-}
-
-function closeModal(){
-
-  modalBg.classList.remove("show");
-
-  modal.innerHTML="";
-
-  document.body.classList.remove("modal-open");
-}
-
-modalBg.addEventListener("click",event=>{
-
-  if(event.target===modalBg){
+    saveAll();
+    renderHistory();
+    renderChat();
     closeModal();
-  }
 
-});
+    showToast("Chat duplicated");
+  };
 
-window.closeModal=closeModal;
+  $("deleteChat").onclick = () => {
 
-/* =========================================================
-   KEYBOARD
-========================================================= */
+    if(!confirm("Delete this chat?")){
+      return;
+    }
 
-input.addEventListener("keydown",event=>{
+    chats =
+      chats.filter(
+        c => c.id !== currentId
+      );
 
-  if(event.key==="Enter" && !event.shiftKey){
+    if(!chats.length){
+      createChat(false);
+    }else{
+      currentId = chats[0].id;
+    }
 
-    event.preventDefault();
-
-    sendMessage();
-
-  }
-
-});
-
-input.addEventListener("input",()=>{
-
-  input.style.height="auto";
-
-  input.style.height=
-    Math.min(input.scrollHeight,180)+"px";
-
-  updateCounter();
-
-  saveJSON(
-    KEYS.draft,
-    input.value
-  );
-});
-
-document.addEventListener("keydown",event=>{
-
-  if((event.ctrlKey || event.metaKey) &&
-     event.key.toLowerCase()==="k"){
-
-    event.preventDefault();
-
-    $("chatSearch").focus();
-  }
-
-  if(event.key==="Escape"){
+    saveAll();
+    renderHistory();
+    renderChat();
     closeModal();
+  };
+
+  $("exportChat").onclick = () => {
+
+    const chat = currentChat();
+
+    if(!chat) return;
+
+    const text =
+      `# ${chat.title}\n\n` +
+      chat.messages
+        .map(m =>
+          `## ${m.role === "user" ? "You" : "AI"}\n\n${m.content}`
+        )
+        .join("\n\n");
+
+    const blob =
+      new Blob(
+        [text],
+        {type:"text/markdown"}
+      );
+
+    const url =
+      URL.createObjectURL(blob);
+
+    const a =
+      document.createElement("a");
+
+    a.href = url;
+    a.download =
+      (chat.title || "chat") +
+      ".md";
+
+    a.click();
+
+    URL.revokeObjectURL(url);
+
+    showToast("Chat exported");
+  };
+
+  $("printChat").onclick = () => {
+
+    closeModal();
+
+    setTimeout(() => {
+      window.print();
+    },100);
+  };
+};
+
+/* =========================
+   MODAL CLOSE
+========================= */
+
+modalBg.addEventListener(
+  "click",
+  event => {
+
+    if(event.target === modalBg){
+      closeModal();
+    }
   }
-
-});
-
-/* =========================================================
-   QUICK PROMPTS
-========================================================= */
-
-document.querySelectorAll("[data-prompt]")
-  .forEach(button=>{
-
-    button.onclick=()=>{
-
-      input.value=
-        button.dataset.prompt;
-
-      input.focus();
-
-      updateCounter();
-
-    };
-
-  });
-
-/* =========================================================
-   SEARCH
-========================================================= */
-
-$("chatSearch").addEventListener(
-  "input",
-  renderHistory
 );
 
-/* =========================================================
-   TOP BUTTONS
-========================================================= */
+/* =========================
+   ESCAPE
+========================= */
 
-$("newChatBtn").onclick=()=>{
-  createChat();
-};
+document.addEventListener(
+  "keydown",
+  event => {
 
-sendBtn.onclick=()=>{
-  sendMessage();
-};
+    if(event.key === "Escape"){
 
-$("themeBtn").onclick=()=>{
-  toggleTheme();
-};
+      if(modalBg.classList.contains("show")){
+        closeModal();
+        return;
+      }
 
-$("settingsBtn").onclick=()=>{
-  showSettings();
-};
-
-$("favoriteBtn").onclick=()=>{
-  toggleFavorite();
-};
-
-$("renameBtn").onclick=()=>{
-  renameChat();
-};
-
-$("moreBtn").onclick=()=>{
-
-  openModal(`
-    <div class="modal-head">
-      <strong>More Chat Actions</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body">
-
-      <div class="grid-buttons">
-
-        <button class="control-btn" onclick="copyAll();closeModal()">📋 Copy All</button>
-        <button class="control-btn" onclick="createSnapshot();closeModal()">📸 Snapshot</button>
-        <button class="control-btn" onclick="exportChat();closeModal()">📤 Export</button>
-        <button class="control-btn" onclick="clearCurrentChat();closeModal()">🧹 Clear</button>
-        <button class="control-btn" onclick="printChat();closeModal()">🖨️ Print</button>
-
-      </div>
-
-    </div>
-  `);
-
-};
-
-/* =========================================================
-   EXPORT
-========================================================= */
-
-function exportChat(){
-
-  const chat=currentChat();
-
-  if(!chat) return;
-
-  const text=
-    "# "+chat.title+"\n\n"+
-    chat.messages
-      .map(m=>
-        "## "+(m.role==="user"?"You":"Simple Chat AI")+
-        "\n\n"+
-        m.content
-      )
-      .join("\n\n");
-
-  const blob=new Blob(
-    [text],
-    {type:"text/markdown"}
-  );
-
-  const url=URL.createObjectURL(blob);
-
-  const a=document.createElement("a");
-
-  a.href=url;
-  a.download=
-    (chat.title || "chat")
-      .replace(/[^\w-]+/g,"_")+
-    ".md";
-
-  a.click();
-
-  URL.revokeObjectURL(url);
-}
-
-function printChat(){
-
-  const chat=currentChat();
-
-  if(!chat) return;
-
-  const win=window.open("","_blank");
-
-  if(!win){
-    toast("Popup blocked.");
-    return;
+      if(generating){
+        stopGeneration();
+      }
+    }
   }
+);
 
-  win.document.write(`
-    <html>
-      <head>
-        <title>${escapeHTML(chat.title)}</title>
-      </head>
-      <body>
-        <h1>${escapeHTML(chat.title)}</h1>
-        ${chat.messages.map(m=>`
-          <h3>${m.role==="user"?"You":"Simple Chat AI"}</h3>
-          <div>${markdown(m.content)}</div>
-          <hr>
-        `).join("")}
-      </body>
-    </html>
-  `);
+/* =========================
+   INITIALIZE
+========================= */
 
-  win.document.close();
-  win.print();
-}
+loadAll();
 
-function clearCurrentChat(){
+settings.persona =
+  settings.persona || "Assistant";
 
-  const chat=currentChat();
+settings.mode =
+  settings.mode || "Balanced";
 
-  if(!chat) return;
-
-  if(!confirm("Clear this conversation?")) return;
-
-  chat.messages=[];
-
-  saveAll();
-  renderEverything();
-}
-
-/* =========================================================
-   COMMANDS
-========================================================= */
-
-document.querySelectorAll("[data-command]")
-  .forEach(button=>{
-
-    button.onclick=()=>{
-
-      const command=button.dataset.command;
-
-      const actions={
-        dashboard:commandCenter,
-        calendar:showCalendar,
-        saved:showSaved,
-        tasks:showTasks,
-        files:showFiles,
-        memory:showMemory,
-        prompts:showPrompts,
-        quiz:quizMaker,
-        cards:studyCards,
-        keypoints:keyPoints,
-        decision:decisionTable,
-        meeting:meetingNotes,
-        email:emailWriter,
-        outline:documentOutline,
-        statistics:showStatistics,
-        snapshot:createSnapshot,
-        read:readingMode,
-        clean:cleanText,
-        brief:dailyBrief,
-        compare:compareResponses,
-        variations:responseVariations
-      };
-
-      actions[command]?.();
-
-    };
-
+document
+  .querySelectorAll(".persona")
+  .forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.persona === settings.persona
+    );
   });
 
-/* =========================================================
-   COMPARE / VARIATIONS
-========================================================= */
-
-async function compareResponses(){
-
-  const text=input.value.trim();
-
-  if(!text){
-    toast("Enter a prompt first.");
-    input.focus();
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>⚖️ Compare Responses</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="compareResult">
-      Generating comparison...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Give two clearly different approaches to answer this prompt. Label them Response A and Response B. Do not select a winner.\n\n"+text
+document
+  .querySelectorAll(".mode")
+  .forEach(button => {
+    button.classList.toggle(
+      "active",
+      button.dataset.mode === settings.mode
     );
-
-    $("compareResult").innerHTML=markdown(result);
-
-  }catch(error){
-
-    $("compareResult").textContent=error.message;
-
-  }
-}
-
-async function responseVariations(){
-
-  const text=input.value.trim();
-
-  if(!text){
-    toast("Enter a prompt first.");
-    return;
-  }
-
-  openModal(`
-    <div class="modal-head">
-      <strong>🔁 Response Variations</strong>
-      <button class="modal-close" onclick="closeModal()">×</button>
-    </div>
-
-    <div class="modal-body" id="variationResult">
-      Creating variations...
-    </div>
-  `);
-
-  try{
-
-    const result=await directAI(
-      "Create three different versions of an answer to this prompt: concise, detailed and creative. Clearly label each.\n\n"+text
-    );
-
-    $("variationResult").innerHTML=
-      markdown(result);
-
-  }catch(error){
-
-    $("variationResult").textContent=
-      error.message;
-
-  }
-}
-
-/* =========================================================
-   AUTO SAVE / REMINDERS
-========================================================= */
-
-setInterval(()=>{
-
-  if(!settings.temporary){
-    saveJSON(KEYS.draft,input.value);
-  }
-
-  const nowTime=Date.now();
-
-  reminders.forEach(reminder=>{
-
-    if(!reminder.done &&
-       reminder.time<=nowTime){
-
-      reminder.done=true;
-
-      toast(
-        "⏰ Reminder: "+reminder.title
-      );
-    }
-
   });
 
-  saveJSON(KEYS.reminders,reminders);
+$("personaBadge").textContent =
+  settings.persona;
 
-},60000);
-
-/* =========================================================
-   RENDER TABS
-========================================================= */
-
-function renderTabs(){
-
-  const container=$("workspaceTabs");
-
-  container.innerHTML="";
-
-  workspace.openTabs
-    .map(id=>chats.find(c=>c.id===id))
-    .filter(Boolean)
-    .forEach(chat=>{
-
-      const button=document.createElement("button");
-
-      button.className=
-        "workspace-tab "+
-        (chat.id===currentId ? "active":"");
-
-      button.textContent=
-        chat.title;
-
-      button.onclick=()=>{
-        openChat(chat.id);
-      };
-
-      container.appendChild(button);
-    });
-}
-
-/* =========================================================
-   STATS
-========================================================= */
-
-function updateStats(){
-
-  const chat=currentChat();
-
-  if(!chat){
-
-    $("statMessages").textContent="0";
-    $("statWords").textContent="0";
-    $("statAI").textContent="0";
-    $("statPinned").textContent="0";
-
-    return;
-  }
-
-  $("statMessages").textContent=
-    chat.messages.length;
-
-  $("statWords").textContent=
-    chat.messages.reduce(
-      (sum,m)=>
-        sum+
-        (m.content.trim()
-          ? m.content.trim().split(/\s+/).length
-          : 0),
-      0
-    );
-
-  $("statAI").textContent=
-    chat.messages.filter(
-      m=>m.role==="assistant"
-    ).length;
-
-  $("statPinned").textContent=
-    chat.messages.filter(
-      m=>m.pinned
-    ).length;
-}
-
-/* =========================================================
-   RENDER EVERYTHING
-========================================================= */
-
-function renderEverything(){
-
-  renderHistory();
-  renderChat();
-  renderTabs();
-  applyTheme();
-  updateCounter();
-
-  const chat=currentChat();
-
-  $("favoriteBtn").textContent=
-    chat?.favorite ? "★":"☆";
-}
-
-/* =========================================================
-   INITIAL LOAD
-========================================================= */
-
-function load(){
-
-  applyTheme();
-
-  if(chats.length===0){
-
-    createChat();
-
-  }else{
-
-    currentId=
-      chats[0]?.id || null;
-
-    if(!workspace.openTabs.includes(currentId)){
-      workspace.openTabs.push(currentId);
-    }
-
-    renderEverything();
-
-  }
-
-  const draft=
-    loadJSON(KEYS.draft,"");
-
-  if(draft && !input.value){
-    input.value=draft;
-    updateCounter();
-  }
-
-  if(settings.persona){
-
-    document
-      .querySelectorAll("[data-persona]")
-      .forEach(button=>{
-        button.classList.toggle(
-          "active",
-          button.dataset.persona===settings.persona
-        );
-      });
-  }
-
-  if(settings.mode){
-
-    document
-      .querySelectorAll("[data-mode]")
-      .forEach(button=>{
-        button.classList.toggle(
-          "active",
-          button.dataset.mode===settings.mode
-        );
-      });
-  }
-}
-
-/* =========================================================
-   GLOBAL FUNCTIONS FOR INLINE BUTTONS
-========================================================= */
-
-window.renameChat=renameChat;
-window.duplicateChat=duplicateChat;
-window.branchChat=branchChat;
-window.archiveChat=archiveChat;
-window.toggleFavorite=toggleFavorite;
-window.deleteChat=deleteChat;
-window.toggleTask=toggleTask;
-window.deleteTask=deleteTask;
-window.addTask=addTask;
-window.copySaved=copySaved;
-window.deleteSaved=deleteSaved;
-window.addMemory=addMemory;
-window.deleteMemory=deleteMemory;
-window.usePrompt=usePrompt;
-window.useLibraryFile=useLibraryFile;
-window.copyMessage=copyMessage;
-window.regenerate=regenerate;
-window.editMessage=editMessage;
-window.pinMessage=pinMessage;
-window.bookmarkMessage=bookmarkMessage;
-window.continueResponse=continueResponse;
-window.improveMessage=improveMessage;
-window.askResponse=askResponse;
-window.readAloud=readAloud;
-window.runCalculator=runCalculator;
-window.generateEmail=generateEmail;
-window.generateOutline=generateOutline;
-
-/* =========================================================
-   START
-========================================================= */
-
-load();
+updateCounter();
+updateStats();
 
 </script>
+
 </body>
 </html>
