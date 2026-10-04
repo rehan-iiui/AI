@@ -505,7 +505,7 @@ async function askAI(text){
       .slice(-30)
       .map(item => ({ role:item.role, content:item.content }));
 
-    const response = await fetch("/netlify/functions/chat", {
+    const response = await fetch(/api/chat, {
       method:"POST",
       headers:{ "Content-Type": "application/json" },
       body:JSON.stringify({
