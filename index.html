@@ -314,219 +314,6 @@ body.dark .ai-tool-icon{background:#1d2b46;}
 <script>
 "use strict";
 
-/* ==========================================================
-   MARKDOWN RENDERING for AI answers (no external library needed)
-   Headings, bold/italic/strike, inline code, code blocks with Copy,
-   lists (nested), tables, quotes, links, horizontal rules.
-========================================================== */
-(function(){
-
-  const style = document.createElement("style");
-  style.textContent = `
-    .message-bubble.md{white-space:normal;}
-    .md > :first-child{margin-top:0;}
-    .md > :last-child{margin-bottom:0;}
-    .md p{margin:0 0 .75em;}
-    .md h1,.md h2,.md h3,.md h4,.md h5,.md h6{margin:1em 0 .45em;line-height:1.3;}
-    .md h1{font-size:1.35em;} .md h2{font-size:1.2em;} .md h3{font-size:1.08em;}
-    .md h4,.md h5,.md h6{font-size:1em;}
-    .md ul,.md ol{margin:0 0 .75em;padding-left:1.4em;}
-    .md li{margin:.2em 0;}
-    .md blockquote{margin:0 0 .75em;padding:.4em .9em;border-left:3px solid var(--accent);background:var(--surface2);border-radius:0 10px 10px 0;color:var(--muted);}
-    .md code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:.88em;background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:.1em .38em;}
-    .md-code{margin:0 0 .75em;border:1px solid var(--border);border-radius:12px;overflow:hidden;background:var(--surface2);}
-    .md-code-head{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;font-size:11px;color:var(--muted);border-bottom:1px solid var(--border);}
-    .md-copy{border:1px solid var(--border);background:var(--surface);color:var(--text);border-radius:8px;padding:3px 9px;font-size:11px;cursor:pointer;}
-    .md-copy:hover{border-color:var(--accent);color:var(--accent);}
-    .md-code pre{margin:0;padding:10px 12px;overflow-x:auto;}
-    .md-code code{background:none;border:0;padding:0;font-size:12.5px;white-space:pre;}
-    .md table{border-collapse:collapse;display:block;overflow-x:auto;max-width:100%;margin:0 0 .75em;}
-    .md th,.md td{border:1px solid var(--border);padding:6px 10px;text-align:left;}
-    .md th{background:var(--surface2);}
-    .md hr{border:0;border-top:1px solid var(--border);margin:1em 0;}
-    .md a{color:var(--accent);}
-  `;
-  document.head.appendChild(style);
-
-  const esc = s => String(s)
-    .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
-    .replace(/"/g, "&quot;").replace(/'/g, "&#039;");
-
-  /* ---------- inline: code, links, bold, italic, strike ---------- */
-  function inline(text){
-    const codes = [];
-    let s = esc(text);
-
-    s = s.replace(/`([^`\n]+)`/g, function(m, c){
-      codes.push("<code>" + c + "</code>");
-      return "\u0001" + (codes.length - 1) + "\u0001";
-    });
-
-    s = s.replace(/\[([^\]\n]+)\]\((https?:\/\/[^\s)]+|mailto:[^\s)]+)\)/g,
-      '<a href="$2" target="_blank" rel="noopener noreferrer">$1</a>');
-    s = s.replace(/\*\*([^\n]+?)\*\*/g, "<strong>$1</strong>");
-    s = s.replace(/(^|[^\w])__([^\n]+?)__(?!\w)/g, "$1<strong>$2</strong>");
-    s = s.replace(/\*([^\s*][^*\n]*?)\*/g, "<em>$1</em>");
-    s = s.replace(/(^|[^\w])_([^\s_][^_\n]*?)_(?!\w)/g, "$1<em>$2</em>");
-    s = s.replace(/~~([^\n]+?)~~/g, "<del>$1</del>");
-
-    return s.replace(/\u0001(\d+)\u0001/g, (m, i) => codes[+i]);
-  }
-
-  /* ---------- lists (nested) ---------- */
-  function buildList(items){
-    let html = "";
-    const stack = [];
-    const tag = o => o ? "ol" : "ul";
-
-    items.forEach(function(it){
-      while(stack.length && it.indent < stack[stack.length - 1].indent){
-        html += "</li></" + tag(stack.pop().ord) + ">";
-      }
-
-      const top = stack[stack.length - 1];
-
-      if(!top || it.indent > top.indent){
-        stack.push({indent:it.indent, ord:it.ord});
-        html += "<" + tag(it.ord) + "><li>" + inline(it.text);
-      }else{
-        html += "</li><li>" + inline(it.text);
-      }
-    });
-
-    while(stack.length){
-      html += "</li></" + tag(stack.pop().ord) + ">";
-    }
-
-    return html;
-  }
-
-  /* ---------- tables ---------- */
-  const SEP = /^\s*\|?\s*:?-{2,}:?\s*(\|\s*:?-{2,}:?\s*)*\|?\s*$/;
-
-  function cells(line){
-    let l = line.trim();
-    if(l.charAt(0) === "|"){ l = l.slice(1); }
-    if(l.charAt(l.length - 1) === "|"){ l = l.slice(0, -1); }
-    return l.split("|").map(c => c.trim());
-  }
-
-  function buildTable(head, sep, rows){
-    const align = cells(sep).map(c => c.charAt(0) === ":" && c.slice(-1) === ":" ? "center" : c.slice(-1) === ":" ? "right" : "left");
-    const cell = (t, i, tag) => "<" + tag + ' style="text-align:' + (align[i] || "left") + '">' + inline(t) + "</" + tag + ">";
-
-    return "<table><thead><tr>" + cells(head).map((c, i) => cell(c, i, "th")).join("") + "</tr></thead><tbody>" +
-      rows.map(r => "<tr>" + cells(r).map((c, i) => cell(c, i, "td")).join("") + "</tr>").join("") +
-      "</tbody></table>";
-  }
-
-  /* ---------- blocks ---------- */
-  const LIST = /^(\s*)([-*+]|\d+[.)])\s+(.*)$/;
-  const HR = /^\s*([-*_])(\s*\1){2,}\s*$/;
-  const HEAD = /^(#{1,6})\s+(.*?)\s*#*\s*$/;
-
-  function blocks(text){
-    const lines = text.split("\n");
-    let html = "";
-    let i = 0;
-
-    const special = l => HEAD.test(l) || HR.test(l) || LIST.test(l) || /^\s*>/.test(l) || /^\u0000CB\d+\u0000$/.test(l.trim());
-
-    while(i < lines.length){
-      const line = lines[i];
-
-      if(!line.trim()){ i++; continue; }
-
-      if(/^\u0000CB\d+\u0000$/.test(line.trim())){ html += line.trim(); i++; continue; }
-
-      const h = line.match(HEAD);
-      if(h){ html += "<h" + h[1].length + ">" + inline(h[2]) + "</h" + h[1].length + ">"; i++; continue; }
-
-      if(HR.test(line)){ html += "<hr>"; i++; continue; }
-
-      if(/^\s*>/.test(line)){
-        const q = [];
-        while(i < lines.length && /^\s*>/.test(lines[i])){ q.push(lines[i].replace(/^\s*>\s?/, "")); i++; }
-        html += "<blockquote>" + blocks(q.join("\n")) + "</blockquote>";
-        continue;
-      }
-
-      if(line.indexOf("|") > -1 && i + 1 < lines.length && SEP.test(lines[i + 1]) && lines[i + 1].indexOf("-") > -1){
-        const rows = [];
-        const head = line, sep = lines[i + 1];
-        i += 2;
-        while(i < lines.length && lines[i].trim() && lines[i].indexOf("|") > -1){ rows.push(lines[i]); i++; }
-        html += buildTable(head, sep, rows);
-        continue;
-      }
-
-      if(LIST.test(line)){
-        const items = [];
-        while(i < lines.length && LIST.test(lines[i])){
-          const m = lines[i].match(LIST);
-          items.push({indent:m[1].replace(/\t/g, "    ").length, ord:/\d/.test(m[2]), text:m[3]});
-          i++;
-        }
-        html += buildList(items);
-        continue;
-      }
-
-      const para = [];
-      while(i < lines.length && lines[i].trim() && !(para.length && special(lines[i]))){
-        para.push(inline(lines[i]));
-        i++;
-      }
-      html += "<p>" + para.join("<br>") + "</p>";
-    }
-
-    return html;
-  }
-
-  /* ---------- main entry ---------- */
-  window.renderMarkdown = function(src){
-    const code = [];
-    let text = String(src).replace(/\r\n?/g, "\n");
-
-    text = text.replace(/```([^\n`]*)\n([\s\S]*?)(?:```|$)/g, function(m, lang, body){
-      code.push(
-        '<div class="md-code"><div class="md-code-head"><span>' + esc(lang.trim() || "code") +
-        '</span><button type="button" class="md-copy">Copy</button></div><pre><code>' +
-        esc(body.replace(/\n$/, "")) + "</code></pre></div>"
-      );
-      return "\n\u0000CB" + (code.length - 1) + "\u0000\n";
-    });
-
-    return blocks(text).replace(/\u0000CB(\d+)\u0000/g, (m, n) => code[+n]);
-  };
-
-  /* ---------- Copy button on code blocks ---------- */
-  document.addEventListener("click", function(event){
-    const btn = event.target.closest && event.target.closest(".md-copy");
-
-    if(!btn){ return; }
-
-    const codeEl = btn.closest(".md-code").querySelector("code");
-    const text = codeEl ? codeEl.textContent : "";
-
-    const done = function(){ btn.textContent = "Copied"; setTimeout(function(){ btn.textContent = "Copy"; }, 1500); };
-
-    if(navigator.clipboard && window.isSecureContext){
-      navigator.clipboard.writeText(text).then(done).catch(function(){});
-    }else{
-      const a = document.createElement("textarea");
-      a.value = text; a.style.cssText = "position:fixed;opacity:0";
-      document.body.appendChild(a); a.select();
-      try{ document.execCommand("copy"); done(); }catch(e){}
-      a.remove();
-    }
-  });
-
-})();
-</script>
-
-<script>
-"use strict";
-
 /* BASIC HELPERS */
 const $ = selector => document.querySelector(selector);
 const $$ = selector => Array.from(document.querySelectorAll(selector));
@@ -673,7 +460,7 @@ function render(){
       return `
         <div class="message ${message.role}">
           <div>
-            ${message.role === "assistant" ? '<div class="message-bubble md">' + renderMarkdown(message.content) + '</div>' : '<div class="message-bubble">' + escapeHTML(message.content) + '</div>'}
+            <div class="message-bubble">${escapeHTML(message.content)}</div>
             <div class="message-time">${message.role === "user" ? "You" : "AI"}</div>
           </div>
         </div>
@@ -970,57 +757,10 @@ $$(".ai-tool").forEach(button => {
   });
 });
 
-/* Content for AI tools: selected text > text in the message box > last AI answer.
-   (Tools no longer use the whole chat.) */
-let toolSelection = { text:"", time:0 };
-
-document.addEventListener("selectionchange", function(){
-  const sel = window.getSelection();
-  const text = sel ? sel.toString().trim() : "";
-
-  if(!text || !sel.anchorNode){
-    return;
-  }
-
-  const node = sel.anchorNode.nodeType === 1 ? sel.anchorNode : sel.anchorNode.parentNode;
-
-  if(node && messagesEl.contains(node)){
-    toolSelection = { text:text, time:Date.now() };
-  }
-});
-
-function getToolContent(){
-  if(toolSelection.text && Date.now() - toolSelection.time < 120000){
-    const picked = toolSelection.text;
-    toolSelection = { text:"", time:0 };
-    return picked;
-  }
-
-  let typed = input.value.trim();
-  const mark = "\n\nCONTENT:\n";
-  const at = typed.indexOf(mark);
-
-  if(at > -1){
-    typed = typed.slice(at + mark.length).trim();
-  }
-
-  if(typed){
-    return typed;
-  }
-
-  const messages = currentChat ? currentChat.messages : [];
-
-  for(let i = messages.length - 1; i >= 0; i--){
-    if(messages[i].role === "assistant" && !String(messages[i].content).startsWith("⚠️")){
-      return messages[i].content;
-    }
-  }
-
-  return messages.length ? messages[messages.length - 1].content : "";
-}
-
 function useAITool(tool){
-  const text = getToolContent();
+  const text = currentChat && currentChat.messages.length
+    ? currentChat.messages.map(m => m.content).join("\n")
+    : input.value.trim();
 
   if(!text){
     toast("Write something in the chat first.");
@@ -2025,7 +1765,9 @@ Estimated reading time: ${minutes} min</div>
 
   function useNewTool(tool){
     const text =
-      getToolContent();
+      currentChat && currentChat.messages.length
+        ? currentChat.messages.map(m => m.content).join("\n")
+        : input.value.trim();
 
     if(!text){
       toast("Write something in the chat first.");
@@ -2093,7 +1835,9 @@ Estimated reading time: ${minutes} min</div>
 
   function useMoreTool(tool){
     const text =
-      getToolContent();
+      currentChat && currentChat.messages.length
+        ? currentChat.messages.map(m => m.content).join("\n")
+        : input.value.trim();
 
     if(!text){
       toast("Write something in the chat first.");
@@ -2780,4 +2524,1519 @@ Estimated reading time: ${minutes} min</div>
 
   /* ---------- block Simple Extra until the wait is over ---------- */
   menu.addEventListener("click", function(event){
-   
+    const option = event.target.closest(".model-option");
+
+    if(!option || !isExtraOption(option)){
+      return;
+    }
+
+    if(isUnlocked()){
+      return;
+    }
+
+    event.preventDefault();
+    event.stopImmediatePropagation();
+
+    if(!state.startedAt){
+      state.startedAt = Date.now();
+      save();
+      toast(EXTRA_NAME + " will be available after 6 minutes.");
+    }else{
+      toast(EXTRA_NAME + " will be available in " + formatTime(remaining()) + ".");
+    }
+
+    refresh();
+  }, true);
+
+  /* ---------- live countdown ---------- */
+  setInterval(function(){
+    const wasUnlocked = state.unlocked;
+    refresh();
+
+    if(!wasUnlocked && state.unlocked && state.startedAt){
+      toast(EXTRA_NAME + " is now available.");
+    }
+  }, 1000);
+
+  /* If Simple Extra was saved as the model before the wait existed, go back to Simple 1.2 */
+  if(localStorage.getItem(MODEL_KEY) === EXTRA_ID && !isUnlocked()){
+    const first = menu.querySelector(".model-option");
+
+    if(first){
+      first.click();
+    }
+  }
+
+  refresh();
+
+})();
+</script>
+<script>
+"use strict";
+
+/* ==========================================================
+   STOP GENERATING (added separately, existing code untouched)
+   - A stop button appears in the header while the AI is answering
+   - Pressing it cancels the request and adds "Generation stopped."
+========================================================== */
+(function(){
+
+  const CHAT_URL = "/netlify/functions/chat";
+
+  /* ---------- styles ---------- */
+  const style = document.createElement("style");
+  style.textContent = `
+    .stop-button{
+      display:none;
+      place-items:center;
+      color:var(--danger);
+      border-color:var(--danger);
+      animation:stopPulse 1.2s ease-in-out infinite;
+    }
+    .stop-button.show{
+      display:grid;
+    }
+    .stop-button:hover{
+      border-color:var(--danger);
+      box-shadow:0 0 0 3px rgba(239,68,68,.18);
+    }
+    @keyframes stopPulse{
+      0%,100%{box-shadow:0 0 0 0 rgba(239,68,68,.35);}
+      50%{box-shadow:0 0 0 6px rgba(239,68,68,0);}
+    }
+  `;
+  document.head.appendChild(style);
+
+  /* ---------- header button ---------- */
+  const stopButton = document.createElement("button");
+  stopButton.type = "button";
+  stopButton.className = "header-button stop-button";
+  stopButton.id = "stopButton";
+  stopButton.title = "Stop generating";
+  stopButton.setAttribute("aria-label", "Stop generating");
+  stopButton.textContent = "⏹️";
+
+  document.getElementById("themeButton").insertAdjacentElement("beforebegin", stopButton);
+
+  /* ---------- track running requests ---------- */
+  const running = new Set();
+
+  function updateButton(){
+    stopButton.classList.toggle("show", running.size > 0);
+  }
+
+  stopButton.addEventListener("click", function(){
+    if(!running.size){
+      return;
+    }
+
+    running.forEach(controller => controller.abort());
+    toast("Stopping...");
+  });
+
+  /* ---------- wrap fetch so chat requests can be cancelled ----------
+     The whole response body is read inside the wrapper, so a stop at any
+     point is handled here and the original chat code is not edited. */
+  const previousFetch = window.fetch.bind(window);
+
+  window.fetch = function(resource, options){
+    const url = typeof resource === "string" ? resource : ((resource && resource.url) || "");
+
+    if(url.indexOf(CHAT_URL) === -1){
+      return previousFetch(resource, options);
+    }
+
+    const controller = new AbortController();
+    running.add(controller);
+    updateButton();
+
+    const settings = Object.assign({}, options, { signal:controller.signal });
+
+    return previousFetch(resource, settings)
+      .then(function(response){
+        return response.text().then(function(text){
+          return new Response(text, {
+            status: response.status,
+            statusText: response.statusText,
+            headers: { "Content-Type":"application/json" }
+          });
+        });
+      })
+      .catch(function(error){
+        if(error && error.name === "AbortError"){
+          return new Response(JSON.stringify({ reply:"⏹️ Generation stopped." }), {
+            status: 200,
+            headers: { "Content-Type":"application/json" }
+          });
+        }
+
+        throw error;
+      })
+      .finally(function(){
+        running.delete(controller);
+        updateButton();
+      });
+  };
+
+})();
+</script>
+<script>
+"use strict";
+
+/* ==========================================================
+   HEADER + CHAT ENHANCEMENTS
+   Existing application code remains unchanged.
+
+   Added:
+   1. Live AI status
+   2. Header New Chat
+   3. Header Search + Ctrl+K
+   4. Quick Export / Share
+   5. Auto-read AI answers
+   6. Total AI tool usage meter
+   7. Language switcher
+   8. Keyboard shortcuts help
+========================================================== */
+(function(){
+
+  /* ========================================================
+     STYLES
+  ======================================================== */
+
+  const style = document.createElement("style");
+
+  style.textContent = `
+    /* ---------- NEW HEADER BUTTONS ---------- */
+
+    .extra-header-button{
+      width:44px;
+      height:44px;
+      flex:none;
+      border-radius:14px;
+      background:var(--surface2);
+      border:1px solid var(--border);
+      color:var(--text);
+      cursor:pointer;
+      transition:.2s;
+      display:grid;
+      place-items:center;
+      font-size:18px;
+      position:relative;
+    }
+
+    .extra-header-button:hover{
+      border-color:var(--accent);
+      box-shadow:0 0 0 3px rgba(37,99,235,.10);
+      transform:translateY(-1px);
+    }
+
+    .extra-header-button.active{
+      color:var(--accent);
+      border-color:var(--accent);
+      background:rgba(37,99,235,.08);
+    }
+
+    /* ---------- USAGE BADGE ---------- */
+
+    .usage-header{
+      height:44px;
+      min-width:92px;
+      padding:0 10px;
+      display:flex;
+      flex-direction:column;
+      justify-content:center;
+      gap:3px;
+      border:1px solid var(--border);
+      border-radius:14px;
+      background:var(--surface2);
+      cursor:pointer;
+      transition:.18s;
+    }
+
+    .usage-header:hover{
+      border-color:var(--accent);
+    }
+
+    .usage-top{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:7px;
+      font-size:9px;
+      font-weight:800;
+      color:var(--muted);
+    }
+
+    .usage-number{
+      color:var(--text);
+      font-size:10px;
+      font-weight:800;
+    }
+
+    .usage-track{
+      width:100%;
+      height:5px;
+      border-radius:99px;
+      background:var(--border);
+      overflow:hidden;
+    }
+
+    .usage-fill{
+      width:100%;
+      height:100%;
+      border-radius:99px;
+      background:linear-gradient(90deg,var(--accent),var(--accent2));
+      transition:width .3s ease;
+    }
+
+    /* ---------- LANGUAGE PICKER ---------- */
+
+    .language-picker{
+      position:relative;
+      flex:none;
+    }
+
+    .language-button{
+      height:44px;
+      padding:0 11px;
+      display:flex;
+      align-items:center;
+      gap:6px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background:var(--surface2);
+      color:var(--text);
+      font-size:12px;
+      font-weight:700;
+      cursor:pointer;
+      white-space:nowrap;
+      transition:.18s;
+    }
+
+    .language-button:hover,
+    .language-picker.open .language-button{
+      border-color:var(--accent);
+      color:var(--accent);
+      box-shadow:0 0 0 2px rgba(37,99,235,.10);
+    }
+
+    .language-menu{
+      position:absolute;
+      right:0;
+      top:calc(100% + 10px);
+      width:190px;
+      max-height:330px;
+      overflow:auto;
+      padding:7px;
+      background:var(--surface);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:0 20px 55px rgba(15,23,42,.22);
+      z-index:80;
+      opacity:0;
+      visibility:hidden;
+      transform:translateY(-5px);
+      transition:.18s;
+    }
+
+    .language-picker.open .language-menu{
+      opacity:1;
+      visibility:visible;
+      transform:translateY(0);
+    }
+
+    .language-option{
+      width:100%;
+      padding:10px 11px;
+      border-radius:12px;
+      background:transparent;
+      color:var(--text);
+      cursor:pointer;
+      text-align:left;
+      display:flex;
+      align-items:center;
+      gap:9px;
+      transition:.15s;
+    }
+
+    .language-option:hover{
+      background:var(--surface2);
+    }
+
+    .language-option.active{
+      background:rgba(37,99,235,.10);
+      color:var(--accent);
+      font-weight:800;
+    }
+
+    .language-option span:last-child{
+      margin-left:auto;
+    }
+
+    /* ---------- STATUS ---------- */
+
+    .status-dot.status-thinking{
+      background:#eab308;
+      box-shadow:0 0 8px rgba(234,179,8,.65);
+    }
+
+    .status-dot.status-offline{
+      background:var(--danger);
+      box-shadow:0 0 8px rgba(239,68,68,.65);
+    }
+
+    .status-text.status-thinking{
+      color:#ca8a04;
+    }
+
+    .status-text.status-offline{
+      color:var(--danger);
+    }
+
+    /* ---------- AUTO READ ---------- */
+
+    .auto-read-indicator{
+      position:absolute;
+      top:-5px;
+      right:-5px;
+      width:9px;
+      height:9px;
+      border-radius:50%;
+      background:var(--success);
+      border:2px solid var(--surface2);
+      display:none;
+    }
+
+    .extra-header-button.auto-read-on
+    .auto-read-indicator{
+      display:block;
+    }
+
+    /* ---------- SHORTCUT MODAL ---------- */
+
+    .shortcut-list{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+    }
+
+    .shortcut-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:15px;
+      padding:11px 13px;
+      border:1px solid var(--border);
+      border-radius:13px;
+      background:var(--surface2);
+    }
+
+    .shortcut-row strong{
+      font-size:12px;
+    }
+
+    .shortcut-key{
+      padding:4px 8px;
+      border:1px solid var(--border);
+      border-bottom-width:2px;
+      border-radius:7px;
+      background:var(--surface);
+      color:var(--muted);
+      font-size:10px;
+      font-weight:800;
+      white-space:nowrap;
+    }
+
+    /* ---------- MOBILE ---------- */
+
+    @media(max-width:800px){
+      .usage-header{
+        display:none;
+      }
+
+      .language-button{
+        width:44px;
+        padding:0;
+        justify-content:center;
+      }
+
+      .language-button .language-name{
+        display:none;
+      }
+    }
+
+    @media(max-width:600px){
+      .extra-header-button{
+        width:40px;
+        height:40px;
+      }
+
+      .language-button{
+        width:40px;
+        height:40px;
+      }
+
+      .header-actions{
+        gap:4px;
+      }
+    }
+  `;
+
+  document.head.appendChild(style);
+
+
+  /* ========================================================
+     1. LIVE AI STATUS
+  ======================================================== */
+
+  const statusElement = document.querySelector(".status");
+  const statusDot = statusElement
+    ? statusElement.querySelector(".status-dot")
+    : null;
+
+  let statusText = statusElement
+    ? statusElement.querySelector(".status-text")
+    : null;
+
+  if(statusElement && statusDot){
+
+    if(!statusText){
+      statusText = document.createElement("span");
+      statusText.className = "status-text";
+
+      const oldText = Array.from(statusElement.childNodes)
+        .find(node =>
+          node.nodeType === Node.TEXT_NODE &&
+          node.textContent.trim()
+        );
+
+      if(oldText){
+        oldText.remove();
+      }
+
+      statusElement.appendChild(statusText);
+    }
+
+    function setStatus(state){
+      statusDot.classList.remove(
+        "status-thinking",
+        "status-offline"
+      );
+
+      statusText.classList.remove(
+        "status-thinking",
+        "status-offline"
+      );
+
+      if(state === "thinking"){
+        statusText.textContent = "Thinking...";
+        statusDot.classList.add("status-thinking");
+        statusText.classList.add("status-thinking");
+      }
+      else if(state === "offline"){
+        statusText.textContent = "Offline";
+        statusDot.classList.add("status-offline");
+        statusText.classList.add("status-offline");
+      }
+      else{
+        statusText.textContent = "AI Online";
+      }
+    }
+
+    window.simpleChatSetStatus = setStatus;
+
+    setStatus(navigator.onLine ? "online" : "offline");
+
+    window.addEventListener("online", function(){
+      setStatus("online");
+      toast("Connection restored.");
+    });
+
+    window.addEventListener("offline", function(){
+      setStatus("offline");
+      toast("You are offline.");
+    });
+
+    /* Watch the existing typing message */
+    const statusObserver = new MutationObserver(function(){
+      const typing = document.getElementById("typingMessage");
+
+      if(typing){
+        setStatus("thinking");
+      }
+    });
+
+    statusObserver.observe(
+      document.getElementById("messages"),
+      {
+        childList:true,
+        subtree:true
+      }
+    );
+
+    /* Wrap fetch to detect successful / failed AI requests */
+    const oldFetch = window.fetch.bind(window);
+
+    window.fetch = function(resource, options){
+
+      const url =
+        typeof resource === "string"
+          ? resource
+          : ((resource && resource.url) || "");
+
+      const isChatRequest =
+        url.indexOf("/netlify/functions/chat") !== -1;
+
+      if(isChatRequest){
+        setStatus("thinking");
+
+        return oldFetch(resource, options)
+          .then(function(response){
+
+            if(!response.ok){
+              setStatus("offline");
+            }else{
+              setStatus("online");
+            }
+
+            return response;
+
+          })
+          .catch(function(error){
+
+            if(error && error.name === "AbortError"){
+              setStatus(navigator.onLine ? "online" : "offline");
+            }else{
+              setStatus("offline");
+            }
+
+            throw error;
+          });
+      }
+
+      return oldFetch(resource, options);
+    };
+
+  }
+
+
+  /* ========================================================
+     2. HEADER NEW CHAT BUTTON
+  ======================================================== */
+
+  const headerActions = document.querySelector(".header-actions");
+
+  const newChatHeader = document.createElement("button");
+
+  newChatHeader.type = "button";
+  newChatHeader.className = "extra-header-button";
+  newChatHeader.id = "headerNewChat";
+  newChatHeader.title = "New Chat";
+  newChatHeader.setAttribute("aria-label","New Chat");
+  newChatHeader.textContent = "➕";
+
+  newChatHeader.addEventListener("click", function(){
+
+    currentChat = makeChat();
+    chats.unshift(currentChat);
+
+    saveChats();
+    render();
+
+    input.value = "";
+    autoResize();
+    input.focus();
+
+    toast("New chat created.");
+  });
+
+  headerActions.insertBefore(
+    newChatHeader,
+    document.getElementById("themeButton")
+  );
+
+
+  /* ========================================================
+     3. HEADER SEARCH + CTRL+K
+  ======================================================== */
+
+  const searchHeader = document.createElement("button");
+
+  searchHeader.type = "button";
+  searchHeader.className = "extra-header-button";
+  searchHeader.id = "headerSearch";
+  searchHeader.title = "Search Chats (Ctrl+K)";
+  searchHeader.setAttribute("aria-label","Search Chats");
+  searchHeader.textContent = "🔍";
+
+  searchHeader.addEventListener("click", function(){
+    if(typeof searchChats === "function"){
+      searchChats();
+    }else{
+      openModal(
+        "🔍 Search Chats",
+        `<div class="logic-answer">Search is not available yet.</div>`
+      );
+    }
+  });
+
+  headerActions.insertBefore(
+    searchHeader,
+    document.getElementById("themeButton")
+  );
+
+  document.addEventListener("keydown", function(event){
+
+    if(
+      (event.ctrlKey || event.metaKey) &&
+      event.key.toLowerCase() === "k"
+    ){
+      event.preventDefault();
+
+      if(typeof searchChats === "function"){
+        searchChats();
+      }
+    }
+
+  });
+
+
+  /* ========================================================
+     4. QUICK EXPORT / SHARE
+  ======================================================== */
+
+  const shareHeader = document.createElement("button");
+
+  shareHeader.type = "button";
+  shareHeader.className = "extra-header-button";
+  shareHeader.id = "headerShare";
+  shareHeader.title = "Export or Share Chat";
+  shareHeader.setAttribute("aria-label","Export or Share Chat");
+  shareHeader.textContent = "📤";
+
+  shareHeader.addEventListener("click", async function(){
+
+    ensureChat();
+
+    let text = "Simple Chat AI\n";
+    text += "Chat: " + (currentChat.title || "New Chat") + "\n\n";
+
+    currentChat.messages.forEach(function(message){
+
+      text +=
+        (message.role === "user" ? "YOU" : "AI") +
+        ":\n" +
+        message.content +
+        "\n\n";
+
+    });
+
+    /* Use native share if available */
+    if(navigator.share){
+
+      try{
+
+        await navigator.share({
+          title: currentChat.title || "Simple Chat AI",
+          text: text
+        });
+
+        toast("Chat shared.");
+
+        return;
+
+      }catch(error){
+
+        if(error && error.name === "AbortError"){
+          return;
+        }
+
+      }
+
+    }
+
+    /* Otherwise copy */
+    if(navigator.clipboard){
+
+      try{
+
+        await navigator.clipboard.writeText(text);
+
+        toast("Chat copied to clipboard.");
+
+        return;
+
+      }catch(error){
+        /* continue to download */
+      }
+
+    }
+
+    /* Final fallback: download */
+    const blob = new Blob(
+      [text],
+      {type:"text/plain;charset=utf-8"}
+    );
+
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+
+    a.href = url;
+    a.download = "simple-chat-ai-chat.txt";
+
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+
+    setTimeout(function(){
+      URL.revokeObjectURL(url);
+    },1000);
+
+    toast("Chat exported.");
+
+  });
+
+  headerActions.insertBefore(
+    shareHeader,
+    document.getElementById("themeButton")
+  );
+
+
+  /* ========================================================
+     5. AUTO-READ TOGGLE
+  ======================================================== */
+
+  let autoRead =
+    localStorage.getItem("simple_chat_auto_read") === "true";
+
+  const autoReadButton = document.createElement("button");
+
+  autoReadButton.type = "button";
+  autoReadButton.className =
+    "extra-header-button" +
+    (autoRead ? " auto-read-on active" : "");
+
+  autoReadButton.id = "autoReadButton";
+  autoReadButton.title =
+    autoRead
+      ? "Auto-read ON — click to turn off"
+      : "Auto-read OFF — click to turn on";
+
+  autoReadButton.setAttribute(
+    "aria-label",
+    "Toggle automatic AI reading"
+  );
+
+  autoReadButton.innerHTML =
+    '🔊<span class="auto-read-indicator"></span>';
+
+  function updateAutoReadButton(){
+
+    autoReadButton.classList.toggle(
+      "auto-read-on",
+      autoRead
+    );
+
+    autoReadButton.classList.toggle(
+      "active",
+      autoRead
+    );
+
+    autoReadButton.title =
+      autoRead
+        ? "Auto-read ON — click to turn off"
+        : "Auto-read OFF — click to turn on";
+
+  }
+
+  autoReadButton.addEventListener("click", function(){
+
+    autoRead = !autoRead;
+
+    localStorage.setItem(
+      "simple_chat_auto_read",
+      autoRead ? "true" : "false"
+    );
+
+    updateAutoReadButton();
+
+    if(!autoRead && "speechSynthesis" in window){
+      speechSynthesis.cancel();
+    }
+
+    toast(
+      autoRead
+        ? "Auto-read enabled."
+        : "Auto-read disabled."
+    );
+
+  });
+
+  headerActions.insertBefore(
+    autoReadButton,
+    document.getElementById("themeButton")
+  );
+
+  updateAutoReadButton();
+
+
+  /* ========================================================
+     AUTO-READ AFTER AI RESPONSE
+  ======================================================== */
+
+  let lastReadMessage = null;
+
+  const originalRender = window.render;
+
+  if(typeof originalRender === "function"){
+
+    window.render = function(){
+
+      originalRender();
+
+      if(!autoRead){
+        return;
+      }
+
+      if(!currentChat || !currentChat.messages.length){
+        return;
+      }
+
+      const messages = currentChat.messages;
+
+      const last =
+        messages[messages.length - 1];
+
+      if(
+        !last ||
+        last.role !== "assistant" ||
+        String(last.content).startsWith("⚠️")
+      ){
+        return;
+      }
+
+      if(lastReadMessage === last.content){
+        return;
+      }
+
+      lastReadMessage = last.content;
+
+      if(!("speechSynthesis" in window)){
+        return;
+      }
+
+      speechSynthesis.cancel();
+
+      const speech =
+        new SpeechSynthesisUtterance(last.content);
+
+      speech.lang =
+        localStorage.getItem(
+          "simple_chat_language_code"
+        ) || "en-US";
+
+      speech.rate = 1;
+      speech.pitch = 1;
+
+      speechSynthesis.speak(speech);
+
+    };
+
+  }
+
+
+  /* ========================================================
+     6. TOTAL AI TOOL USAGE METER
+  ======================================================== */
+
+  const TOTAL_LIMIT = 300;
+  const TOTAL_KEY = "simple_chat_total_tool_uses";
+
+  let totalUses =
+    parseInt(
+      localStorage.getItem(TOTAL_KEY) || "0",
+      10
+    );
+
+  if(!Number.isFinite(totalUses)){
+    totalUses = 0;
+  }
+
+  const usageHeader =
+    document.createElement("button");
+
+  usageHeader.type = "button";
+  usageHeader.className = "usage-header";
+  usageHeader.id = "usageHeader";
+  usageHeader.title =
+    "Total AI tool uses remaining";
+
+  usageHeader.innerHTML = `
+    <div class="usage-top">
+      <span>AI Uses</span>
+      <span class="usage-number" id="usageNumber">300 left</span>
+    </div>
+    <div class="usage-track">
+      <div class="usage-fill" id="usageFill"></div>
+    </div>
+  `;
+
+  function updateUsageMeter(){
+
+    const remaining =
+      Math.max(
+        0,
+        TOTAL_LIMIT - totalUses
+      );
+
+    const percent =
+      Math.max(
+        0,
+        Math.min(
+          100,
+          (remaining / TOTAL_LIMIT) * 100
+        )
+      );
+
+    const number =
+      document.getElementById("usageNumber");
+
+    const fill =
+      document.getElementById("usageFill");
+
+    if(number){
+      number.textContent =
+        remaining + " left";
+    }
+
+    if(fill){
+      fill.style.width =
+        percent + "%";
+    }
+
+    usageHeader.title =
+      remaining +
+      " total AI tool uses remaining.";
+
+  }
+
+  usageHeader.addEventListener("click", function(){
+
+    const remaining =
+      Math.max(
+        0,
+        TOTAL_LIMIT - totalUses
+      );
+
+    openModal(
+      "📊 AI Tool Usage",
+      `
+        <div class="logic-answer">
+          <strong>${remaining}</strong> total AI tool uses remaining.
+
+          <br><br>
+
+          Used: ${totalUses} / ${TOTAL_LIMIT}
+
+          <br><br>
+
+          Each individual AI tool also keeps its existing
+          30-use limit and 5-minute lock system.
+        </div>
+      `
+    );
+
+  });
+
+  headerActions.insertBefore(
+    usageHeader,
+    document.getElementById("themeButton")
+  );
+
+  updateUsageMeter();
+
+
+  /* Count actual AI tool clicks without changing existing tool code */
+
+  const aiToolList =
+    document.querySelector(".ai-tools");
+
+  if(aiToolList){
+
+    aiToolList.addEventListener(
+      "click",
+      function(event){
+
+        const button =
+          event.target.closest(".ai-tool");
+
+        if(!button){
+          return;
+        }
+
+        const hasText =
+          (
+            currentChat &&
+            currentChat.messages &&
+            currentChat.messages.length
+          ) ||
+          input.value.trim();
+
+        if(!hasText){
+          return;
+        }
+
+        const toolName =
+          button.dataset.tool || "";
+
+        if(!toolName){
+          return;
+        }
+
+        /* Count only if the tool is not currently locked */
+        if(button.classList.contains("limit-locked")){
+          return;
+        }
+
+        totalUses += 1;
+
+        if(totalUses > TOTAL_LIMIT){
+          totalUses = TOTAL_LIMIT;
+        }
+
+        localStorage.setItem(
+          TOTAL_KEY,
+          String(totalUses)
+        );
+
+        updateUsageMeter();
+
+      },
+      true
+    );
+
+  }
+
+
+  /* ========================================================
+     7. LANGUAGE SWITCHER
+  ======================================================== */
+
+  const LANGUAGES = [
+    {
+      code:"en",
+      speech:"en-US",
+      name:"English",
+      flag:"🇬🇧"
+    },
+    {
+      code:"ur",
+      speech:"ur-PK",
+      name:"اردو",
+      flag:"🇵🇰"
+    },
+    {
+      code:"ar",
+      speech:"ar-SA",
+      name:"العربية",
+      flag:"🇸🇦"
+    },
+    {
+      code:"hi",
+      speech:"hi-IN",
+      name:"हिन्दी",
+      flag:"🇮🇳"
+    },
+    {
+      code:"tr",
+      speech:"tr-TR",
+      name:"Türkçe",
+      flag:"🇹🇷"
+    },
+    {
+      code:"fr",
+      speech:"fr-FR",
+      name:"Français",
+      flag:"🇫🇷"
+    },
+    {
+      code:"es",
+      speech:"es-ES",
+      name:"Español",
+      flag:"🇪🇸"
+    },
+    {
+      code:"de",
+      speech:"de-DE",
+      name:"Deutsch",
+      flag:"🇩🇪"
+    },
+    {
+      code:"zh",
+      speech:"zh-CN",
+      name:"中文",
+      flag:"🇨🇳"
+    }
+  ];
+
+  const savedLanguage =
+    localStorage.getItem(
+      "simple_chat_language"
+    ) || "en";
+
+  let selectedLanguage =
+    LANGUAGES.find(
+      language =>
+        language.code === savedLanguage
+    ) || LANGUAGES[0];
+
+  const languagePicker =
+    document.createElement("div");
+
+  languagePicker.className =
+    "language-picker";
+
+  const languageButton =
+    document.createElement("button");
+
+  languageButton.type = "button";
+  languageButton.className =
+    "language-button";
+
+  languageButton.innerHTML = `
+    <span class="language-flag"></span>
+    <span class="language-name"></span>
+    <span>▼</span>
+  `;
+
+  const languageMenu =
+    document.createElement("div");
+
+  languageMenu.className =
+    "language-menu";
+
+  languagePicker.appendChild(
+    languageButton
+  );
+
+  languagePicker.appendChild(
+    languageMenu
+  );
+
+  function renderLanguageButton(){
+
+    languageButton.querySelector(
+      ".language-flag"
+    ).textContent =
+      selectedLanguage.flag;
+
+    languageButton.querySelector(
+      ".language-name"
+    ).textContent =
+      selectedLanguage.name;
+
+  }
+
+  function renderLanguageMenu(){
+
+    languageMenu.innerHTML = "";
+
+    LANGUAGES.forEach(function(language){
+
+      const option =
+        document.createElement("button");
+
+      option.type = "button";
+      option.className =
+        "language-option" +
+        (
+          language.code === selectedLanguage.code
+            ? " active"
+            : ""
+        );
+
+      option.innerHTML = `
+        <span>${language.flag}</span>
+        <span>${language.name}</span>
+        <span>
+          ${
+            language.code === selectedLanguage.code
+              ? "✓"
+              : ""
+          }
+        </span>
+      `;
+
+      option.addEventListener(
+        "click",
+        function(event){
+
+          event.stopPropagation();
+
+          selectedLanguage =
+            language;
+
+          localStorage.setItem(
+            "simple_chat_language",
+            language.code
+          );
+
+          localStorage.setItem(
+            "simple_chat_language_code",
+            language.speech
+          );
+
+          renderLanguageButton();
+          renderLanguageMenu();
+
+          languagePicker.classList.remove(
+            "open"
+          );
+
+          languageButton.setAttribute(
+            "aria-expanded",
+            "false"
+          );
+
+          toast(
+            "Language changed to " +
+            language.name + "."
+          );
+
+        }
+      );
+
+      languageMenu.appendChild(
+        option
+      );
+
+    });
+
+  }
+
+  languageButton.addEventListener(
+    "click",
+    function(event){
+
+      event.stopPropagation();
+
+      const open =
+        languagePicker.classList.toggle(
+          "open"
+        );
+
+      languageButton.setAttribute(
+        "aria-expanded",
+        open ? "true" : "false"
+      );
+
+    }
+  );
+
+  document.addEventListener(
+    "click",
+    function(event){
+
+      if(!languagePicker.contains(event.target)){
+
+        languagePicker.classList.remove(
+          "open"
+        );
+
+        languageButton.setAttribute(
+          "aria-expanded",
+          "false"
+        );
+
+      }
+
+    }
+  );
+
+  headerActions.insertBefore(
+    languagePicker,
+    document.getElementById("themeButton")
+  );
+
+  renderLanguageButton();
+  renderLanguageMenu();
+
+
+  /* ========================================================
+     ADD LANGUAGE INSTRUCTION TO AI REQUESTS
+  ======================================================== */
+
+  const previousLanguageFetch =
+    window.fetch.bind(window);
+
+  window.fetch = function(
+    resource,
+    options
+  ){
+
+    const url =
+      typeof resource === "string"
+        ? resource
+        : ((resource && resource.url) || "");
+
+    if(
+      url.indexOf(
+        "/netlify/functions/chat"
+      ) !== -1 &&
+      options &&
+      typeof options.body === "string"
+    ){
+
+      try{
+
+        const body =
+          JSON.parse(options.body);
+
+        const languageInstruction =
+          selectedLanguage.code === "en"
+            ? ""
+            : "\n\nLANGUAGE PREFERENCE: " +
+              "Answer the user in " +
+              selectedLanguage.name +
+              " unless the user specifically asks for another language.";
+
+        body.systemPrompt =
+          (body.systemPrompt || "") +
+          languageInstruction;
+
+        options =
+          Object.assign(
+            {},
+            options,
+            {
+              body:
+                JSON.stringify(body)
+            }
+          );
+
+      }catch(error){
+        /* Keep request unchanged if parsing fails */
+      }
+
+    }
+
+    return previousLanguageFetch(
+      resource,
+      options
+    );
+
+  };
+
+
+  /* ========================================================
+     8. KEYBOARD SHORTCUTS HELP
+  ======================================================== */
+
+  const helpButton =
+    document.createElement("button");
+
+  helpButton.type = "button";
+  helpButton.className =
+    "extra-header-button";
+
+  helpButton.id =
+    "keyboardHelpButton";
+
+  helpButton.title =
+    "Keyboard shortcuts";
+
+  helpButton.setAttribute(
+    "aria-label",
+    "Keyboard shortcuts"
+  );
+
+  helpButton.textContent = "❓";
+
+  function showKeyboardHelp(){
+
+    openModal(
+      "❓ Keyboard Shortcuts",
+      `
+        <div class="shortcut-list">
+
+          <div class="shortcut-row">
+            <strong>Search Chats</strong>
+            <span class="shortcut-key">Ctrl + K</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>Send message</strong>
+            <span class="shortcut-key">Enter</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>New line</strong>
+            <span class="shortcut-key">Shift + Enter</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>Close popup</strong>
+            <span class="shortcut-key">Esc</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>New Chat</strong>
+            <span class="shortcut-key">Header ➕</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>Search</strong>
+            <span class="shortcut-key">Header 🔍</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>Share / Export</strong>
+            <span class="shortcut-key">Header 📤</span>
+          </div>
+
+          <div class="shortcut-row">
+            <strong>Auto-read</strong>
+            <span class="shortcut-key">Header 🔊</span>
+          </div>
+
+        </div>
+      `
+    );
+
+  }
+
+  helpButton.addEventListener(
+    "click",
+    showKeyboardHelp
+  );
+
+  headerActions.insertBefore(
+    helpButton,
+    document.getElementById("themeButton")
+  );
+
+
+  /* ========================================================
+     INITIAL STATUS / LANGUAGE
+  ======================================================== */
+
+  if(
+    localStorage.getItem(
+      "simple_chat_language_code"
+    ) === null
+  ){
+
+    localStorage.setItem(
+      "simple_chat_language_code",
+      selectedLanguage.speech
+    );
+
+  }
+
+  console.log(
+    "Simple Chat AI enhancements loaded successfully."
+  );
+
+})();
+</script>
+</body>
