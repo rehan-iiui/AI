@@ -2,441 +2,463 @@
 <html lang="en" class="dark">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NexusAI Workspace</title>
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>NexusAI Glassmorphism Workspace</title>
 
 <script src="https://cdn.tailwindcss.com"></script>
 
 <script>
-tailwind.config = {
-    darkMode: 'class',
-    theme: {
-        extend: {
-            colors: {
-                brand: {
-                    50: '#eef2ff',
-                    500: '#6366f1',
-                    600: '#4f46e5',
-                    700: '#4338ca'
-                }
+tailwind.config={
+    darkMode:"class",
+    theme:{
+        extend:{
+            colors:{
+                glassDark:"rgba(15,23,42,.65)",
+                glassLight:"rgba(255,255,255,.75)"
+            },
+            boxShadow:{
+                glass:"0 8px 32px rgba(0,0,0,.37)",
+                glow:"0 0 25px -5px rgba(99,102,241,.5)",
+                glowPurple:"0 0 25px -5px rgba(168,85,247,.5)"
             }
         }
     }
-};
+}
 </script>
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-
-<link
-    rel="stylesheet"
-    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
->
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
 <style>
-body {
-    font-family: 'Inter', sans-serif;
+*{
+    box-sizing:border-box;
 }
 
-::-webkit-scrollbar {
-    width: 5px;
-    height: 5px;
+body{
+    font-family:"Inter",sans-serif;
 }
 
-::-webkit-scrollbar-track {
-    background: transparent;
+::-webkit-scrollbar{
+    width:4px;
+    height:4px;
 }
 
-::-webkit-scrollbar-thumb {
-    background: rgba(156, 163, 175, 0.3);
-    border-radius: 9999px;
+::-webkit-scrollbar-track{
+    background:transparent;
 }
 
-::-webkit-scrollbar-thumb:hover {
-    background: rgba(156, 163, 175, 0.5);
+::-webkit-scrollbar-thumb{
+    background:rgba(156,163,175,.2);
+    border-radius:9999px;
 }
 
-.message-content {
-    white-space: pre-wrap;
-    line-height: 1.65;
+::-webkit-scrollbar-thumb:hover{
+    background:rgba(156,163,175,.4);
 }
 
-.typing-dot {
-    animation: typing 1.2s infinite ease-in-out;
+.glass-panel{
+    background:rgba(15,23,42,.60);
+    backdrop-filter:blur(16px);
+    -webkit-backdrop-filter:blur(16px);
+    border:1px solid rgba(255,255,255,.08);
 }
 
-.typing-dot:nth-child(2) {
-    animation-delay: .15s;
+.light .glass-panel{
+    background:rgba(255,255,255,.72);
+    border-color:rgba(0,0,0,.06);
 }
 
-.typing-dot:nth-child(3) {
-    animation-delay: .3s;
+.ai-avatar{
+    position:relative;
+    overflow:visible;
 }
 
-@keyframes typing {
-    0%, 60%, 100% {
-        opacity: .25;
-        transform: translateY(0);
+.ai-avatar::after{
+    content:"";
+    position:absolute;
+    right:-2px;
+    bottom:-1px;
+    width:9px;
+    height:9px;
+    border-radius:50%;
+    background:#22c55e;
+    border:2px solid #0f172a;
+    box-shadow:0 0 8px rgba(34,197,94,.8);
+}
+
+.user-avatar{
+    position:relative;
+}
+
+.message-bubble{
+    animation:messageIn .22s ease-out;
+}
+
+@keyframes messageIn{
+    from{
+        opacity:0;
+        transform:translateY(8px) scale(.98);
     }
-
-    30% {
-        opacity: 1;
-        transform: translateY(-3px);
+    to{
+        opacity:1;
+        transform:translateY(0) scale(1);
     }
 }
 
-.toast {
-    animation: toastIn .25s ease-out;
+.ai-thinking{
+    animation:aiPulse 1.3s infinite ease-in-out;
 }
 
-@keyframes toastIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
+@keyframes aiPulse{
+    0%,100%{
+        transform:scale(1);
+        box-shadow:0 0 0 rgba(99,102,241,0);
     }
+    50%{
+        transform:scale(1.08);
+        box-shadow:0 0 25px rgba(99,102,241,.45);
+    }
+}
 
-    to {
-        opacity: 1;
-        transform: translateY(0);
+.typing-dot{
+    width:5px;
+    height:5px;
+    border-radius:50%;
+    background:#818cf8;
+    animation:typing 1s infinite;
+}
+
+.typing-dot:nth-child(2){
+    animation-delay:.15s;
+}
+
+.typing-dot:nth-child(3){
+    animation-delay:.3s;
+}
+
+@keyframes typing{
+    0%,60%,100%{
+        transform:translateY(0);
+        opacity:.4;
     }
+    30%{
+        transform:translateY(-4px);
+        opacity:1;
+    }
+}
+
+.tool-icon{
+    transition:.2s;
+}
+
+.group:hover .tool-icon{
+    transform:scale(1.12) rotate(-2deg);
+}
+
+.model-dot{
+    box-shadow:0 0 10px currentColor;
+}
+
+.light body{
+    background:#f1f5f9;
 }
 </style>
 </head>
 
-<body class="bg-gray-50 dark:bg-gray-950 text-gray-900 dark:text-gray-100 h-screen overflow-hidden flex flex-col">
+<body class="bg-slate-950 text-slate-100 h-screen overflow-hidden flex flex-col relative selection:bg-indigo-500 selection:text-white">
+
+<!-- BACKGROUND -->
+<div class="absolute top-[-10%] left-[-10%] w-[50vw] h-[50vw] rounded-full bg-indigo-600/20 blur-[120px] pointer-events-none animate-pulse"></div>
+<div class="absolute bottom-[-10%] right-[-10%] w-[50vw] h-[50vw] rounded-full bg-purple-600/20 blur-[120px] pointer-events-none animate-pulse" style="animation-duration:4s"></div>
+<div class="absolute top-[30%] right-[20%] w-[30vw] h-[30vw] rounded-full bg-cyan-600/10 blur-[100px] pointer-events-none"></div>
 
 <!-- HEADER -->
-<header class="h-14 border-b border-gray-200 dark:border-gray-800 bg-white/80 dark:bg-gray-900/80 backdrop-blur-md px-4 flex items-center justify-between z-20 shrink-0">
+<header class="h-16 glass-panel border-b border-white/10 px-4 md:px-6 flex items-center justify-between z-20 shrink-0">
 
     <div class="flex items-center space-x-3">
 
-        <button
-            onclick="toggleLeftSidebar()"
-            class="p-2 rounded-2xl text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all md:hidden"
-            title="Toggle AI Tools"
-        >
+        <button onclick="toggleLeftSidebar()" class="p-2 rounded-2xl text-slate-400 hover:text-white hover:bg-white/10 transition-all md:hidden">
             <i class="fa-solid fa-wand-magic-sparkles"></i>
         </button>
 
-        <div class="flex items-center space-x-2">
+        <div class="flex items-center space-x-2.5">
 
-            <div class="w-8 h-8 rounded-2xl bg-gradient-to-tr from-indigo-600 to-violet-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30">
+            <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-indigo-600 via-violet-600 to-pink-500 flex items-center justify-center text-white shadow-lg shadow-indigo-500/30 ring-1 ring-white/20">
                 <i class="fa-solid fa-bolt text-sm"></i>
             </div>
 
-            <span class="font-bold text-lg bg-gradient-to-r from-indigo-600 to-violet-500 bg-clip-text text-transparent">
+            <span class="font-bold text-lg bg-gradient-to-r from-indigo-400 via-purple-300 to-pink-400 bg-clip-text text-transparent">
                 NexusAI
             </span>
 
         </div>
-
     </div>
-
 
     <div class="flex items-center space-x-3">
 
-        <button
-            onclick="openVercelModal()"
-            class="flex items-center space-x-1.5 px-3 py-1.5 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 text-xs font-medium hover:bg-indigo-100 dark:hover:bg-indigo-900/50 transition-all shadow-sm"
-        >
-            <i class="fa-solid fa-triangle-exclamation"></i>
-            <span>Deploy to Vercel</span>
+        <button onclick="openVercelModal()" class="flex items-center space-x-1.5 px-3.5 py-2 rounded-2xl bg-indigo-500/10 border border-indigo-500/30 text-indigo-300 text-xs font-medium hover:bg-indigo-500/20 transition-all">
+            <i class="fa-solid fa-cloud-arrow-up"></i>
+            <span class="hidden sm:inline">Deploy to Vercel</span>
         </button>
 
-        <button
-            onclick="toggleTheme()"
-            class="p-2.5 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all"
-            title="Toggle Dark/Light Mode"
-        >
+        <button onclick="toggleTheme()" class="p-2.5 rounded-2xl text-slate-300 hover:text-white hover:bg-white/10 transition-all border border-white/5">
             <i id="theme-icon" class="fa-solid fa-moon"></i>
         </button>
 
-        <button
-            onclick="toggleRightSidebar()"
-            class="p-2.5 rounded-2xl text-gray-600 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 transition-all md:hidden"
-            title="Toggle History"
-        >
+        <button onclick="toggleRightSidebar()" class="p-2.5 rounded-2xl text-slate-300 hover:text-white hover:bg-white/10 transition-all border border-white/5 md:hidden">
             <i class="fa-solid fa-clock-rotate-left"></i>
         </button>
 
     </div>
-
 </header>
 
-
-<!-- APP -->
-<div class="flex-1 flex overflow-hidden relative">
+<!-- MAIN -->
+<div class="flex-1 flex overflow-hidden relative z-10">
 
 <!-- LEFT SIDEBAR -->
-<aside
-    id="left-sidebar"
-    class="absolute md:relative z-30 inset-y-0 left-0 w-80 bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0 shrink-0"
->
+<aside id="left-sidebar"
+class="absolute md:relative z-30 inset-y-0 left-0 w-80 glass-panel border-r border-white/10 flex flex-col transition-transform duration-300 -translate-x-full md:translate-x-0 shrink-0 shadow-2xl md:shadow-none">
 
-    <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between">
 
         <div class="flex items-center space-x-2">
-
-            <i class="fa-solid fa-toolbox text-indigo-500"></i>
-
-            <h2 class="font-semibold text-xs tracking-wide uppercase text-gray-500 dark:text-gray-400">
-                20 AI Tools Workspace
+            <i class="fa-solid fa-toolbox text-indigo-400"></i>
+            <h2 class="font-semibold text-xs tracking-wider uppercase text-slate-400">
+                20 AI Tools
             </h2>
-
         </div>
 
-        <button
-            onclick="toggleLeftSidebar()"
-            class="md:hidden text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-        >
+        <button onclick="toggleLeftSidebar()" class="md:hidden text-slate-400 hover:text-white">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
     </div>
 
-
     <div class="p-3">
 
         <div class="relative">
 
-            <i class="fa-solid fa-search absolute left-3 top-3 text-xs text-gray-400"></i>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-slate-400"></i>
 
             <input
-                type="text"
                 id="tool-search"
-                placeholder="Search 20 AI tools..."
+                type="text"
+                placeholder="Search AI tools..."
                 oninput="filterTools()"
-                class="w-full bg-gray-100 dark:bg-gray-800/60 rounded-2xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all border border-transparent dark:border-gray-700/50"
-            >
+                class="w-full bg-slate-900/60 rounded-2xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-white/10 text-slate-200 placeholder-slate-500">
 
         </div>
 
     </div>
 
-
-    <div
-        id="ai-tools-list"
-        class="flex-1 overflow-y-auto p-3 space-y-1.5"
-    ></div>
+    <div id="ai-tools-list" class="flex-1 overflow-y-auto p-3 space-y-1.5"></div>
 
 </aside>
 
-
 <!-- CENTER -->
-<main class="flex-1 flex flex-col bg-gray-50/50 dark:bg-gray-950/50 relative overflow-hidden">
+<main class="flex-1 flex flex-col bg-transparent relative overflow-hidden">
 
-    <div
-        id="chat-messages"
-        class="flex-1 overflow-y-auto p-4 md:p-6 space-y-6"
-    >
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
 
         <!-- WELCOME -->
-        <div
-            id="welcome-screen"
-            class="max-w-2xl mx-auto text-center py-12 space-y-4"
-        >
+        <div id="welcome-state" class="max-w-2xl mx-auto text-center py-12 space-y-5">
 
-            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-600 mx-auto flex items-center justify-center text-white text-2xl shadow-xl shadow-indigo-500/20">
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+            <div class="relative w-20 h-20 mx-auto">
+
+                <div class="ai-avatar w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center text-white text-3xl shadow-2xl shadow-indigo-500/30 ring-1 ring-white/30 animate-bounce"
+                style="animation-duration:3s">
+
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+
+                </div>
+
             </div>
 
-            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
+            <h1 class="text-3xl md:text-4xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-200 to-slate-400 bg-clip-text text-transparent">
                 How can NexusAI help you today?
             </h1>
 
-            <p class="text-sm text-gray-500 dark:text-gray-400 max-w-md mx-auto">
-                Select any AI tool on the left, choose your model, and start chatting.
+            <p class="text-sm text-slate-400 max-w-md mx-auto leading-relaxed">
+                Choose a tool, select a model, or simply type anything below.
+                <br>
+                <strong class="text-emerald-400">
+                    <i class="fa-solid fa-circle-check mr-1"></i>
+                    No special keyword required.
+                </strong>
             </p>
 
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-4 max-w-lg mx-auto">
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 pt-4 max-w-lg mx-auto">
+                <button onclick="quickPrompt('Explain artificial intelligence in simple words.')"
+                class="p-3.5 glass-panel rounded-3xl text-xs text-left hover:border-indigo-500/50 hover:bg-white/10 transition-all shadow-lg group">
 
-                <button
-                    onclick="quickPrompt('Can you summarize the latest technology trends?')"
-                    class="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl text-xs text-left hover:border-indigo-500 transition-all shadow-sm group"
-                >
-                    <span class="font-semibold block group-hover:text-indigo-500">
-                        ✨ Summarize Technology Trends
+                    <span class="font-semibold block text-slate-200 group-hover:text-indigo-400">
+                        <i class="fa-solid fa-lightbulb text-amber-400 mr-2"></i>
+                        Explain Something
                     </span>
 
-                    <span class="text-gray-400">
-                        Ask NexusAI for a summary
+                    <span class="text-slate-500 text-[11px]">
+                        Ask NexusAI anything
                     </span>
+
                 </button>
 
+                <button onclick="quickPrompt('Help me plan a new project.')"
+                class="p-3.5 glass-panel rounded-3xl text-xs text-left hover:border-indigo-500/50 hover:bg-white/10 transition-all shadow-lg group">
 
-                <button
-                    onclick="quickPrompt('Write a professional email about my project.')"
-                    class="p-3 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl text-xs text-left hover:border-indigo-500 transition-all shadow-sm group"
-                >
-                    <span class="font-semibold block group-hover:text-indigo-500">
-                        📧 Project Outreach
+                    <span class="font-semibold block text-slate-200 group-hover:text-indigo-400">
+                        <i class="fa-solid fa-rocket text-pink-400 mr-2"></i>
+                        Start a Project
                     </span>
 
-                    <span class="text-gray-400">
-                        Polished professional template
+                    <span class="text-slate-500 text-[11px]">
+                        Get ideas and planning help
                     </span>
+
                 </button>
 
             </div>
-
         </div>
 
     </div>
 
-
-    <!-- CHAT BAR -->
-    <div class="p-4 md:p-6 bg-gradient-to-t from-gray-50 via-gray-50/80 to-transparent dark:from-gray-950 dark:via-gray-950/80 shrink-0">
+    <!-- COMPOSER -->
+    <div class="p-4 md:p-6 bg-gradient-to-t from-slate-950 via-slate-950/80 to-transparent shrink-0">
 
         <div class="max-w-4xl mx-auto">
 
-            <div
-                class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-3 shadow-xl shadow-gray-200/50 dark:shadow-none transition-all focus-within:ring-2 focus-within:ring-indigo-500/50"
-            >
+            <div class="glass-panel rounded-[2rem] p-3.5 shadow-2xl transition-all focus-within:ring-2 focus-within:ring-indigo-500/50">
 
                 <textarea
                     id="user-input"
                     rows="1"
-                    placeholder="Type your message..."
+                    placeholder="Message NexusAI..."
                     onkeydown="handleKeyDown(event)"
                     oninput="autoResize(this)"
-                    class="w-full bg-transparent resize-none focus:outline-none text-sm px-2 py-1 max-h-36 text-gray-800 dark:text-gray-100 placeholder-gray-400"
-                ></textarea>
+                    class="w-full bg-transparent resize-none focus:outline-none text-sm px-3 py-1.5 max-h-36 text-slate-100 placeholder-slate-500"></textarea>
 
+                <div class="flex items-center justify-between pt-3 mt-2 border-t border-white/10">
 
-                <div class="flex items-center justify-between pt-2 mt-2 border-t border-gray-100 dark:border-gray-800/80">
-
-                    <div class="flex items-center space-x-2">
+                    <div class="flex items-center space-x-2.5">
 
                         <!-- PLUS -->
                         <div class="relative">
 
-                            <button
-                                onclick="toggleAttachmentMenu()"
-                                class="w-9 h-9 rounded-2xl bg-gray-100 dark:bg-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all flex items-center justify-center shadow-sm"
-                                title="Attach file or tool"
-                            >
-                                <i class="fa-solid fa-plus text-sm"></i>
+                            <button onclick="toggleAttachmentMenu()"
+                            class="w-9 h-9 rounded-2xl bg-white/5 hover:bg-white/15 text-slate-300 hover:text-white transition-all flex items-center justify-center border border-white/5">
+
+                                <i class="fa-solid fa-plus text-xs"></i>
+
                             </button>
 
+                            <div id="attachment-menu"
+                            class="hidden absolute bottom-12 left-0 w-52 glass-panel rounded-3xl shadow-2xl p-1.5 z-40 text-xs bg-slate-900/95">
 
-                            <div
-                                id="attachment-menu"
-                                class="hidden absolute bottom-12 left-0 w-48 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-xl p-1.5 z-40 text-xs"
-                            >
+                                <button onclick="triggerAttachment('Upload Document')"
+                                class="w-full text-left px-3.5 py-2.5 rounded-2xl hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
 
-                                <button
-                                    onclick="triggerAttachment('Upload Document')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center space-x-2"
-                                >
-                                    <i class="fa-solid fa-file-arrow-up text-indigo-500"></i>
+                                    <i class="fa-solid fa-file-arrow-up text-indigo-400"></i>
                                     <span>Upload Document</span>
+
                                 </button>
 
-                                <button
-                                    onclick="triggerAttachment('Insert Code Snippet')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center space-x-2"
-                                >
-                                    <i class="fa-solid fa-code text-violet-500"></i>
+                                <button onclick="triggerAttachment('Code Snippet')"
+                                class="w-full text-left px-3.5 py-2.5 rounded-2xl hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+
+                                    <i class="fa-solid fa-code text-violet-400"></i>
                                     <span>Code Snippet</span>
+
                                 </button>
 
-                                <button
-                                    onclick="triggerAttachment('Web Search URL')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 flex items-center space-x-2"
-                                >
-                                    <i class="fa-solid fa-globe text-emerald-500"></i>
+                                <button onclick="triggerAttachment('Web Search')"
+                                class="w-full text-left px-3.5 py-2.5 rounded-2xl hover:bg-white/10 flex items-center space-x-2.5 text-slate-200">
+
+                                    <i class="fa-solid fa-globe text-emerald-400"></i>
                                     <span>Web Search</span>
+
                                 </button>
 
                             </div>
-
                         </div>
-
 
                         <!-- MODEL -->
                         <div class="relative">
 
-                            <button
-                                onclick="toggleModelDropdown()"
-                                id="model-selector-btn"
-                                class="flex items-center space-x-2 px-3 py-1.5 rounded-2xl bg-gray-100 dark:bg-gray-800 text-xs font-medium text-gray-700 dark:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-700 transition-all shadow-sm"
-                            >
+                            <button onclick="toggleModelDropdown()"
+                            id="model-selector-btn"
+                            class="flex items-center space-x-2 px-3.5 py-2 rounded-2xl bg-white/5 hover:bg-white/15 text-xs font-medium text-slate-200 border border-white/5">
+
+                                <div id="model-dot" class="model-dot w-2 h-2 rounded-full bg-indigo-400 text-indigo-400"></div>
 
                                 <span id="selected-model-name">
                                     Simple AI
                                 </span>
 
-                                <i class="fa-solid fa-chevron-down text-[10px] text-gray-400"></i>
+                                <i class="fa-solid fa-chevron-down text-[10px] text-slate-400"></i>
 
                             </button>
 
+                            <div id="model-dropdown"
+                            class="hidden absolute bottom-12 left-0 w-60 glass-panel rounded-3xl shadow-2xl p-1.5 z-40 bg-slate-900/95">
 
-                            <div
-                                id="model-dropdown"
-                                class="hidden absolute bottom-10 left-0 w-56 bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl shadow-xl p-1.5 z-40 text-xs"
-                            >
+                                <button onclick="selectModel('Simple AI','fa-bolt')"
+                                class="w-full text-left px-3 py-2.5 rounded-2xl hover:bg-indigo-500/20 flex flex-col text-slate-200">
 
-                                <button
-                                    onclick="selectModel('Simple AI')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 transition-all flex flex-col"
-                                >
                                     <span class="font-semibold">
+                                        <i class="fa-solid fa-bolt text-indigo-400 mr-2"></i>
                                         Simple AI
                                     </span>
 
-                                    <span class="text-[10px] text-gray-400">
-                                        Fast & Lightweight Assistant
+                                    <span class="text-[10px] text-slate-400 pl-6">
+                                        Fast assistant
                                     </span>
+
                                 </button>
 
+                                <button onclick="selectModel('Pro Reasoner','fa-brain')"
+                                class="w-full text-left px-3 py-2.5 rounded-2xl hover:bg-purple-500/20 flex flex-col text-slate-200 mt-1">
 
-                                <button
-                                    onclick="selectModel('Pro Reasoner')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 transition-all flex flex-col mt-1"
-                                >
                                     <span class="font-semibold">
+                                        <i class="fa-solid fa-brain text-purple-400 mr-2"></i>
                                         Pro Reasoner
                                     </span>
 
-                                    <span class="text-[10px] text-gray-400">
-                                        Advanced logical analysis
+                                    <span class="text-[10px] text-slate-400 pl-6">
+                                        Logical analysis
                                     </span>
+
                                 </button>
 
+                                <button onclick="selectModel('Creative Gen','fa-wand-magic-sparkles')"
+                                class="w-full text-left px-3 py-2.5 rounded-2xl hover:bg-pink-500/20 flex flex-col text-slate-200 mt-1">
 
-                                <button
-                                    onclick="selectModel('Creative Gen')"
-                                    class="w-full text-left px-3 py-2 rounded-2xl hover:bg-indigo-50 dark:hover:bg-indigo-950/50 hover:text-indigo-600 transition-all flex flex-col mt-1"
-                                >
                                     <span class="font-semibold">
+                                        <i class="fa-solid fa-wand-magic-sparkles text-pink-400 mr-2"></i>
                                         Creative Gen
                                     </span>
 
-                                    <span class="text-[10px] text-gray-400">
-                                        High creativity for storytelling
+                                    <span class="text-[10px] text-slate-400 pl-6">
+                                        Creative responses
                                     </span>
+
                                 </button>
 
                             </div>
-
                         </div>
 
                     </div>
 
+                    <div class="flex items-center space-x-3">
 
-                    <div class="flex items-center space-x-2">
-
-                        <span class="text-[10px] text-gray-400 hidden sm:inline">
-                            Press Enter ↵
+                        <span class="text-[11px] text-slate-400 hidden sm:inline">
+                            Enter ↵
                         </span>
 
-                        <button
-                            onclick="sendMessage()"
-                            id="send-button"
-                            class="w-9 h-9 rounded-2xl bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/30 transition-all transform hover:scale-105 active:scale-95"
-                            title="Send Message"
-                        >
+                        <button onclick="sendMessage()"
+                        class="w-10 h-10 rounded-2xl bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white flex items-center justify-center shadow-lg shadow-indigo-500/40 transition-all transform hover:scale-105 active:scale-95 ring-1 ring-white/30">
+
                             <i class="fa-solid fa-paper-plane text-xs"></i>
+
                         </button>
 
                     </div>
@@ -445,155 +467,122 @@ body {
 
             </div>
 
-
-            <p class="text-[11px] text-center text-gray-400 mt-2">
-                NexusAI workspace. Connected to your Vercel API.
+            <p class="text-[11px] text-center text-slate-500 mt-2.5">
+                <i class="fa-solid fa-shield-halved mr-1"></i>
+                NexusAI • Your API key stays on Vercel
             </p>
 
         </div>
-
     </div>
 
 </main>
 
-
 <!-- RIGHT SIDEBAR -->
-<aside
-    id="right-sidebar"
-    class="absolute md:relative z-30 inset-y-0 right-0 w-80 bg-white dark:bg-gray-900 border-l border-gray-200 dark:border-gray-800 flex flex-col transition-transform duration-300 translate-x-full md:translate-x-0 shrink-0"
->
+<aside id="right-sidebar"
+class="absolute md:relative z-30 inset-y-0 right-0 w-80 glass-panel border-l border-white/10 flex flex-col transition-transform duration-300 translate-x-full md:translate-x-0 shrink-0 shadow-2xl">
 
-    <div class="p-4 border-b border-gray-200 dark:border-gray-800 flex items-center justify-between">
+    <div class="p-4 border-b border-white/10 flex items-center justify-between">
 
         <div class="flex items-center space-x-2">
-
-            <i class="fa-solid fa-clock-rotate-left text-indigo-500"></i>
-
-            <h2 class="font-semibold text-sm tracking-wide uppercase text-gray-500 dark:text-gray-400">
+            <i class="fa-solid fa-clock-rotate-left text-indigo-400"></i>
+            <h2 class="font-semibold text-xs tracking-wider uppercase text-slate-400">
                 Chat History
             </h2>
-
         </div>
 
-        <button
-            onclick="toggleRightSidebar()"
-            class="md:hidden text-gray-400"
-        >
+        <button onclick="toggleRightSidebar()" class="md:hidden text-slate-400 hover:text-white">
             <i class="fa-solid fa-xmark"></i>
         </button>
 
     </div>
 
-
     <div class="p-3">
 
-        <button
-            onclick="startNewChat()"
-            class="w-full py-2.5 px-4 bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-500 hover:to-violet-500 text-white rounded-3xl font-medium text-xs shadow-lg shadow-indigo-500/20 flex items-center justify-center space-x-2 transition-all"
-        >
+        <button onclick="startNewChat()"
+        class="w-full py-3 px-4 bg-gradient-to-r from-indigo-600 via-purple-600 to-pink-600 hover:from-indigo-500 hover:to-pink-500 text-white rounded-2xl font-semibold text-xs shadow-lg flex items-center justify-center space-x-2">
+
             <i class="fa-solid fa-plus"></i>
             <span>New chat</span>
+
         </button>
 
     </div>
-
 
     <div class="px-3 pb-2">
 
         <div class="relative">
 
-            <i class="fa-solid fa-search absolute left-3 top-3 text-xs text-gray-400"></i>
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-slate-400"></i>
 
             <input
-                type="text"
                 id="history-search"
+                type="text"
                 placeholder="Search chats..."
                 oninput="filterHistory()"
-                class="w-full bg-gray-100 dark:bg-gray-800/60 rounded-2xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 transition-all"
-            >
+                class="w-full bg-slate-900/60 rounded-2xl pl-9 pr-4 py-2 text-xs focus:outline-none focus:ring-2 focus:ring-indigo-500 border border-white/10 text-slate-200 placeholder-slate-500">
 
         </div>
 
     </div>
 
+    <div id="history-list" class="flex-1 overflow-y-auto p-3 space-y-4 text-xs">
 
-    <div
-        id="history-list"
-        class="flex-1 overflow-y-auto p-3 space-y-4 text-xs"
-    >
+        <div id="today-history">
 
-        <div>
-
-            <span class="text-[10px] font-semibold text-gray-400 uppercase tracking-wider px-2 mb-1 block">
+            <span class="text-[10px] font-semibold text-slate-500 uppercase tracking-wider px-2 mb-1.5 block">
                 Today
             </span>
 
-            <div class="space-y-1 mt-1">
+            <div id="history-items" class="space-y-1 mt-1">
 
-                <div
-                    onclick="selectChat(this)"
-                    class="group flex items-center justify-between p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-medium cursor-pointer transition-all border border-indigo-100 dark:border-indigo-900/30 shadow-sm"
-                >
+                <div class="group flex items-center justify-between p-3 rounded-2xl bg-indigo-500/20 text-indigo-300 font-medium border border-indigo-500/30">
 
-                    <div class="flex items-center space-x-2 truncate">
+                    <div class="flex items-center space-x-2.5 truncate">
 
                         <i class="fa-regular fa-message text-[11px]"></i>
 
                         <span class="truncate">
-                            Workspace Introduction Session
+                            New NexusAI Chat
                         </span>
-
-                    </div>
-
-
-                    <div class="hidden group-hover:flex items-center space-x-1 text-gray-400">
-
-                        <button onclick="renameChat(event)">
-                            <i class="fa-solid fa-pen text-[10px]"></i>
-                        </button>
-
-                        <button onclick="deleteChat(event)">
-                            <i class="fa-solid fa-trash text-[10px] hover:text-red-500"></i>
-                        </button>
 
                     </div>
 
                 </div>
 
             </div>
-
         </div>
 
     </div>
 
+    <!-- USER -->
+    <div class="p-3.5 border-t border-white/10 flex items-center justify-between bg-slate-900/40">
 
-    <div class="p-3 border-t border-gray-200 dark:border-gray-800 flex items-center justify-between">
+        <div class="flex items-center space-x-3">
 
-        <div class="flex items-center space-x-2.5">
+            <div class="user-avatar w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 text-white flex items-center justify-center text-xs shadow-lg ring-1 ring-white/30">
 
-            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-semibold flex items-center justify-center text-xs shadow">
-                AI
+                <i class="fa-solid fa-user"></i>
+
             </div>
 
             <div>
 
-                <span class="block text-xs font-semibold">
+                <span class="block text-xs font-semibold text-slate-200">
                     Workspace User
                 </span>
 
-                <span class="block text-[10px] text-gray-400">
-                    Vercel AI App
+                <span class="block text-[10px] text-slate-400">
+                    NexusAI Workspace
                 </span>
 
             </div>
 
         </div>
 
-        <button
-            onclick="openVercelModal()"
-            class="text-gray-400 hover:text-gray-600 p-2 rounded-2xl"
-        >
+        <button onclick="openVercelModal()" class="text-slate-400 hover:text-white p-2 rounded-xl hover:bg-white/10">
+
             <i class="fa-solid fa-circle-info"></i>
+
         </button>
 
     </div>
@@ -602,269 +591,303 @@ body {
 
 </div>
 
-
 <!-- VERCEL MODAL -->
-<div
-    id="vercel-modal"
-    class="fixed inset-0 z-50 bg-black/60 backdrop-blur-sm hidden flex items-center justify-center p-4"
->
+<div id="vercel-modal"
+class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-md hidden items-center justify-center p-4">
 
-    <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl space-y-4">
+    <div class="glass-panel border border-white/20 rounded-[2.5rem] p-6 md:p-8 w-full max-w-lg shadow-2xl space-y-5 bg-slate-900/95">
 
         <div class="flex items-center justify-between">
 
-            <div class="flex items-center space-x-2 text-indigo-600 dark:text-indigo-400">
+            <div class="flex items-center space-x-2.5 text-indigo-400">
 
-                <i class="fa-solid fa-server"></i>
+                <i class="fa-solid fa-cloud-arrow-up text-xl"></i>
 
-                <h3 class="font-bold text-base text-gray-900 dark:text-white">
-                    NexusAI API
+                <h3 class="font-bold text-lg text-white">
+                    Deploy NexusAI
                 </h3>
 
             </div>
 
-            <button
-                onclick="closeVercelModal()"
-                class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200"
-            >
+            <button onclick="closeVercelModal()" class="text-slate-400 hover:text-white p-2">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
 
         </div>
 
-
-        <p class="text-xs text-gray-500 dark:text-gray-400">
-            Your frontend sends messages to
-            <code class="bg-gray-100 dark:bg-gray-800 px-1 rounded">
-                /api/chat
-            </code>.
-            The secret API key stays on the server.
+        <p class="text-xs text-slate-300 leading-relaxed">
+            Put this HTML file in your project and keep your API route at
+            <code class="text-indigo-300">/api/chat.js</code>.
         </p>
 
+        <div class="bg-slate-950/80 border border-white/10 p-4 rounded-3xl space-y-4 text-xs">
 
-        <div class="bg-gray-100 dark:bg-gray-800 p-4 rounded-2xl text-xs font-mono space-y-2">
-
-            <div class="text-indigo-500 font-semibold">
-                Required Vercel Environment Variable
+            <div>
+                <div class="font-semibold text-indigo-400">
+                    <i class="fa-solid fa-1 mr-2"></i>
+                    Frontend
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">
+                    Save this file as <b>index.html</b>.
+                </p>
             </div>
 
             <div>
-                OPENAI_API_KEY
-            </div>
-
-            <div class="text-indigo-500 font-semibold pt-2">
-                API endpoint
+                <div class="font-semibold text-indigo-400">
+                    <i class="fa-solid fa-2 mr-2"></i>
+                    API
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">
+                    Put the working backend in <b>api/chat.js</b>.
+                </p>
             </div>
 
             <div>
-                POST /api/chat
+                <div class="font-semibold text-indigo-400">
+                    <i class="fa-solid fa-key mr-2"></i>
+                    Environment Variable
+                </div>
+                <p class="text-[11px] text-slate-400 mt-1">
+                    <b>REPLICATE_API_TOKEN</b>
+                </p>
             </div>
 
         </div>
 
-
         <div class="flex justify-end">
 
-            <button
-                onclick="closeVercelModal()"
-                class="px-4 py-2 rounded-2xl text-xs font-medium bg-indigo-600 hover:bg-indigo-500 text-white transition-all"
-            >
+            <button onclick="closeVercelModal()"
+            class="px-5 py-2.5 rounded-2xl text-xs font-semibold bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-lg">
+
+                <i class="fa-solid fa-check mr-2"></i>
                 Got it
+
             </button>
 
         </div>
 
     </div>
-
 </div>
-
-
-<!-- TOAST -->
-<div
-    id="toast"
-    class="fixed bottom-6 right-6 hidden z-[100] bg-gray-900 dark:bg-white text-white dark:text-gray-900 px-4 py-3 rounded-2xl shadow-2xl text-xs"
-></div>
-
 
 <script>
 
-const aiTools = [
-    {
-        id: 1,
-        name: "Code Assistant",
-        icon: "fa-code",
-        desc: "Write, refactor, and review clean code",
-        prompt: "Help me write or refactor code for:"
-    },
-    {
-        id: 2,
-        name: "Content Writer",
-        icon: "fa-pen-nib",
-        desc: "Draft engaging articles, essays, and notes",
-        prompt: "Write content about:"
-    },
-    {
-        id: 3,
-        name: "Image Generator",
-        icon: "fa-image",
-        desc: "Create detailed image concepts",
-        prompt: "Create a detailed image-generation prompt for:"
-    },
-    {
-        id: 4,
-        name: "Email Drafter",
-        icon: "fa-envelope",
-        desc: "Craft professional emails",
-        prompt: "Draft a professional email about:"
-    },
-    {
-        id: 5,
-        name: "Resume Reviewer",
-        icon: "fa-file-lines",
-        desc: "Improve resume content",
-        prompt: "Review and improve this resume content:"
-    },
-    {
-        id: 6,
-        name: "Bug Fixer",
-        icon: "fa-bug",
-        desc: "Identify and troubleshoot code errors",
-        prompt: "Find and fix the bug in this code:"
-    },
-    {
-        id: 7,
-        name: "Storyteller",
-        icon: "fa-book-open",
-        desc: "Create imaginative stories",
-        prompt: "Write an engaging story about:"
-    },
-    {
-        id: 8,
-        name: "Translator",
-        icon: "fa-language",
-        desc: "Translate between languages",
-        prompt: "Translate the following text:"
-    },
-    {
-        id: 9,
-        name: "Idea Brainstormer",
-        icon: "fa-lightbulb",
-        desc: "Generate creative ideas",
-        prompt: "Brainstorm ideas for:"
-    },
-    {
-        id: 10,
-        name: "SEO Optimizer",
-        icon: "fa-chart-line",
-        desc: "Optimize titles and content",
-        prompt: "Optimize this content for SEO:"
-    },
-    {
-        id: 11,
-        name: "Math Solver",
-        icon: "fa-calculator",
-        desc: "Solve mathematical problems",
-        prompt: "Solve this math problem step by step:"
-    },
-    {
-        id: 12,
-        name: "SQL Generator",
-        icon: "fa-database",
-        desc: "Create SQL queries",
-        prompt: "Write an SQL query for:"
-    },
-    {
-        id: 13,
-        name: "Regex Helper",
-        icon: "fa-terminal",
-        desc: "Create and explain regex",
-        prompt: "Create a regular expression for:"
-    },
-    {
-        id: 14,
-        name: "Poem Creator",
-        icon: "fa-feather",
-        desc: "Create poems",
-        prompt: "Write a poem about:"
-    },
-    {
-        id: 15,
-        name: "JSON Formatter",
-        icon: "fa-code",
-        desc: "Format and explain JSON",
-        prompt: "Format and explain this JSON:"
-    },
-    {
-        id: 16,
-        name: "API Designer",
-        icon: "fa-network-wired",
-        desc: "Design APIs and schemas",
-        prompt: "Design an API for:"
-    },
-    {
-        id: 17,
-        name: "Strategy Planner",
-        icon: "fa-chess",
-        desc: "Plan projects and strategies",
-        prompt: "Create a strategy plan for:"
-    },
-    {
-        id: 18,
-        name: "Fitness Coach",
-        icon: "fa-dumbbell",
-        desc: "Create exercise plans",
-        prompt: "Create a safe exercise plan for:"
-    },
-    {
-        id: 19,
-        name: "Recipe Creator",
-        icon: "fa-utensils",
-        desc: "Create recipes",
-        prompt: "Create a recipe using:"
-    },
-    {
-        id: 20,
-        name: "Language Tutor",
-        icon: "fa-graduation-cap",
-        desc: "Learn languages and grammar",
-        prompt: "Teach me about:"
-    }
+/* =========================================================
+   NEXUSAI
+   REAL API FRONTEND
+   ========================================================= */
+
+const aiTools=[
+
+{
+name:"Code Assistant",
+icon:"fa-code",
+color:"text-blue-400",
+desc:"Write, refactor and review code",
+prompt:"Help me write, refactor, or review this code:"
+},
+
+{
+name:"Content Writer",
+icon:"fa-pen-nib",
+color:"text-pink-400",
+desc:"Write articles, essays and notes",
+prompt:"Write high-quality content about:"
+},
+
+{
+name:"Image Generator",
+icon:"fa-image",
+color:"text-purple-400",
+desc:"Create detailed image prompts",
+prompt:"Create a detailed image-generation prompt for:"
+},
+
+{
+name:"Email Drafter",
+icon:"fa-envelope",
+color:"text-cyan-400",
+desc:"Create professional emails",
+prompt:"Draft a professional email about:"
+},
+
+{
+name:"Resume Reviewer",
+icon:"fa-file-lines",
+color:"text-emerald-400",
+desc:"Improve resume content",
+prompt:"Review and improve this resume content:"
+},
+
+{
+name:"Bug Fixer",
+icon:"fa-bug",
+color:"text-red-400",
+desc:"Find and fix programming bugs",
+prompt:"Find and fix the bugs in this code:"
+},
+
+{
+name:"Storyteller",
+icon:"fa-book-open",
+color:"text-amber-400",
+desc:"Create imaginative stories",
+prompt:"Write an engaging story about:"
+},
+
+{
+name:"Translator",
+icon:"fa-language",
+color:"text-sky-400",
+desc:"Translate between languages",
+prompt:"Translate the following text:"
+},
+
+{
+name:"Idea Brainstormer",
+icon:"fa-lightbulb",
+color:"text-yellow-400",
+desc:"Generate creative ideas",
+prompt:"Give me creative ideas for:"
+},
+
+{
+name:"SEO Optimizer",
+icon:"fa-chart-line",
+color:"text-green-400",
+desc:"Improve SEO content",
+prompt:"Optimize this content for SEO:"
+},
+
+{
+name:"Math Solver",
+icon:"fa-calculator",
+color:"text-indigo-400",
+desc:"Solve mathematical problems",
+prompt:"Solve this math problem step by step:"
+},
+
+{
+name:"SQL Generator",
+icon:"fa-database",
+color:"text-orange-400",
+desc:"Create SQL queries",
+prompt:"Create an SQL query for:"
+},
+
+{
+name:"Regex Helper",
+icon:"fa-terminal",
+color:"text-violet-400",
+desc:"Create regular expressions",
+prompt:"Create or explain a regular expression for:"
+},
+
+{
+name:"Poem Creator",
+icon:"fa-feather",
+color:"text-rose-400",
+desc:"Create poems and lyrics",
+prompt:"Write a poem about:"
+},
+
+{
+name:"JSON Formatter",
+icon:"fa-code",
+color:"text-teal-400",
+desc:"Format and explain JSON",
+prompt:"Format and explain this JSON:"
+},
+
+{
+name:"API Designer",
+icon:"fa-network-wired",
+color:"text-blue-400",
+desc:"Design APIs and schemas",
+prompt:"Design an API for:"
+},
+
+{
+name:"Strategy Planner",
+icon:"fa-chess",
+color:"text-purple-400",
+desc:"Plan projects and businesses",
+prompt:"Create a strategy and plan for:"
+},
+
+{
+name:"Fitness Coach",
+icon:"fa-dumbbell",
+color:"text-green-400",
+desc:"Create workout plans",
+prompt:"Create a safe workout plan for:"
+},
+
+{
+name:"Recipe Creator",
+icon:"fa-utensils",
+color:"text-orange-400",
+desc:"Create recipes",
+prompt:"Create a recipe using:"
+},
+
+{
+name:"Language Tutor",
+icon:"fa-graduation-cap",
+color:"text-cyan-400",
+desc:"Learn languages and grammar",
+prompt:"Teach me about this language topic:"
+}
+
 ];
 
+let conversation=[];
+let selectedModel="Simple AI";
+let selectedIcon="fa-bolt";
+let sending=false;
 
-let selectedModel = "Simple AI";
-let isSending = false;
 
+/* =========================================================
+   INITIALIZE
+   ========================================================= */
 
-document.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded",()=>{
+
     renderTools(aiTools);
+
+    const input=document.getElementById("user-input");
+
+    input.focus();
+
 });
 
 
-function renderTools(tools) {
+/* =========================================================
+   TOOLS
+   ========================================================= */
 
-    const container = document.getElementById("ai-tools-list");
+function renderTools(tools){
 
-    container.innerHTML = tools.map(tool => `
+    const container=document.getElementById("ai-tools-list");
+
+    container.innerHTML=tools.map(tool=>`
 
         <button
-            onclick="useTool(${tool.id})"
-            class="w-full text-left p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 transition-all flex items-start space-x-3 group"
-        >
+            onclick='useTool(${JSON.stringify(tool.name)},${JSON.stringify(tool.prompt)})'
+            class="w-full text-left p-2.5 rounded-2xl hover:bg-white/10 transition-all flex items-start space-x-3 group border border-transparent hover:border-white/10">
 
-            <div class="w-7 h-7 rounded-2xl bg-indigo-50 dark:bg-indigo-950/50 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shrink-0 mt-0.5 group-hover:scale-110 transition-transform shadow-sm">
+            <div class="tool-icon w-8 h-8 rounded-xl bg-indigo-500/15 flex items-center justify-center shrink-0 mt-0.5 border border-indigo-500/20">
 
-                <i class="fa-solid ${tool.icon} text-xs"></i>
+                <i class="fa-solid ${tool.icon} ${tool.color} text-xs"></i>
 
             </div>
 
             <div class="overflow-hidden">
 
-                <span class="block text-xs font-semibold text-gray-800 dark:text-gray-200 group-hover:text-indigo-600 dark:group-hover:text-indigo-400 truncate">
+                <span class="block text-xs font-semibold text-slate-200 group-hover:text-indigo-300 truncate">
                     ${escapeHTML(tool.name)}
                 </span>
 
-                <span class="block text-[10px] text-gray-400 truncate">
+                <span class="block text-[10px] text-slate-400 truncate">
                     ${escapeHTML(tool.desc)}
                 </span>
 
@@ -873,682 +896,700 @@ function renderTools(tools) {
         </button>
 
     `).join("");
+
 }
 
 
-function filterTools() {
+function filterTools(){
 
-    const query =
-        document
-            .getElementById("tool-search")
-            .value
-            .toLowerCase()
-            .trim();
+    const q=document
+        .getElementById("tool-search")
+        .value
+        .toLowerCase()
+        .trim();
 
-    const filtered = aiTools.filter(tool =>
-        tool.name.toLowerCase().includes(query) ||
-        tool.desc.toLowerCase().includes(query)
+    renderTools(
+        aiTools.filter(tool=>
+            tool.name.toLowerCase().includes(q) ||
+            tool.desc.toLowerCase().includes(q)
+        )
     );
 
-    renderTools(filtered);
 }
 
 
-function useTool(id) {
+function useTool(name,prompt){
 
-    const tool = aiTools.find(item => item.id === id);
+    const input=document.getElementById("user-input");
 
-    if (!tool) return;
-
-    const input = document.getElementById("user-input");
-
-    input.value = `[${tool.name}] ${tool.prompt} `;
+    input.value=`${prompt} `;
 
     input.focus();
 
     autoResize(input);
 
-    if (window.innerWidth < 768) {
-        toggleLeftSidebar();
+    if(window.innerWidth<768){
+
+        document
+            .getElementById("left-sidebar")
+            .classList.add("-translate-x-full");
+
     }
+
 }
 
 
-function toggleLeftSidebar() {
+/* =========================================================
+   SIDEBARS
+   ========================================================= */
+
+function toggleLeftSidebar(){
+
     document
         .getElementById("left-sidebar")
         .classList.toggle("-translate-x-full");
+
 }
 
 
-function toggleRightSidebar() {
+function toggleRightSidebar(){
+
     document
         .getElementById("right-sidebar")
         .classList.toggle("translate-x-full");
+
 }
 
 
-function toggleTheme() {
+/* =========================================================
+   THEME
+   ========================================================= */
 
-    const html = document.documentElement;
-    const icon = document.getElementById("theme-icon");
+function toggleTheme(){
 
-    if (html.classList.contains("dark")) {
+    const html=document.documentElement;
+    const icon=document.getElementById("theme-icon");
+
+    if(html.classList.contains("dark")){
 
         html.classList.remove("dark");
+        html.classList.add("light");
 
-        icon.className =
-            "fa-solid fa-sun text-amber-500";
+        icon.className="fa-solid fa-sun text-amber-400";
 
-    } else {
+    }else{
 
+        html.classList.remove("light");
         html.classList.add("dark");
 
-        icon.className =
-            "fa-solid fa-moon text-indigo-400";
+        icon.className="fa-solid fa-moon text-indigo-300";
 
     }
+
 }
 
 
-function toggleModelDropdown() {
+/* =========================================================
+   MODEL
+   ========================================================= */
+
+function toggleModelDropdown(){
 
     document
         .getElementById("model-dropdown")
         .classList.toggle("hidden");
+
 }
 
 
-function selectModel(name) {
+function selectModel(name,icon){
 
-    selectedModel = name;
+    selectedModel=name;
+    selectedIcon=icon;
 
-    document.getElementById("selected-model-name").innerText = name;
+    document.getElementById("selected-model-name").textContent=name;
+
+    const dot=document.getElementById("model-dot");
+
+    dot.className="model-dot w-2 h-2 rounded-full bg-indigo-400 text-indigo-400";
 
     document
         .getElementById("model-dropdown")
         .classList.add("hidden");
+
 }
 
 
-function toggleAttachmentMenu() {
+/* =========================================================
+   ATTACHMENTS
+   ========================================================= */
+
+function toggleAttachmentMenu(){
 
     document
         .getElementById("attachment-menu")
         .classList.toggle("hidden");
+
 }
 
 
-function triggerAttachment(type) {
+function triggerAttachment(type){
 
     document
         .getElementById("attachment-menu")
         .classList.add("hidden");
 
-    const input = document.getElementById("user-input");
+    const input=document.getElementById("user-input");
 
-    input.value += `[Attached: ${type}] `;
+    input.value+=`[${type}] `;
 
     input.focus();
 
     autoResize(input);
+
 }
 
 
-function autoResize(textarea) {
+/* =========================================================
+   TEXTAREA
+   ========================================================= */
 
-    textarea.style.height = "auto";
+function autoResize(textarea){
 
-    textarea.style.height =
-        Math.min(textarea.scrollHeight, 120) + "px";
+    textarea.style.height="auto";
+
+    textarea.style.height=
+        Math.min(textarea.scrollHeight,120)+"px";
+
 }
 
 
-function handleKeyDown(event) {
+function handleKeyDown(event){
 
-    if (
-        event.key === "Enter" &&
-        !event.shiftKey
-    ) {
+    if(event.key==="Enter" && !event.shiftKey){
 
         event.preventDefault();
 
         sendMessage();
+
     }
+
 }
 
 
-function quickPrompt(text) {
+function quickPrompt(text){
 
-    const input = document.getElementById("user-input");
+    const input=document.getElementById("user-input");
 
-    input.value = text;
+    input.value=text;
 
     autoResize(input);
 
     sendMessage();
+
 }
 
 
-function openVercelModal() {
+/* =========================================================
+   SEND MESSAGE
+   ========================================================= */
 
-    document
-        .getElementById("vercel-modal")
-        .classList.remove("hidden");
-}
+async function sendMessage(){
 
+    if(sending) return;
 
-function closeVercelModal() {
+    const input=document.getElementById("user-input");
 
-    document
-        .getElementById("vercel-modal")
-        .classList.add("hidden");
-}
+    const text=input.value.trim();
 
+    if(!text) return;
 
-async function sendMessage() {
+    sending=true;
 
-    if (isSending) return;
+    const chat=document.getElementById("chat-messages");
 
-    const input =
-        document.getElementById("user-input");
+    const welcome=document.getElementById("welcome-state");
 
-    const text =
-        input.value.trim();
+    if(welcome){
 
-    if (!text) {
-
-        showToast("Please type a message first.");
-
-        input.focus();
-
-        return;
-    }
-
-
-    isSending = true;
-
-    const sendButton =
-        document.getElementById("send-button");
-
-    sendButton.disabled = true;
-
-    sendButton.classList.add("opacity-60");
-
-
-    const chat =
-        document.getElementById("chat-messages");
-
-
-    const welcome =
-        document.getElementById("welcome-screen");
-
-    if (welcome) {
         welcome.remove();
-    }
-
-
-    appendUserMessage(text);
-
-
-    input.value = "";
-
-    input.style.height = "auto";
-
-
-    const loadingId =
-        "loading-" + Date.now();
-
-
-    appendLoadingMessage(
-        loadingId,
-        selectedModel
-    );
-
-
-    scrollChat();
-
-
-    try {
-
-        const response =
-            await fetch("/api/chat", {
-
-                method: "POST",
-
-                headers: {
-                    "Content-Type": "application/json"
-                },
-
-                body: JSON.stringify({
-
-                    message: text,
-
-                    model: selectedModel
-
-                })
-
-            });
-
-
-        const rawText =
-            await response.text();
-
-
-        let data = null;
-
-
-        try {
-
-            data =
-                rawText
-                    ? JSON.parse(rawText)
-                    : null;
-
-        } catch (jsonError) {
-
-            throw new Error(
-                "Invalid JSON response from /api/chat. Server returned: " +
-                rawText.slice(0, 300)
-            );
-
-        }
-
-
-        if (!response.ok) {
-
-            throw new Error(
-                data?.error ||
-                data?.message ||
-                `API request failed with status ${response.status}`
-            );
-
-        }
-
-
-        const answer =
-            data?.reply ||
-            data?.message ||
-            data?.content ||
-            data?.output;
-
-
-        if (!answer) {
-
-            throw new Error(
-                "The API returned JSON, but no AI reply was found."
-            );
-
-        }
-
-
-        replaceLoadingWithResponse(
-            loadingId,
-            answer,
-            selectedModel
-        );
-
-
-    } catch (error) {
-
-        console.error("NexusAI API Error:", error);
-
-        replaceLoadingWithError(
-            loadingId,
-            error.message || "Something went wrong."
-        );
 
     }
 
 
-    isSending = false;
+    /* USER MESSAGE */
 
-    sendButton.disabled = false;
+    chat.insertAdjacentHTML("beforeend",`
 
-    sendButton.classList.remove("opacity-60");
+        <div class="message-bubble flex items-start space-x-3 max-w-3xl mx-auto justify-end">
 
-    scrollChat();
-}
+            <div class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4 rounded-3xl rounded-tr-sm text-sm shadow-xl max-w-xl border border-white/20 whitespace-pre-wrap">
 
-
-function appendUserMessage(text) {
-
-    const chat =
-        document.getElementById("chat-messages");
-
-
-    chat.insertAdjacentHTML(
-        "beforeend",
-        `
-
-        <div class="flex items-start space-x-3 max-w-3xl mx-auto justify-end">
-
-            <div class="bg-indigo-600 text-white p-3.5 rounded-3xl rounded-tr-sm text-sm shadow-md max-w-xl message-content">
                 ${escapeHTML(text)}
+
             </div>
 
-            <div class="w-8 h-8 rounded-full bg-indigo-600 text-white font-semibold flex items-center justify-center text-xs shrink-0 shadow">
-                YOU
+            <div class="user-avatar w-9 h-9 rounded-full bg-gradient-to-tr from-indigo-500 to-purple-500 text-white flex items-center justify-center text-xs shrink-0 shadow-lg ring-1 ring-white/30">
+
+                <i class="fa-solid fa-user"></i>
+
             </div>
 
         </div>
 
-        `
-    );
+    `);
+
+
+    /* SAVE USER MESSAGE */
+
+    const previousHistory=[...conversation];
+
+    conversation.push({
+        role:"user",
+        content:text
+    });
+
+
+    input.value="";
+
+    input.style.height="auto";
+
+    chat.scrollTop=chat.scrollHeight;
+
+
+    /* LOADING */
+
+    const responseId="response-"+Date.now();
+
+    chat.insertAdjacentHTML("beforeend",`
+
+        <div id="${responseId}" class="message-bubble flex items-start space-x-3 max-w-3xl mx-auto">
+
+            <div class="ai-avatar ai-thinking w-9 h-9 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 shadow-lg shadow-indigo-500/20 ring-1 ring-white/30">
+
+                <i class="fa-solid ${selectedIcon}"></i>
+
+            </div>
+
+            <div class="glass-panel p-4 rounded-3xl rounded-tl-sm text-sm shadow-xl max-w-xl border border-white/10 bg-slate-900/80">
+
+                <div class="flex items-center space-x-2 text-[10px] text-slate-400 font-medium mb-2">
+
+                    <span class="text-indigo-400 font-semibold">
+                        ${escapeHTML(selectedModel)}
+                    </span>
+
+                    <span>• Thinking</span>
+
+                </div>
+
+                <div class="flex items-center space-x-1.5">
+
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+                    <span class="typing-dot"></span>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    `);
+
+    chat.scrollTop=chat.scrollHeight;
+
+
+    try{
+
+        /*
+         * IMPORTANT:
+         * The browser calls /api/chat.
+         * The Replicate API key NEVER appears here.
+         */
+
+        const response=await fetch("/api/chat",{
+
+            method:"POST",
+
+            headers:{
+                "Content-Type":"application/json"
+            },
+
+            body:JSON.stringify({
+
+                message:text,
+
+                history:previousHistory,
+
+                model:selectedModel
+
+            })
+
+        });
+
+
+        const raw=await response.text();
+
+        let data;
+
+        try{
+
+            data=raw ? JSON.parse(raw) : {};
+
+        }catch(jsonError){
+
+            throw new Error(
+                "The server returned an invalid response. Check that api/chat.js is deployed correctly."
+            );
+
+        }
+
+
+        if(!response.ok){
+
+            throw new Error(
+                data.error ||
+                `API request failed (${response.status}).`
+            );
+
+        }
+
+
+        const reply=
+            typeof data.reply==="string"
+                ? data.reply.trim()
+                : "";
+
+
+        if(!reply){
+
+            throw new Error(
+                "The AI returned an empty response."
+            );
+
+        }
+
+
+        conversation.push({
+
+            role:"assistant",
+
+            content:reply
+
+        });
+
+
+        const responseEl=document.getElementById(responseId);
+
+        if(responseEl){
+
+            responseEl.outerHTML=`
+
+                <div class="message-bubble flex items-start space-x-3 max-w-3xl mx-auto">
+
+                    <div class="ai-avatar w-9 h-9 rounded-2xl bg-gradient-to-tr from-violet-600 via-indigo-600 to-cyan-500 text-white flex items-center justify-center text-xs shrink-0 shadow-lg shadow-indigo-500/20 ring-1 ring-white/30">
+
+                        <i class="fa-solid ${selectedIcon}"></i>
+
+                    </div>
+
+                    <div class="glass-panel p-4 rounded-3xl rounded-tl-sm text-sm shadow-xl max-w-xl border border-white/10 bg-slate-900/80">
+
+                        <div class="flex items-center space-x-2 text-[10px] text-slate-400 font-medium mb-2">
+
+                            <span class="text-indigo-400 font-semibold">
+
+                                ${escapeHTML(selectedModel)}
+
+                            </span>
+
+                            <span>• NexusAI</span>
+
+                        </div>
+
+                        <div class="text-slate-200 leading-relaxed whitespace-pre-wrap">
+
+                            ${escapeHTML(reply)}
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+
+        addHistoryItem(text);
+
+    }catch(error){
+
+        /*
+         * REAL ERROR DISPLAY.
+         * No fake "include ai" message.
+         */
+
+        const responseEl=document.getElementById(responseId);
+
+        if(responseEl){
+
+            responseEl.outerHTML=`
+
+                <div class="message-bubble flex items-start space-x-3 max-w-3xl mx-auto">
+
+                    <div class="w-9 h-9 rounded-2xl bg-gradient-to-tr from-red-600 to-orange-500 text-white flex items-center justify-center text-xs shrink-0 shadow-lg ring-1 ring-white/30">
+
+                        <i class="fa-solid fa-triangle-exclamation"></i>
+
+                    </div>
+
+                    <div class="glass-panel border border-red-500/30 p-4 rounded-3xl rounded-tl-sm text-sm shadow-xl max-w-xl bg-red-950/30">
+
+                        <div class="flex items-center space-x-2 text-[10px] text-red-400 font-semibold mb-2">
+
+                            <i class="fa-solid fa-circle-exclamation"></i>
+
+                            <span>NexusAI Error</span>
+
+                        </div>
+
+                        <div class="text-slate-200 leading-relaxed">
+
+                            ${escapeHTML(error.message || "Something went wrong.")}
+
+                        </div>
+
+                        <div class="text-[10px] text-slate-500 mt-2">
+
+                            Your API key remains hidden on the server.
+
+                        </div>
+
+                    </div>
+
+                </div>
+
+            `;
+
+        }
+
+    }finally{
+
+        sending=false;
+
+        chat.scrollTop=chat.scrollHeight;
+
+    }
+
 }
 
 
-function appendLoadingMessage(id, model) {
+/* =========================================================
+   HISTORY
+   ========================================================= */
 
-    const chat =
-        document.getElementById("chat-messages");
+function addHistoryItem(text){
 
+    const list=document.getElementById("history-items");
 
-    chat.insertAdjacentHTML(
-        "beforeend",
-        `
+    const title=
+        text.length>34
+            ? text.slice(0,34)+"..."
+            : text;
 
-        <div id="${id}" class="flex items-start space-x-3 max-w-3xl mx-auto">
+    const item=document.createElement("div");
 
-            <div class="w-8 h-8 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 shadow-lg shadow-indigo-500/20">
+    item.className=
+        "group flex items-center justify-between p-3 rounded-2xl hover:bg-white/10 text-slate-300 cursor-pointer transition-all border border-transparent";
 
-                <i class="fa-solid fa-bolt"></i>
+    item.innerHTML=`
 
-            </div>
+        <div class="flex items-center space-x-2.5 truncate">
 
+            <i class="fa-regular fa-message text-indigo-400 text-[11px]"></i>
 
-            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-3xl rounded-tl-sm text-sm shadow-sm max-w-xl">
-
-                <div class="flex items-center space-x-2 text-[10px] text-gray-400 font-medium mb-2">
-
-                    <span class="text-indigo-500 font-semibold">
-                        ${escapeHTML(model)}
-                    </span>
-
-                    <span>• Thinking...</span>
-
-                </div>
-
-
-                <div class="flex items-center space-x-1">
-
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 typing-dot"></span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 typing-dot"></span>
-                    <span class="w-1.5 h-1.5 rounded-full bg-indigo-500 typing-dot"></span>
-
-                </div>
-
-            </div>
+            <span class="truncate">
+                ${escapeHTML(title)}
+            </span>
 
         </div>
 
-        `
-    );
-}
+        <button
+            onclick="deleteHistoryItem(event,this)"
+            class="hidden group-hover:block text-slate-500 hover:text-red-400">
 
+            <i class="fa-solid fa-trash text-[10px]"></i>
 
-function replaceLoadingWithResponse(
-    id,
-    answer,
-    model
-) {
-
-    const element =
-        document.getElementById(id);
-
-    if (!element) return;
-
-
-    element.outerHTML = `
-
-        <div class="flex items-start space-x-3 max-w-3xl mx-auto">
-
-            <div class="w-8 h-8 rounded-2xl bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center text-xs shrink-0 shadow-lg shadow-indigo-500/20">
-
-                <i class="fa-solid fa-bolt"></i>
-
-            </div>
-
-
-            <div class="bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 p-4 rounded-3xl rounded-tl-sm text-sm shadow-sm max-w-xl space-y-2">
-
-                <div class="flex items-center space-x-2 text-[10px] text-gray-400 font-medium">
-
-                    <span class="text-indigo-500 font-semibold">
-                        ${escapeHTML(model)}
-                    </span>
-
-                    <span>
-                        • NexusAI
-                    </span>
-
-                </div>
-
-
-                <div class="text-gray-800 dark:text-gray-200 message-content">
-                    ${escapeHTML(String(answer))}
-                </div>
-
-            </div>
-
-        </div>
+        </button>
 
     `;
+
+    list.prepend(item);
+
 }
 
 
-function replaceLoadingWithError(
-    id,
-    message
-) {
+function deleteHistoryItem(event,button){
 
-    const element =
-        document.getElementById(id);
+    event.stopPropagation();
 
-    if (!element) return;
+    button.closest(".group").remove();
 
-
-    element.outerHTML = `
-
-        <div class="flex items-start space-x-3 max-w-3xl mx-auto">
-
-            <div class="w-8 h-8 rounded-2xl bg-red-500 text-white flex items-center justify-center text-xs shrink-0 shadow-lg">
-
-                <i class="fa-solid fa-triangle-exclamation"></i>
-
-            </div>
-
-
-            <div class="bg-white dark:bg-gray-900 border border-red-200 dark:border-red-900/50 p-4 rounded-3xl rounded-tl-sm text-sm shadow-sm max-w-xl space-y-2">
-
-                <div class="text-[10px] text-red-500 font-semibold">
-                    API Error
-                </div>
-
-
-                <div class="text-gray-800 dark:text-gray-200 message-content">
-                    ${escapeHTML(message)}
-                </div>
-
-            </div>
-
-        </div>
-
-    `;
 }
 
 
-function startNewChat() {
+function filterHistory(){
 
-    document.getElementById("chat-messages").innerHTML = `
+    const query=
+        document
+            .getElementById("history-search")
+            .value
+            .toLowerCase();
 
-        <div
-            id="welcome-screen"
-            class="max-w-2xl mx-auto text-center py-12 space-y-4"
-        >
+    document
+        .querySelectorAll("#history-items .group")
+        .forEach(item=>{
 
-            <div class="w-16 h-16 rounded-3xl bg-gradient-to-tr from-indigo-500 to-purple-600 mx-auto flex items-center justify-center text-white text-2xl shadow-xl shadow-indigo-500/20">
+            item.style.display=
+                item.innerText
+                    .toLowerCase()
+                    .includes(query)
+                    ? "flex"
+                    : "none";
 
-                <i class="fa-solid fa-wand-magic-sparkles"></i>
+        });
+
+}
+
+
+/* =========================================================
+   NEW CHAT
+   ========================================================= */
+
+function startNewChat(){
+
+    conversation=[];
+
+    const chat=document.getElementById("chat-messages");
+
+    chat.innerHTML=`
+
+        <div id="welcome-state" class="max-w-2xl mx-auto text-center py-12 space-y-5">
+
+            <div class="ai-avatar w-20 h-20 rounded-[2rem] bg-gradient-to-tr from-indigo-500 via-purple-500 to-pink-500 mx-auto flex items-center justify-center text-white text-3xl shadow-2xl ring-1 ring-white/30">
+
+                <i class="fa-solid fa-sparkles"></i>
 
             </div>
 
-            <h1 class="text-2xl md:text-3xl font-bold tracking-tight">
-                New conversation started
+            <h1 class="text-2xl md:text-3xl font-bold tracking-tight text-white">
+
+                New conversation
+
             </h1>
 
-            <p class="text-sm text-gray-500 dark:text-gray-400">
-                Type a message below to start chatting.
+            <p class="text-sm text-slate-400">
+
+                Ask NexusAI anything. No special keyword is required.
+
             </p>
 
         </div>
 
     `;
 
+    if(window.innerWidth<768){
 
-    if (window.innerWidth < 768) {
-        toggleRightSidebar();
-    }
-}
-
-
-function selectChat(element) {
-
-    document
-        .querySelectorAll("#history-list .group")
-        .forEach(el => {
-
-            el.className =
-                "group flex items-center justify-between p-2.5 rounded-2xl hover:bg-gray-100 dark:hover:bg-gray-800 text-gray-700 dark:text-gray-300 cursor-pointer transition-all";
-
-        });
-
-
-    element.className =
-        "group flex items-center justify-between p-2.5 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 text-indigo-600 dark:text-indigo-400 font-medium cursor-pointer transition-all border border-indigo-100 dark:border-indigo-900/30 shadow-sm";
-
-
-    if (window.innerWidth < 768) {
-        toggleRightSidebar();
-    }
-}
-
-
-function renameChat(event) {
-
-    event.stopPropagation();
-
-    const title =
-        event.target
-            .closest(".group")
-            .querySelector("span.truncate");
-
-
-    const newTitle =
-        prompt(
-            "Enter new chat title:",
-            title.innerText
-        );
-
-
-    if (newTitle && newTitle.trim()) {
-        title.innerText =
-            newTitle.trim();
-    }
-}
-
-
-function deleteChat(event) {
-
-    event.stopPropagation();
-
-    const item =
-        event.target.closest(".group");
-
-    if (item) {
-        item.remove();
-    }
-}
-
-
-function filterHistory() {
-
-    const query =
         document
-            .getElementById("history-search")
-            .value
-            .toLowerCase()
-            .trim();
+            .getElementById("right-sidebar")
+            .classList.add("translate-x-full");
 
+    }
 
-    document
-        .querySelectorAll("#history-list .group")
-        .forEach(item => {
-
-            const text =
-                item.innerText.toLowerCase();
-
-            item.style.display =
-                text.includes(query)
-                    ? "flex"
-                    : "none";
-
-        });
 }
 
 
-function scrollChat() {
+/* =========================================================
+   VERCEL MODAL
+   ========================================================= */
 
-    const chat =
-        document.getElementById("chat-messages");
+function openVercelModal(){
 
-    requestAnimationFrame(() => {
+    const modal=document.getElementById("vercel-modal");
 
-        chat.scrollTop =
-            chat.scrollHeight;
+    modal.classList.remove("hidden");
 
-    });
+    modal.classList.add("flex");
+
 }
 
 
-function escapeHTML(str) {
+function closeVercelModal(){
+
+    const modal=document.getElementById("vercel-modal");
+
+    modal.classList.add("hidden");
+
+    modal.classList.remove("flex");
+
+}
+
+
+/* =========================================================
+   ESCAPE HTML
+   ========================================================= */
+
+function escapeHTML(str){
 
     return String(str).replace(
         /[&<>'"]/g,
-        tag => ({
-            "&": "&amp;",
-            "<": "&lt;",
-            ">": "&gt;",
-            "'": "&#39;",
-            '"': "&quot;"
-        }[tag])
+        char=>({
+            "&":"&amp;",
+            "<":"&lt;",
+            ">":"&gt;",
+            "'":"&#39;",
+            '"':"&quot;"
+        }[char])
     );
+
 }
 
 
-function showToast(message) {
+/* =========================================================
+   CLOSE DROPDOWNS WHEN CLICKING OUTSIDE
+   ========================================================= */
 
-    const toast =
-        document.getElementById("toast");
+document.addEventListener("click",event=>{
 
-    toast.textContent =
-        message;
+    if(
+        !event.target.closest("#model-selector-btn") &&
+        !event.target.closest("#model-dropdown")
+    ){
 
-    toast.classList.remove("hidden");
+        document
+            .getElementById("model-dropdown")
+            .classList.add("hidden");
 
-    clearTimeout(window.toastTimer);
+    }
 
-    window.toastTimer =
-        setTimeout(() => {
+    if(
+        !event.target.closest("#attachment-menu") &&
+        !event.target.closest("#attachment-menu") &&
+        !event.target.closest('[onclick="toggleAttachmentMenu()"]')
+    ){
 
-            toast.classList.add("hidden");
+        document
+            .getElementById("attachment-menu")
+            .classList.add("hidden");
 
-        }, 3000);
-}
+    }
 
+});
 
 </script>
 
 </body>
 </html>
-
